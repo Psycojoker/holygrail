@@ -117,4 +117,11 @@ class TodoDB(object):
         self._Todo(description=new_description)
 
     def remove_todo(self, todo):
-        self._Todo.select(self._Todo.q.description ==todo)[0].destroySelf()
+        # if todo is an id
+        if type(todo) == long or type(todo) == int:
+            self._Todo.get(todo).destroySelf()
+        else:
+            self._Todo.select(self._Todo.q.description == todo)[0].destroySelf()
+
+    def get_todo_id(self, description):
+        return self._Todo.select(self._Todo.q.description == description)[0].id
