@@ -5,7 +5,48 @@ from sqlobject import *
 
 from datetime import datetime
 
-def connect(user = None, password = None, db_type = None):
+class Context(SQLObject):
+    description = StringCol()
+    position = IntCol(unique=True)
+    hide = BoolCol(default=False)
+    created_at = DateTimeCol(default=datetime.now())
+    completed_at = DateTimeCol(default=None)
+
+class Project(SQLObject):
+    description = StringCol()
+    state = EnumCol(enumValues=('active', 'completed', 'hidden'), default="active")
+    created_at = DateTimeCol(default=datetime.now())
+    completed_at = DateTimeCol(default=None)
+    tickler = DateCol(default=None)
+    due = DateCol(default=None)
+    default_context_id = IntCol(default=None)
+
+class Item(SQLObject):
+    description = StringCol()
+    context = ForeignKey('Context')
+    project = IntCol(default=None)
+    created_at = DateTimeCol(default=datetime.now())
+    hidden = BoolCol(default=False)
+    #tickler = DateCol(default=None)
+    #next_todo = IntCol(default=None)
+    #previous_todo = IntCol(default=None)
+
+class Todo(SQLObject):
+    description = StringCol()
+    notes = StringCol(default=None)
+    context = ForeignKey('Context')
+    project = IntCol(default=None)
+    created_at = DateTimeCol(default=datetime.now())
+    completed_at = DateTimeCol(default=None)
+    due = DateCol(default=None)
+    tickler = DateCol(default=None)
+    completed = BoolCol(default=False)
+    next_todo = IntCol(default=None)
+    previous_todo = IntCol(default=None)
+
+# TODO: how the fuck can I for the use of innodb for mysql ?
+#def connect(user = None, password = None, db_type = None):
+def connect():
     """
     Connect to the database
     """
@@ -16,39 +57,18 @@ def create_db():
     """
     Create the database if it isn't already create
     """
-
-    class Context(SQLObject):
-        description = StringCol()
-        position = IntCol(unique=True)
-        hide = BoolCol(default=False)
-        created_at = DateTimeCol(default=datetime.now())
-        completed_at = DateTimeCol(default=None)
-
     Context.createTable(ifNotExists=True)
-
-    class Project(SQLObject):
-        description = StringCol()
-        #position = IntCol()
-        state = EnumCol(enumValues=('active', 'completed', 'hidden'), default="active")
-        created_at = DateTimeCol(default=datetime.now())
-        completed_at = DateTimeCol(default=None)
-        tickler = DateCol(default=None)
-        default_context_id = IntCol(default=None)
-
     Project.createTable(ifNotExists=True)
-
-    class Todo(SQLObject):
-        description = StringCol()
-        context = ForeignKey('Context')
-        project = IntCol(default=None)
-        created_at = DateTimeCol(default=datetime.now())
-        completed_at = DateTimeCol(default=None)
-        due = DateCol(default=None)
-        tickler = DateCol(default=None)
-        state = EnumCol(enumValues=('active', 'completed', 'hidden'), default="active")
-        next_todo = IntCol(default=None)
-        previous_todo = IntCol(default=None)
-
     Todo.createTable(ifNotExists=True)
+    Item.createTable(ifNotExists=True)
 
-print Todo.select()
+def drop_db():
+    """
+    Drop the database if it isn't already drop
+    """
+    Context.dropTable(ifNotExists=True)
+    Project.dropTable(ifNotExists=True)
+    Todo.dropTable(ifNotExists=True)
+    Item.dropTable(ifNotExists=True)
+
+connect()
