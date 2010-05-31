@@ -115,3 +115,6 @@ class TodoDB(object):
                 raise TodoAlreadyExist(new_description)
 
         self._Todo(description=new_description)
+
+    def remove_todo(self, todo):
+        self._Todo.select(self._Todo.q.description ==todo)[0].destroySelf()

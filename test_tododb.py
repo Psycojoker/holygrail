@@ -61,6 +61,15 @@ class MaTest(unittest.TestCase):
 
         self.assertRaises(WarningTodoAlreadyExistMultipleTimes, tododb.add_todo, "This is a new todo")
 
+    def test_remove_todo_from_description(self):
+        tododb = self.reinitialise()
+
+        was = tododb.todo_len()
+        tododb.add_todo("This is a new todo")
+        self.assertEqual(was + 1, tododb.todo_len())
+        tododb.remove_todo("This is a new todo")
+        self.assertEqual(was, tododb.todo_len())
+
 if __name__ == "__main__":
    unittest.main()
 
