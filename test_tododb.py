@@ -2,7 +2,7 @@
 # -*- coding:Utf-8 -*-
 
 import unittest
-from tododb import TodoDB, TodoAlreadyExist
+from tododb import TodoDB, TodoAlreadyExist, WarningTodoAlreadyExistMultipleTimes
 
 class MaTest(unittest.TestCase):
 
@@ -47,6 +47,19 @@ class MaTest(unittest.TestCase):
         self.assertEqual(was + 1, tododb.todo_len())
 
         self.assertRaises(TodoAlreadyExist, tododb.add_todo, "This is a new todo")
+
+    def test_raise_if_todo_already_exist_multiple_time(self):
+        tododb = self.reinitialise()
+
+        was = tododb.todo_len()
+
+        tododb.add_todo("This is a new todo")
+
+        self.assertEqual(was + 1, tododb.todo_len())
+        tododb._Todo(description="This is a new todo")
+        self.assertEqual(was + 2, tododb.todo_len())
+
+        self.assertRaises(WarningTodoAlreadyExistMultipleTimes, tododb.add_todo, "This is a new todo")
 
 if __name__ == "__main__":
    unittest.main()

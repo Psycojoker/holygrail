@@ -21,6 +21,13 @@ class TodoAlreadyExist(exceptions.Exception):
     def __str__(self):
         return 'this todo already exist in the database: "%s"' % self.todo_name
 
+class WarningTodoAlreadyExistMultipleTimes(exceptions.Exception):
+    def __init__(self, todo_name):
+        self.todo_name = todo_name
+
+    def __str__(self):
+        return 'WARNING: this todo already exist in multiple intance in the database, this is *not* normal: "%s"' % self.todo_name
+
 class TodoDB(object):
     def __init__(self):
         self.connect()
@@ -102,6 +109,9 @@ class TodoDB(object):
 
     def add_todo(self, new_description):
         if _select_len(self._Todo.select(self._Todo.q.description == new_description)) > 0:
+            if _select_len(self._Todo.select(self._Todo.q.description == new_description)) > 1:
+                raise WarningTodoAlreadyExistMultipleTimes(new_description)
+            else:
                 raise TodoAlreadyExist(new_description)
 
         self._Todo(description=new_description)
