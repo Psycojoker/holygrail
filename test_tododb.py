@@ -1,9 +1,8 @@
 #!/usr/bin/python
 # -*- coding:Utf-8 -*-
 
-
 import unittest
-from tododb import TodoDB
+from tododb import TodoDB, TodoAlreadyExist
 
 class MaTest(unittest.TestCase):
 
@@ -25,6 +24,17 @@ class MaTest(unittest.TestCase):
         tododb.add_todo("This is a new todo")
 
         self.assertEqual(was + 1, tododb.todo_len())
+
+    def test_cant_add_two_time_the_same_todo(self):
+        tododb = self.reinitialise()
+
+        was = tododb.todo_len()
+
+        tododb.add_todo("This is a new todo")
+
+        self.assertEqual(was + 1, tododb.todo_len())
+
+        self.assertRaises(TodoAlreadyExist, tododb.add_todo, "This is a new todo")
 
 if __name__ == "__main__":
    unittest.main()
