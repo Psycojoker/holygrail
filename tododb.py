@@ -23,7 +23,7 @@ class TodoAlreadyExist(exceptions.Exception):
 
 class TodoDB(object):
     def __init__(self):
-        pass
+        self.connect()
 
     #class Context(SQLObject):
         #description = StringCol()

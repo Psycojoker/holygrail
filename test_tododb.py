@@ -11,7 +11,6 @@ class MaTest(unittest.TestCase):
         Reinitialise the db to make test with a clean one
         """
         tododb = TodoDB()
-        tododb.connect()
         tododb.drop_db()
         tododb.create_db()
         return tododb
