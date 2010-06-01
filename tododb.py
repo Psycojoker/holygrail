@@ -26,10 +26,7 @@ class TodoDoesntExist(exceptions.Exception):
         self.todo_name = todo_name
 
     def __str__(self):
-        if type(self.todo_name) == int or type(self.todo_name) == long:
-            return 'there is no todo with this id: %i' % self.todo_name
-        else:
-            return 'todo with this name doesn\'t exist: %s' % self.todo_name
+        return 'this todo doesn\'t exist: %s' % self.todo_name
 
 class TodoDB(object):
     def __init__(self):
@@ -126,26 +123,25 @@ class TodoDB(object):
         assert _select_len(self._Todo.select(self._Todo.q.description == new_description)) == 1, 'The count of this new todo differt from 1, more than one of this todo has been add or none of it has been add: "%s"' % new_description
 
     def remove_todo(self, todo):
-        # if todo is an id
-        if type(todo) == long or type(todo) == int:
+        if _select_len(self._Todo.select(self._Todo.q.description == todo)) == 0:
+            raise TodoDoesntExist(todo)
+
+        self._Todo.select(self._Todo.q.description == todo)[0].destroySelf()
+        assert _select_len(self._Todo.select(self._Todo.q.description == todo)) == 0, "The number of this todo should be now egal to 0: \"%s\"" % todo
+
+    def remove_todo_by_id(self, todo):
+        try:
+            self._Todo.get(todo).destroySelf()
+        except SQLObjectNotFound:
+            raise TodoDoesntExist(todo)
+
+        # assert, only on contract programming purpose
+        if __debug__:
             try:
-                self._Todo.get(todo).destroySelf()
+                self._Todo.get(todo)
+                raise AssertionError("This todo should have been destroyed: \"%s\"" % todo)
             except SQLObjectNotFound:
-                raise TodoDoesntExist(todo)
-
-            # assert, only on contract programming purpose
-            if __debug__:
-                try:
-                    self._Todo.get(todo)
-                    raise AssertionError("This todo should have been destroyed: \"%s\"" % todo)
-                except SQLObjectNotFound:
-                    pass
-        else:
-            if _select_len(self._Todo.select(self._Todo.q.description == todo)) == 0:
-                raise TodoDoesntExist(todo)
-
-            self._Todo.select(self._Todo.q.description == todo)[0].destroySelf()
-            assert _select_len(self._Todo.select(self._Todo.q.description == todo)) == 0, "The number of this todo should be now egal to 0: \"%s\"" % todo
+                pass
 
     def get_todo_id(self, description):
         query = self._Todo.select(self._Todo.q.description == description)

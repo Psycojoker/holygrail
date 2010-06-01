@@ -93,7 +93,7 @@ class MaTest(unittest.TestCase):
         self.assertEqual(was + 1, tododb.todo_len())
 
         id = tododb.get_todo_id("This is a new todo")
-        tododb.remove_todo(id)
+        tododb.remove_todo_by_id(id)
 
         self.assertEqual(was, tododb.todo_len())
 
