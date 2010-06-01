@@ -123,6 +123,12 @@ class TodoDB(object):
         assert _select_len(self._Todo.select(self._Todo.q.description == new_description)) == 1, 'The count of this new todo differt from 1, more than one of this todo has been add or none of it has been add: "%s"' % new_description
 
     def remove_todo(self, todo):
+        """
+        Revceived the description of a todo, delete it
+
+        Arguments:
+            * todo description
+        """
         if _select_len(self._Todo.select(self._Todo.q.description == todo)) == 0:
             raise TodoDoesntExist(todo)
 
@@ -130,6 +136,12 @@ class TodoDB(object):
         assert _select_len(self._Todo.select(self._Todo.q.description == todo)) == 0, "The number of this todo should be now egal to 0: \"%s\"" % todo
 
     def remove_todo_by_id(self, todo):
+        """
+        Revceived the id of a todo, delete it
+
+        Arguments:
+            * todo id
+        """
         try:
             self._Todo.get(todo).destroySelf()
         except SQLObjectNotFound:
