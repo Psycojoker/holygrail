@@ -118,6 +118,8 @@ class TodoDB(object):
 
         self._Todo(description=new_description)
 
+        assert _select_len(self._Todo.select(self._Todo.q.description == new_description)) == 1, 'The count of this new todo differt from 1, more than one of this todo has been add or none of it has been add: "%s"' % new_description
+
     def remove_todo(self, todo):
         # if todo is an id
         if type(todo) == long or type(todo) == int:
