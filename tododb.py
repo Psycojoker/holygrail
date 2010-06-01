@@ -128,11 +128,19 @@ class TodoDB(object):
             except SQLObjectNotFound:
                 raise TodoDoesntExist(todo)
 
+            # assert, only on contract programming purpose
+            if __debug__:
+                try:
+                    self._Todo.get(todo)
+                    raise AssertionError("This todo should have been destroyed: \"%s\"" % todo)
+                except SQLObjectNotFound:
+                    pass
         else:
             if _select_len(self._Todo.select(self._Todo.q.description == todo)) == 0:
                 raise TodoDoesntExist(todo)
 
             self._Todo.select(self._Todo.q.description == todo)[0].destroySelf()
+            assert _select_len(self._Todo.select(self._Todo.q.description == todo)) == 0, "The number of this todo should be now egal to 0: \"%s\"" % todo
 
     def get_todo_id(self, description):
         return self._Todo.select(self._Todo.q.description == description)[0].id
