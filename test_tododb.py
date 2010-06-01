@@ -93,6 +93,19 @@ class MaTest(unittest.TestCase):
 
         self.assertRaises(TodoDoesntExist, tododb.remove_todo, 3)
 
+    def test_remove_should_raise_an_assert_if_multiple_todo_exist(self):
+        tododb = self.reinitialise()
+
+        was = tododb.todo_len()
+
+        tododb.add_todo("This is a new todo")
+
+        self.assertEqual(was + 1, tododb.todo_len())
+        tododb._Todo(description="This is a new todo")
+        self.assertEqual(was + 2, tododb.todo_len())
+
+        self.assertRaises(AssertionError, tododb.remove_todo, "This is a new todo")
+
 if __name__ == "__main__":
    unittest.main()
 
