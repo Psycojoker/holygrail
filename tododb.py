@@ -5,6 +5,8 @@ import exceptions
 
 from sqlobject import *
 
+from config import DATABASE_ACCESS
+
 #from datetime import datetime
 
 def _select_len(select):
@@ -84,7 +86,7 @@ class TodoDB(object):
         Connect to the database
         """
         # todo, generalisation
-        sqlhub.processConnection = connectionForURI('mysql://tasks:toto@localhost/tasks')
+        sqlhub.processConnection = connectionForURI(DATABASE_ACCESS)
 
     def create_db(self):
         """
