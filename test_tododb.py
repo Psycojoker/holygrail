@@ -79,6 +79,11 @@ class MaTest(unittest.TestCase):
         self.assertEqual(1, tododb.get_todo_id("This is a new todo"))
         self.assertEqual(2, tododb.get_todo_id("This is a new todo 2"))
 
+    def test_get_todo_id_should_raise_an_exection_if_todo_doesnt_exist(self):
+        tododb = self.reinitialise()
+
+        self.assertRaises(TodoDoesntExist, tododb.get_todo_id, "todo")
+
     def test_remove_todo_from_id(self):
         tododb = self.reinitialise()
 

@@ -143,4 +143,7 @@ class TodoDB(object):
             assert _select_len(self._Todo.select(self._Todo.q.description == todo)) == 0, "The number of this todo should be now egal to 0: \"%s\"" % todo
 
     def get_todo_id(self, description):
-        return self._Todo.select(self._Todo.q.description == description)[0].id
+        query = self._Todo.select(self._Todo.q.description == description)
+        if _select_len(query) == 0:
+            raise TodoDoesntExist, description
+        return query[0].id
