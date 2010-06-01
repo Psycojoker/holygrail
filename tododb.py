@@ -146,4 +146,5 @@ class TodoDB(object):
         query = self._Todo.select(self._Todo.q.description == description)
         if _select_len(query) == 0:
             raise TodoDoesntExist, description
+        assert _select_len(query) == 1, "There is more than one instance of this todo in the database: \"%s\"" % description
         return query[0].id
