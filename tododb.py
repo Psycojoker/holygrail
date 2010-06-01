@@ -111,7 +111,12 @@ class TodoDB(object):
         return _select_len(self._Todo.select())
 
     def add_todo(self, new_description):
-        # should be == 0 but I want to raise a special exception if the todo already exist
+        """
+        Add a new todo
+
+        Arguments:
+            * the description of the todo
+        """
         assert _select_len(self._Todo.select(self._Todo.q.description == new_description)) <= 1, 'multiple instance of this todo exist in the database: "%s"' % new_description
         if _select_len(self._Todo.select(self._Todo.q.description == new_description)) > 0:
             raise TodoAlreadyExist(new_description)
