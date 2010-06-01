@@ -83,6 +83,11 @@ class MaTest(unittest.TestCase):
 
         self.assertEqual(was, tododb.todo_len())
 
+    def test_remove_should_raise_an_exception_if_todo_doesnt_exist(self):
+        tododb = self.reinitialise()
+
+        self.assertRaises(TodoDoesntExist, tododb.remove_todo, "This is a new todo")
+
 if __name__ == "__main__":
    unittest.main()
 
