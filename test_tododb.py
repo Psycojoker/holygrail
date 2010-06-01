@@ -59,7 +59,7 @@ class MaTest(unittest.TestCase):
         tododb._Todo(description="This is a new todo")
         self.assertEqual(was + 2, tododb.todo_len())
 
-        self.assertRaises(WarningTodoAlreadyExistMultipleTimes, tododb.add_todo, "This is a new todo")
+        self.assertRaises(AssertionError, tododb.add_todo, "This is a new todo")
 
     def test_remove_todo_from_description(self):
         tododb = self.reinitialise()
