@@ -70,6 +70,15 @@ class MaTest(unittest.TestCase):
         tododb.remove_todo("This is a new todo")
         self.assertEqual(was, tododb.todo_len())
 
+    def test_get_todo_id(self):
+        tododb = self.reinitialise()
+
+        tododb.add_todo("This is a new todo")
+        tododb.add_todo("This is a new todo 2")
+
+        self.assertEqual(1, tododb.get_todo_id("This is a new todo"))
+        self.assertEqual(2, tododb.get_todo_id("This is a new todo 2"))
+
     def test_remove_todo_from_id(self):
         tododb = self.reinitialise()
 
