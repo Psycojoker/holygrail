@@ -21,12 +21,15 @@ class TodoAlreadyExist(exceptions.Exception):
     def __str__(self):
         return 'this todo already exist in the database: "%s"' % self.todo_name
 
-class WarningTodoAlreadyExistMultipleTimes(exceptions.Exception):
+class TodoDoesntExist(exceptions.Exception):
     def __init__(self, todo_name):
         self.todo_name = todo_name
 
     def __str__(self):
-        return 'WARNING: this todo already exist in multiple intance in the database, this is *not* normal: "%s"' % self.todo_name
+        if type(self.todo_name) == int or type(self.todo_name) == long:
+            return 'there is no todo with this id: %i' % self.todo_name
+        else:
+            return 'todo with this name doesn\'t exist: %s' % self.todo_name
 
 class TodoDB(object):
     def __init__(self):
