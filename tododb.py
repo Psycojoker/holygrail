@@ -144,6 +144,12 @@ class TodoDB(object):
                 pass
 
     def get_todo_id(self, description):
+        """
+        Receveid a the description of a todo, return it's id
+
+        Arguments:
+            * todo description
+        """
         query = self._Todo.select(self._Todo.q.description == description)
         if _select_len(query) == 0:
             raise TodoDoesntExist, description
