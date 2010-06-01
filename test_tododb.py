@@ -120,6 +120,18 @@ class MaTest(unittest.TestCase):
 
         self.assertRaises(AssertionError, tododb.remove_todo, "This is a new todo")
 
+    def test_todo_len(self):
+        tododb = self.reinitialise()
+        self.assertEqual(0, tododb.todo_len())
+        tododb.add_todo("New todo")
+        self.assertEqual(1, tododb.todo_len())
+        tododb.add_todo("New todo 2")
+        self.assertEqual(2, tododb.todo_len())
+        tododb.remove_todo_by_id(1)
+        self.assertEqual(1, tododb.todo_len())
+        tododb.remove_todo_by_id(2)
+        self.assertEqual(0, tododb.todo_len())
+
 if __name__ == "__main__":
    unittest.main()
 
