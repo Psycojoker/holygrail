@@ -2,7 +2,7 @@
 # -*- coding:Utf-8 -*-
 
 import unittest
-from tododb import TodoDB, TodoAlreadyExist, TodoDoesntExist
+from tdd import TodoDB, TodoAlreadyExist, TodoDoesntExist
 
 class MaTest(unittest.TestCase):
 
