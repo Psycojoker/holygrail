@@ -150,5 +150,15 @@ class TodoDB(object):
         assert query.count() == 1, "There is more than one instance of this todo in the database: \"%s\"" % description
         return query[0].id
 
+    def search_for_todo(self, description):
+        todos = self._Todo.select()
+
+        result = []
+        for i in todos:
+            if description in i.description:
+                result.append({"id" : i.id, "description" : i.description})
+
+        return result
+
 if __name__ == "__main__":
     pass

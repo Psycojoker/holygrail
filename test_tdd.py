@@ -105,6 +105,27 @@ class MaTest(unittest.TestCase):
         tododb.remove_todo(2)
         self.assertEqual(0, tododb.todo_len())
 
+    def test_seach_for_todo(self):
+        tododb = self.reinitialise()
+
+        todo_to_add = ("new todo", "another todo", "yet a todo", "tododo", "todotodo")
+        todo_to_add_that_doesnt_match = ("blabla", "foo", "bar")
+
+        for i in todo_to_add:
+            tododb.add_todo(i)
+
+        for i in todo_to_add_that_doesnt_match:
+            tododb.add_todo(i)
+
+        result = tododb.search_for_todo("todo")
+
+        self.assertEqual(len(todo_to_add), len(result))
+
+        for i in result:
+            self.assertTrue(i["description"] in todo_to_add)
+
+    # def test_rename_todo(self):
+
 if __name__ == "__main__":
    unittest.main()
 
