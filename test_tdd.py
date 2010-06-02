@@ -61,15 +61,6 @@ class MaTest(unittest.TestCase):
 
         self.assertRaises(AssertionError, tododb.add_todo, "This is a new todo")
 
-    def test_remove_todo_from_description(self):
-        tododb = self.reinitialise()
-
-        was = tododb.todo_len()
-        tododb.add_todo("This is a new todo")
-        self.assertEqual(was + 1, tododb.todo_len())
-        tododb.remove_todo("This is a new todo")
-        self.assertEqual(was, tododb.todo_len())
-
     def test_get_todo_id(self):
         tododb = self.reinitialise()
 
@@ -84,7 +75,7 @@ class MaTest(unittest.TestCase):
 
         self.assertRaises(TodoDoesntExist, tododb.get_todo_id, "todo")
 
-    def test_remove_todo_from_id(self):
+    def test_remove_todo(self):
         tododb = self.reinitialise()
 
         was = tododb.todo_len()
@@ -93,32 +84,14 @@ class MaTest(unittest.TestCase):
         self.assertEqual(was + 1, tododb.todo_len())
 
         id = tododb.get_todo_id("This is a new todo")
-        tododb.remove_todo_by_id(id)
+        tododb.remove_todo(id)
 
         self.assertEqual(was, tododb.todo_len())
 
     def test_remove_should_raise_an_exception_if_todo_doesnt_exist(self):
         tododb = self.reinitialise()
 
-        self.assertRaises(TodoDoesntExist, tododb.remove_todo, "This is a new todo")
-
-    def test_remove_should_raise_an_exception_if_todo_doesnt_exist_from_id(self):
-        tododb = self.reinitialise()
-
         self.assertRaises(TodoDoesntExist, tododb.remove_todo, 3)
-
-    def test_remove_should_raise_an_assert_if_multiple_todo_exist(self):
-        tododb = self.reinitialise()
-
-        was = tododb.todo_len()
-
-        tododb.add_todo("This is a new todo")
-
-        self.assertEqual(was + 1, tododb.todo_len())
-        tododb._Todo(description="This is a new todo")
-        self.assertEqual(was + 2, tododb.todo_len())
-
-        self.assertRaises(AssertionError, tododb.remove_todo, "This is a new todo")
 
     def test_todo_len(self):
         tododb = self.reinitialise()
@@ -127,9 +100,9 @@ class MaTest(unittest.TestCase):
         self.assertEqual(1, tododb.todo_len())
         tododb.add_todo("New todo 2")
         self.assertEqual(2, tododb.todo_len())
-        tododb.remove_todo_by_id(1)
+        tododb.remove_todo(1)
         self.assertEqual(1, tododb.todo_len())
-        tododb.remove_todo_by_id(2)
+        tododb.remove_todo(2)
         self.assertEqual(0, tododb.todo_len())
 
 if __name__ == "__main__":
