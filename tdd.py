@@ -9,13 +9,6 @@ from config import DATABASE_ACCESS
 
 #from datetime import datetime
 
-def _select_len(select):
-    len = 0
-    for i in select:
-        len += 1
-
-    return len
-
 class TodoAlreadyExist(exceptions.Exception):
     def __init__(self, todo_name):
         self.todo_name = todo_name
@@ -107,7 +100,7 @@ class TodoDB(object):
         self._Todo.dropTable(ifExists=True)
 
     def todo_len(self):
-        return _select_len(self._Todo.select())
+        return self._Todo.select().count()
 
     def add_todo(self, new_description):
         """
@@ -116,13 +109,13 @@ class TodoDB(object):
         Arguments:
             * the description of the todo
         """
-        assert _select_len(self._Todo.select(self._Todo.q.description == new_description)) <= 1, 'multiple instance of this todo exist in the database: "%s"' % new_description
-        if _select_len(self._Todo.select(self._Todo.q.description == new_description)) > 0:
+        assert self._Todo.select(self._Todo.q.description == new_description).count() <= 1, 'multiple instance of this todo exist in the database: "%s"' % new_description
+        if self._Todo.select(self._Todo.q.description == new_description).count() > 0:
             raise TodoAlreadyExist(new_description)
 
         self._Todo(description=new_description)
 
-        assert _select_len(self._Todo.select(self._Todo.q.description == new_description)) == 1, 'The count of this new todo differt from 1, more than one of this todo has been add or none of it has been add: "%s"' % new_description
+        assert self._Todo.select(self._Todo.q.description == new_description).count() == 1, 'The count of this new todo differt from 1, more than one of this todo has been add or none of it has been add: "%s"' % new_description
 
     def remove_todo(self, todo):
         """
@@ -152,7 +145,7 @@ class TodoDB(object):
             * todo description
         """
         query = self._Todo.select(self._Todo.q.description == description)
-        if _select_len(query) == 0:
+        if query.count() == 0:
             raise TodoDoesntExist, description
-        assert _select_len(query) == 1, "There is more than one instance of this todo in the database: \"%s\"" % description
+        assert query.count() == 1, "There is more than one instance of this todo in the database: \"%s\"" % description
         return query[0].id
