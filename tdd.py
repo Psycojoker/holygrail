@@ -149,3 +149,6 @@ class TodoDB(object):
             raise TodoDoesntExist, description
         assert query.count() == 1, "There is more than one instance of this todo in the database: \"%s\"" % description
         return query[0].id
+
+if __name__ == "__main__":
+    pass
