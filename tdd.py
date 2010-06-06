@@ -151,6 +151,12 @@ class TodoDB(object):
         return query[0].id
 
     def search_for_todo(self, description):
+        """
+        Receive a string, return all the todo that match that string
+
+        Arguments:
+            * a string
+        """
         todos = self._Todo.select()
 
         result = []
