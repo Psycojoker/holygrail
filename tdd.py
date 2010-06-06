@@ -167,6 +167,13 @@ class TodoDB(object):
         return result
 
     def get_todo(self, description):
+        """
+        Receive a description of a todo, return the todo informations
+        Raise an exception if the todo doesn't exist
+
+        Arguments:
+            * todo description
+        """
         todo = self._Todo.select(self._Todo.q.description == description)
 
         if todo.count() == 0:
