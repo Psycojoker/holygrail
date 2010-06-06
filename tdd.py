@@ -139,7 +139,7 @@ class TodoDB(object):
 
     def get_todo_id(self, description):
         """
-        Receveid a the description of a todo, return it's id
+        Receive a the description of a todo, return it's id
 
         Arguments:
             * todo description
