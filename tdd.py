@@ -160,5 +160,16 @@ class TodoDB(object):
 
         return result
 
+    def get_todo(self, description):
+        todo = self._Todo.select(self._Todo.q.description == description)
+
+        if todo.count() == 0:
+            raise TodoDoesntExist(description)
+
+        assert todo.count() == 1, "There should be only one instance of this todo: %s" % description
+        assert todo[0].description == description, "Description given and the description of the todo should be egal: %s" % description
+
+        return {"id" : todo[0].id, "description" : todo[0].description}
+
 if __name__ == "__main__":
     pass

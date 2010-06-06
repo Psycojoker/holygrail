@@ -124,7 +124,21 @@ class MaTest(unittest.TestCase):
         for i in result:
             self.assertTrue(i["description"] in todo_to_add)
 
-    # def test_rename_todo(self):
+    def test_get_todo(self):
+        tododb = self.reinitialise()
+
+        tododb.add_todo("todo")
+
+        todo = tododb.get_todo("todo")
+
+        self.assertEqual(todo["id"], 1)
+
+        self.assertEqual(todo["description"], "todo")
+
+    def test_get_todo_throw_except_if_doesnt_exist(self):
+        tododb = self.reinitialise()
+
+        self.assertRaises(TodoDoesntExist, tododb.get_todo, "haha I don't exist")
 
 if __name__ == "__main__":
    unittest.main()
