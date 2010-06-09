@@ -184,7 +184,7 @@ class TodoDB(object):
         assert todo.count() == 1, "There should be only one instance of this todo: %s" % description
         assert todo[0].description == description, "Description given and the description of the todo should be egal: %s" % description
 
-        return {"id" : todo[0].id, "description" : todo[0].description}
+        return todo[0]
 
 if __name__ == "__main__":
     pass
