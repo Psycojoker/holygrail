@@ -104,7 +104,7 @@ class TodoDB(object):
 
     def add_todo(self, new_description):
         """
-        Add a new todo
+        Add a new todo, return it
 
         Arguments:
             * the description of the todo
