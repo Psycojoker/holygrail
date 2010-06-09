@@ -10,7 +10,7 @@ class MaTest(unittest.TestCase):
         """
         Reinitialise the db to make test with a clean one
         """
-        tododb = TodoDB()
+        tododb = TodoDB('sqlite:/:memory:')
         tododb.drop_db()
         tododb.create_db()
         return tododb
@@ -23,6 +23,9 @@ class MaTest(unittest.TestCase):
 
     def test_connect(self):
         TodoDB()
+
+    def test_connect_to_another_database(self):
+        TodoDB("sqlite:/file")
 
     def test_add_a_todo(self):
         """

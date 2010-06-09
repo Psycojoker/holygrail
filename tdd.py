@@ -24,8 +24,8 @@ class TodoDoesntExist(exceptions.Exception):
         return 'this todo doesn\'t exist: %s' % self.todo_name
 
 class TodoDB(object):
-    def __init__(self):
-        self.connect()
+    def __init__(self, database_uri = None):
+        self.connect(database_uri)
 
     #class Context(SQLObject):
         #description = StringCol()
@@ -74,12 +74,12 @@ class TodoDB(object):
 
     # TODO: how the fuck can I for the use of innodb for mysql ?
     #def connect(selfuser = None, password = None, db_type = None):
-    def connect(self):
+    def connect(self, database_uri):
         """
         Connect to the database
         """
         # todo, generalisation
-        sqlhub.processConnection = connectionForURI(DATABASE_ACCESS)
+        sqlhub.processConnection = connectionForURI(database_uri) if database_uri else connectionForURI(DATABASE_ACCESS)
 
     def create_db(self):
         """
