@@ -68,11 +68,12 @@ class TodoDB(object):
         #completed_at = DateTimeCol(default=None)
         #due = DateCol(default=None)
         #tickler = DateCol(default=None)
-        #completed = BoolCol(default=False)
+        completed = BoolCol(default=False)
         #next_todo = IntCol(default=None)
         #previous_todo = IntCol(default=None)
 
     # TODO: how the fuck can I for the use of innodb for mysql ?
+    # maybe I should let the user configure his database, dunno
     #def connect(selfuser = None, password = None, db_type = None):
     def connect(self, database_uri):
         """
@@ -202,5 +203,20 @@ class TodoDB(object):
 
         todo.description = new_description
 
+    def toggle(self, id):
+        """
+        Receive an id, toggle the completion of a todo.
+
+        Arguments:
+            * todo id
+        """
+        try:
+            todo = self._Todo.get(id)
+        except SQLObjectNotFound, e:
+            raise TodoDoesntExist(id)
+
+        todo.completed = not todo.completed
+
 if __name__ == "__main__":
-    pass
+    t = TodoDB()
+    t.search_for_todo("t")

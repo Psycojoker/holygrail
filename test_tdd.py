@@ -167,6 +167,21 @@ class MaTest(unittest.TestCase):
 
         self.assertRaises(TodoDoesntExist, tododb.rename_todo, 15, "haha I don't exist")
 
+    def test_toggle_todo(self):
+        tododb = self.reinitialise()
+
+        t = tododb.add_todo("prout")
+
+        self.assertFalse(t.completed)
+        tododb.toggle(t.id)
+        self.assertTrue(t.completed)
+        tododb.toggle(t.id)
+        self.assertFalse(t.completed)
+
+    def test_toggle_raise_doesnt_exist(self):
+        tododb = self.reinitialise()
+        self.assertRaises(TodoDoesntExist, tododb.toggle, 42)
+
 if __name__ == "__main__":
    unittest.main()
 
