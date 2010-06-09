@@ -113,9 +113,11 @@ class TodoDB(object):
         if self._Todo.select(self._Todo.q.description == new_description).count() > 0:
             raise TodoAlreadyExist(new_description)
 
-        self._Todo(description=new_description)
+        todo = self._Todo(description=new_description)
 
         assert self._Todo.select(self._Todo.q.description == new_description).count() == 1, 'The count of this new todo differt from 1, more than one of this todo has been add or none of it has been add: "%s"' % new_description
+
+        return todo
 
     def remove_todo(self, todo):
         """
