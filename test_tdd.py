@@ -131,14 +131,35 @@ class MaTest(unittest.TestCase):
 
         todo = tododb.get_todo("todo")
 
-        self.assertEqual(todo["id"], 1)
+        self.assertEqual(todo.id, 1)
 
-        self.assertEqual(todo["description"], "todo")
+        self.assertEqual(todo.description, "todo")
+
+    def test_get_todo_should_return_the_created_todo(self):
+        tododb = self.reinitialise()
+
+        todo = tododb.add_todo("todo")
+
+        self.assertEqual(todo.description, "todo")
 
     def test_get_todo_throw_except_if_doesnt_exist(self):
         tododb = self.reinitialise()
 
         self.assertRaises(TodoDoesntExist, tododb.get_todo, "haha I don't exist")
+
+    def test_rename_todo(self):
+        tododb = self.reinitialise()
+
+        t = tododb.add_todo("first name")
+
+        tododb.rename_todo(t.id, "second name")
+
+        self.assertEqual(t.description, "second name")
+
+    def test_rename_todo_should_raise_exception_if_doesnt_exist(self):
+        tododb = self.reinitialise()
+
+        self.assertRaises(TodoDoesntExist, tododb.rename_todo, 15, "haha I don't exist")
 
 if __name__ == "__main__":
    unittest.main()

@@ -186,5 +186,21 @@ class TodoDB(object):
 
         return todo[0]
 
+    def rename_todo(self, id, new_description):
+        """
+        Receive an id and a new description, rename the todo with it
+        Raise an exception if the todo doesn't exist.
+
+        Arguments:
+            * todo id
+            * todo new description
+        """
+        try:
+            todo = self._Todo.get(id)
+        except SQLObjectNotFound, e:
+            raise TodoDoesntExist(id)
+
+        todo.description = new_description
+
 if __name__ == "__main__":
     pass
