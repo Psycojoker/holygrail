@@ -21,6 +21,9 @@ class MaTest(unittest.TestCase):
         """
         tododb = self.reinitialise()
 
+    def test_connect(self):
+        TodoDB()
+
     def test_add_a_todo(self):
         """
         You should be able to add a new todo.
