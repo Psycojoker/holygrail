@@ -75,7 +75,11 @@ class TodoDB(object):
 
     class _Todo(SQLObject):
         """
-        A Todo
+        A Todo object.
+
+        WARNING avoid as much as possible to modify directly the todo
+        attribute, prefere the api, and if you do that be really SURE to know
+        what you are doing. You don't want to break anything, right ?
 
         Arguments:
             * description: a text field that discribe the todo
