@@ -92,13 +92,13 @@ class Test_TDD(unittest.TestCase):
         tododb.add_todo("This is a new todo")
         tododb.add_todo("This is a new todo 2")
 
-        self.assertEqual(1, tododb.get_todo_id("This is a new todo"))
-        self.assertEqual(2, tododb.get_todo_id("This is a new todo 2"))
+        self.assertEqual(1, tododb.get_todo_by_desc("This is a new todo").id)
+        self.assertEqual(2, tododb.get_todo_by_desc("This is a new todo 2").id)
 
     def test_get_todo_id_should_raise_an_exection_if_todo_doesnt_exist(self):
         tododb = self.reinitialise()
 
-        self.assertRaises(TodoDoesntExist, tododb.get_todo_id, "todo")
+        self.assertRaises(TodoDoesntExist, tododb.get_todo_by_desc, "todo")
 
     def test_remove_todo(self):
         tododb = self.reinitialise()
@@ -108,8 +108,8 @@ class Test_TDD(unittest.TestCase):
 
         self.assertEqual(was + 1, tododb.todo_len())
 
-        id = tododb.get_todo_id("This is a new todo")
-        tododb.remove_todo(id)
+        todo = tododb.get_todo_by_desc("This is a new todo")
+        tododb.remove_todo(todo.id)
 
         self.assertEqual(was, tododb.todo_len())
 
@@ -149,12 +149,12 @@ class Test_TDD(unittest.TestCase):
         for i in result:
             self.assertTrue(i["description"] in todo_to_add)
 
-    def test_get_todo(self):
+    def test_get_todo_by_desc(self):
         tododb = self.reinitialise()
 
         tododb.add_todo("todo")
 
-        todo = tododb.get_todo("todo")
+        todo = tododb.get_todo_by_desc("todo")
 
         self.assertEqual(todo.id, 1)
 
@@ -170,7 +170,7 @@ class Test_TDD(unittest.TestCase):
     def test_get_todo_throw_except_if_doesnt_exist(self):
         tododb = self.reinitialise()
 
-        self.assertRaises(TodoDoesntExist, tododb.get_todo, "haha I don't exist")
+        self.assertRaises(TodoDoesntExist, tododb.get_todo_by_desc, "haha I don't exist")
 
     def test_rename_todo(self):
         tododb = self.reinitialise()

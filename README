@@ -1,0 +1,38 @@
+Toudoudone
+==========
+
+Toudoudone aims to be a base library to interact with a todo database. It provides a
+simple interface allowing you to interact with your todo in several ways.
+This means that you can create and use whatever client you like and even use multiple
+interfaces (ie: cli, mail, web application etc).
+Yes, this is geeky and I like it.
+
+In its current state, Toudoudone is usable but not really interesting. You can
+only create todo with a description and mark it as completed. If you want to
+start playing with it, the code is documented.
+"Release early, release often" as someone said.
+
+In it's current state Toudoudone is usable but not really interesting. You can
+only create todo with a description and check it as completed. If you want to
+already play with it, I try to keep the code documented.
+"Release early, release often" they said.
+
+I hope to provide much more cool features, a cli interface and sample interface
+in the future. The structure will be inspired a lot by Tracks (getontracks.org)
+with projects and contexts.
+
+Installation
+------------
+Create a config.py file and add this variable:
+
+DATABASE_ACCESS = "value according to http://www.sqlobject.org/SQLObject.html#declaring-a-connection"
+
+Sample (don't forget to create that username/database etc ...):
+DATABASE_ACCESS = "mysql://username:password@localhost/database"
+
+If you have questions, bugs etc ... ping me on irc.freenode.net, pseudo Bram,
+or mail me at cortex@worlddomination.be
+
+Changelog
+---------
+ * 0.1 ti

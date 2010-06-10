@@ -160,9 +160,10 @@ class TodoDB(object):
             except SQLObjectNotFound:
                 pass
 
-    def get_todo_id(self, description):
+    def get_todo_by_desc(self, description):
         """
-        Receive a the description of a todo, return it's id
+        Receive a the description of a todo, return it
+        Raise an exception if the todo doesn't exist
 
         Arguments:
             * todo description
@@ -171,7 +172,7 @@ class TodoDB(object):
         if query.count() == 0:
             raise TodoDoesntExist(description)
         assert query.count() == 1, "There is more than one instance of this todo in the database: \"%s\"" % description
-        return query[0].id
+        return query[0]
 
     def search_for_todo(self, description):
         """
@@ -189,23 +190,20 @@ class TodoDB(object):
 
         return result
 
-    def get_todo(self, description):
+    def get_todo(self, id):
         """
-        Receive a description of a todo, return the todo informations
+        Receive the id of a todo, return the todo
         Raise an exception if the todo doesn't exist
 
         Arguments:
             * todo description
         """
-        todo = self._Todo.select(self._Todo.q.description == description)
+        try:
+            todo = self._Todo.get(id)
+        except SQLObjectNotFound:
+            raise TodoDoesntExist(id)
 
-        if todo.count() == 0:
-            raise TodoDoesntExist(description)
-
-        assert todo.count() == 1, "There should be only one instance of this todo: %s" % description
-        assert todo[0].description == description, "Description given and the description of the todo should be egal: %s" % description
-
-        return todo[0]
+        return todo
 
     def rename_todo(self, id, new_description):
         """
