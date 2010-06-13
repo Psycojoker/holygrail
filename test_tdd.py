@@ -44,12 +44,10 @@ class Test_TDD(unittest.TestCase):
         This should inscrease the number of todos by one
         """
         tododb = self.reinitialise()
-
         was = tododb.todo_len()
-
-        tododb.add_todo("This is a new todo")
-
+        todo = tododb.add_todo("This is a new todo")
         self.assertEqual(was + 1, tododb.todo_len())
+        self.assertTrue(todo in tododb.list_todos())
 
     def test_cant_add_two_time_the_same_todo(self):
         """
