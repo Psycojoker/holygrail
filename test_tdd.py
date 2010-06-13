@@ -59,25 +59,22 @@ class Test_TDD(unittest.TestCase):
 
     def test_raise_if_todo_already_exist_multiple_time(self):
         tododb = self.reinitialise()
-
         was = tododb.todo_len()
-
         tododb.add_todo("This is a new todo")
-
         self.assertEqual(was + 1, tododb.todo_len())
         tododb._Todo(description="This is a new todo")
         self.assertEqual(was + 2, tododb.todo_len())
 
         self.assertRaises(AssertionError, tododb.add_todo, "This is a new todo")
 
-    def test_get_todo_id(self):
+    def test_get_todo_by_desc(self):
         tododb = self.reinitialise()
 
-        tododb.add_todo("This is a new todo")
-        tododb.add_todo("This is a new todo 2")
+        t1 = tododb.add_todo("This is a new todo")
+        t2 = tododb.add_todo("This is a new todo 2")
 
-        self.assertEqual(1, tododb.get_todo_by_desc("This is a new todo").id)
-        self.assertEqual(2, tododb.get_todo_by_desc("This is a new todo 2").id)
+        self.assertEqual(t1.id, tododb.get_todo_by_desc("This is a new todo").id)
+        self.assertEqual(t2.id, tododb.get_todo_by_desc("This is a new todo 2").id)
 
     def test_get_todo_id_should_raise_an_exection_if_todo_doesnt_exist(self):
         tododb = self.reinitialise()
