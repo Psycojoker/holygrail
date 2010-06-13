@@ -240,8 +240,7 @@ class TodoDB(object):
         todo.completed = not todo.completed
 
     def list_todos(self, all=False):
-        query = [i for i in self._Todo.select(self._Todo.q.completed == False)] if not all else [i for i in self._Todo.select()]
-        return query
+        return [i for i in self._Todo.select(self._Todo.q.completed == False)] if not all else [i for i in self._Todo.select()]
 
 if __name__ == "__main__":
     t = TodoDB()
