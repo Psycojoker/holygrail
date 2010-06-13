@@ -28,18 +28,18 @@ from sqlobject import *
 from config import DATABASE_ACCESS
 
 class TodoAlreadyExist(exceptions.Exception):
-    def __init__(self, todo_name):
-        self.todo_name = todo_name
+    def __init__(self, todo):
+        self.todo = todo
 
     def __str__(self):
-        return 'this todo already exist in the database: "%s"' % self.todo_name
+        return 'this todo already exist in the database: "%s"' % self.todo
 
 class TodoDoesntExist(exceptions.Exception):
-    def __init__(self, todo_name):
-        self.todo_name = todo_name
+    def __init__(self, todo):
+        self.todo = todo
 
     def __str__(self):
-        return 'this todo doesn\'t exist: %s' % self.todo_name
+        return 'this todo doesn\'t exist: %s' % self.todo
 
 class TodoDB(object):
     def __init__(self, database_uri = None):
