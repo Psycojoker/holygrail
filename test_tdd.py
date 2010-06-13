@@ -35,12 +35,6 @@ class Test_TDD(unittest.TestCase):
         tododb.create_db()
         return tododb
 
-    def test_create_a_db(self):
-        """
-        create a clean database to test
-        """
-        tododb = self.reinitialise()
-
     def test_connect(self):
         TodoDB()
 
