@@ -137,13 +137,6 @@ class Test_TDD(unittest.TestCase):
         self.assertTrue(todo is tododb.get_todo(todo.id))
         self.assertEqual(todo.description, "todo")
 
-    def test_get_todo_should_return_the_created_todo(self):
-        tododb = self.reinitialise()
-
-        todo = tododb.add_todo("todo")
-
-        self.assertEqual(todo.description, "todo")
-
     def test_get_todo_throw_except_if_doesnt_exist(self):
         tododb = self.reinitialise()
 
