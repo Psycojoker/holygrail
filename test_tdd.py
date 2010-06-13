@@ -76,9 +76,8 @@ class Test_TDD(unittest.TestCase):
         self.assertEqual(t1.id, tododb.get_todo_by_desc("This is a new todo").id)
         self.assertEqual(t2.id, tododb.get_todo_by_desc("This is a new todo 2").id)
 
-    def test_get_todo_id_should_raise_an_exection_if_todo_doesnt_exist(self):
+    def test_get_todo_by_desc_should_raise_an_exection_if_todo_doesnt_exist(self):
         tododb = self.reinitialise()
-
         self.assertRaises(TodoDoesntExist, tododb.get_todo_by_desc, "todo")
 
     def test_remove_todo(self):
