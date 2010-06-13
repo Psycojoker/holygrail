@@ -118,9 +118,7 @@ class Test_TDD(unittest.TestCase):
         todo_to_add_that_doesnt_match = ("blabla", "foo", "bar")
 
         true = [tododb.add_todo(i) for i in todo_to_add]
-
         false = [tododb.add_todo(i) for i in todo_to_add_that_doesnt_match]
-
         result = tododb.search_for_todo("todo")
 
         self.assertEqual(len(todo_to_add), len(result))
@@ -139,21 +137,16 @@ class Test_TDD(unittest.TestCase):
 
     def test_get_todo_throw_except_if_doesnt_exist(self):
         tododb = self.reinitialise()
-
         self.assertRaises(TodoDoesntExist, tododb.get_todo_by_desc, "haha I don't exist")
 
     def test_rename_todo(self):
         tododb = self.reinitialise()
-
         t = tododb.add_todo("first name")
-
         tododb.rename_todo(t.id, "second name")
-
         self.assertEqual(t.description, "second name")
 
     def test_rename_todo_should_raise_exception_if_doesnt_exist(self):
         tododb = self.reinitialise()
-
         self.assertRaises(TodoDoesntExist, tododb.rename_todo, 15, "haha I don't exist")
 
     def test_toggle_todo(self):
