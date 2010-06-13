@@ -106,7 +106,6 @@ class TodoDB(object):
         """
         Connect to the database
         """
-        # todo, generalisation
         sqlhub.processConnection = connectionForURI(database_uri) if database_uri else connectionForURI(DATABASE_ACCESS)
 
     def create_db(self):
