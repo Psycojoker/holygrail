@@ -123,6 +123,8 @@ class TodoDB(object):
     def drop_db(self):
         """
         Drop the database if it isn't already drop
+
+        WARNING: this will destroy *everything* in the database
         """
         #Context.dropTable(ifExists=True)
         #Project.dropTable(ifExists=True)
