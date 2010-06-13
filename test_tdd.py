@@ -136,13 +136,9 @@ class Test_TDD(unittest.TestCase):
         todo_to_add = ("new todo", "another todo", "yet a todo", "tododo", "todotodo")
         todo_to_add_that_doesnt_match = ("blabla", "foo", "bar")
 
-        true = []
-        for i in todo_to_add:
-            true.append(tododb.add_todo(i))
+        true = [tododb.add_todo(i) for i in todo_to_add]
 
-        false = []
-        for i in todo_to_add_that_doesnt_match:
-            false.append(tododb.add_todo(i))
+        false = [tododb.add_todo(i) for i in todo_to_add_that_doesnt_match]
 
         result = tododb.search_for_todo("todo")
 
