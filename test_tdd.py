@@ -54,13 +54,7 @@ class Test_TDD(unittest.TestCase):
         You shouldn't be able to add two time a todo with the same description
         """
         tododb = self.reinitialise()
-
-        was = tododb.todo_len()
-
         tododb.add_todo("This is a new todo")
-
-        self.assertEqual(was + 1, tododb.todo_len())
-
         self.assertRaises(TodoAlreadyExist, tododb.add_todo, "This is a new todo")
 
     def test_raise_if_todo_already_exist_multiple_time(self):
