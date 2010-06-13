@@ -206,11 +206,9 @@ class TodoDB(object):
             * todo description
         """
         try:
-            todo = self._Todo.get(id)
+            return self._Todo.get(id)
         except SQLObjectNotFound:
             raise TodoDoesntExist(id)
-
-        return todo
 
     def rename_todo(self, id, new_description):
         """
