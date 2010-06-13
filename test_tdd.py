@@ -89,9 +89,11 @@ class Test_TDD(unittest.TestCase):
         self.assertEqual(was + 1, tododb.todo_len())
 
         todo = tododb.get_todo_by_desc("This is a new todo")
+        id = todo.id
         tododb.remove_todo(todo.id)
 
         self.assertEqual(was, tododb.todo_len())
+        self.assertRaises(TodoDoesntExist, tododb.get_todo, id)
 
     def test_remove_should_raise_an_exception_if_todo_doesnt_exist(self):
         tododb = self.reinitialise()
