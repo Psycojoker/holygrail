@@ -136,18 +136,23 @@ class Test_TDD(unittest.TestCase):
         todo_to_add = ("new todo", "another todo", "yet a todo", "tododo", "todotodo")
         todo_to_add_that_doesnt_match = ("blabla", "foo", "bar")
 
+        true = []
         for i in todo_to_add:
-            tododb.add_todo(i)
+            true.append(tododb.add_todo(i))
 
+        false = []
         for i in todo_to_add_that_doesnt_match:
-            tododb.add_todo(i)
+            false.append(tododb.add_todo(i))
 
         result = tododb.search_for_todo("todo")
 
         self.assertEqual(len(todo_to_add), len(result))
 
         for i in result:
-            self.assertTrue(i["description"] in todo_to_add)
+            self.assertTrue(i.description in todo_to_add)
+            self.assertTrue(i in true)
+            self.assertFalse(i.description in todo_to_add_that_doesnt_match)
+            self.assertFalse(i in false)
 
     def test_get_todo_by_desc(self):
         tododb = self.reinitialise()

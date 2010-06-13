@@ -195,14 +195,7 @@ class TodoDB(object):
         Arguments:
             * a string
         """
-        todos = self._Todo.select()
-
-        result = []
-        for i in todos:
-            if description in i.description:
-                result.append({"id" : i.id, "description" : i.description})
-
-        return result
+        return [i for i in self._Todo.select() if description in i.description]
 
     def get_todo(self, id):
         """
