@@ -131,9 +131,6 @@ class TodoDB(object):
         #Item.dropTable(ifExists=True)
         self._Todo.dropTable(ifExists=True)
 
-    def todo_len(self):
-        return self._Todo.select().count()
-
     def add_todo(self, new_description):
         """
         Add a new todo, return it

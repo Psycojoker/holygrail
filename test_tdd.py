@@ -44,9 +44,9 @@ class Test_TDD(unittest.TestCase):
         This should inscrease the number of todos by one
         """
         tododb = self.reinitialise()
-        was = tododb.todo_len()
+        was = len(tododb.list_todos())
         todo = tododb.add_todo("This is a new todo")
-        self.assertEqual(was + 1, tododb.todo_len())
+        self.assertEqual(was + 1, len(tododb.list_todos()))
         self.assertTrue(todo in tododb.list_todos())
 
     def test_cant_add_two_time_the_same_todo(self):
@@ -59,11 +59,11 @@ class Test_TDD(unittest.TestCase):
 
     def test_raise_if_todo_already_exist_multiple_time(self):
         tododb = self.reinitialise()
-        was = tododb.todo_len()
+        was = len(tododb.list_todos())
         tododb.add_todo("This is a new todo")
-        self.assertEqual(was + 1, tododb.todo_len())
+        self.assertEqual(was + 1, len(tododb.list_todos()))
         tododb._Todo(description="This is a new todo")
-        self.assertEqual(was + 2, tododb.todo_len())
+        self.assertEqual(was + 2, len(tododb.list_todos()))
 
         self.assertRaises(AssertionError, tododb.add_todo, "This is a new todo")
 
@@ -83,33 +83,21 @@ class Test_TDD(unittest.TestCase):
     def test_remove_todo(self):
         tododb = self.reinitialise()
 
-        was = tododb.todo_len()
+        was = len(tododb.list_todos())
         tododb.add_todo("This is a new todo")
 
-        self.assertEqual(was + 1, tododb.todo_len())
+        self.assertEqual(was + 1, len(tododb.list_todos()))
 
         todo = tododb.get_todo_by_desc("This is a new todo")
         id = todo.id
         tododb.remove_todo(todo.id)
 
-        self.assertEqual(was, tododb.todo_len())
+        self.assertEqual(was, len(tododb.list_todos()))
         self.assertRaises(TodoDoesntExist, tododb.get_todo, id)
 
     def test_remove_should_raise_an_exception_if_todo_doesnt_exist(self):
         tododb = self.reinitialise()
         self.assertRaises(TodoDoesntExist, tododb.remove_todo, 3)
-
-    def test_todo_len(self):
-        tododb = self.reinitialise()
-        self.assertEqual(0, tododb.todo_len())
-        tododb.add_todo("New todo")
-        self.assertEqual(1, tododb.todo_len())
-        tododb.add_todo("New todo 2")
-        self.assertEqual(2, tododb.todo_len())
-        tododb.remove_todo(1)
-        self.assertEqual(1, tododb.todo_len())
-        tododb.remove_todo(2)
-        self.assertEqual(0, tododb.todo_len())
 
     def test_seach_for_todo(self):
         tododb = self.reinitialise()
