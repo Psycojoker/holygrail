@@ -97,7 +97,6 @@ class Test_TDD(unittest.TestCase):
 
     def test_remove_should_raise_an_exception_if_todo_doesnt_exist(self):
         tododb = self.reinitialise()
-
         self.assertRaises(TodoDoesntExist, tododb.remove_todo, 3)
 
     def test_todo_len(self):
@@ -132,15 +131,10 @@ class Test_TDD(unittest.TestCase):
             self.assertFalse(i.description in todo_to_add_that_doesnt_match)
             self.assertFalse(i in false)
 
-    def test_get_todo_by_desc(self):
+    def test_get_todo(self):
         tododb = self.reinitialise()
-
-        tododb.add_todo("todo")
-
-        todo = tododb.get_todo_by_desc("todo")
-
-        self.assertEqual(todo.id, 1)
-
+        todo = tododb.add_todo("todo")
+        self.assertTrue(todo is tododb.get_todo(todo.id))
         self.assertEqual(todo.description, "todo")
 
     def test_get_todo_should_return_the_created_todo(self):
