@@ -201,6 +201,25 @@ class Test_TDD(unittest.TestCase):
         tododb = self.reinitialise()
         self.assertRaises(TodoDoesntExist, tododb.toggle, 42)
 
+    def test_list_todos(self):
+        tododb = self.reinitialise()
+        self.assertEqual(0, len(tododb.list_todos()))
+        t = tododb.add_todo("todo")
+        self.assertEqual(1, len(tododb.list_todos()))
+        self.assertTrue(t in tododb.list_todos())
+        t2 = tododb.add_todo("todo 2")
+        self.assertEqual(2, len(tododb.list_todos()))
+        self.assertTrue(t in tododb.list_todos())
+        self.assertTrue(t2 in tododb.list_todos())
+        tododb.toggle(t2.id)
+        self.assertEqual(1, len(tododb.list_todos()))
+        self.assertTrue(t in tododb.list_todos())
+        self.assertTrue(t2 not in tododb.list_todos())
+        self.assertEqual(2, len(tododb.list_todos(all=True)))
+        self.assertTrue(t in tododb.list_todos(all=True))
+        self.assertTrue(t2 in tododb.list_todos(all=True))
+
+
 if __name__ == "__main__":
    unittest.main()
 
