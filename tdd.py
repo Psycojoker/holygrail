@@ -27,8 +27,6 @@ from sqlobject import *
 
 from config import DATABASE_ACCESS
 
-#from datetime import datetime
-
 class TodoAlreadyExist(exceptions.Exception):
     def __init__(self, todo_name):
         self.todo_name = todo_name
