@@ -203,18 +203,23 @@ class Test_TDD(unittest.TestCase):
 
     def test_list_todos(self):
         tododb = self.reinitialise()
+        # empty
         self.assertEqual(0, len(tododb.list_todos()))
         t = tododb.add_todo("todo")
+        # one todo
         self.assertEqual(1, len(tododb.list_todos()))
         self.assertTrue(t in tododb.list_todos())
+        # two todo
         t2 = tododb.add_todo("todo 2")
         self.assertEqual(2, len(tododb.list_todos()))
         self.assertTrue(t in tododb.list_todos())
         self.assertTrue(t2 in tododb.list_todos())
+        # only uncompleted
         tododb.toggle(t2.id)
         self.assertEqual(1, len(tododb.list_todos()))
         self.assertTrue(t in tododb.list_todos())
         self.assertTrue(t2 not in tododb.list_todos())
+        # everything
         self.assertEqual(2, len(tododb.list_todos(all=True)))
         self.assertTrue(t in tododb.list_todos(all=True))
         self.assertTrue(t2 in tododb.list_todos(all=True))
