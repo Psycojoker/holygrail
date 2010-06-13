@@ -154,7 +154,7 @@ class TodoDB(object):
 
         return todo
 
-    def remove_todo(self, todo):
+    def remove_todo(self, id):
         """
         Revceived the id of a todo, delete it
 
@@ -162,14 +162,14 @@ class TodoDB(object):
             * todo id
         """
         try:
-            self._Todo.get(todo).destroySelf()
+            self._Todo.get(id).destroySelf()
         except SQLObjectNotFound:
-            raise TodoDoesntExist(todo)
+            raise TodoDoesntExist(id)
 
         # assert, only on contract programming purpose
         if __debug__:
             try:
-                self._Todo.get(todo)
+                self._Todo.get(id)
                 raise AssertionError("This todo should have been destroyed: \"%s\"" % todo)
             except SQLObjectNotFound:
                 pass
