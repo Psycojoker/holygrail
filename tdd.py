@@ -105,6 +105,9 @@ class TodoDB(object):
     def connect(self, database_uri):
         """
         Connect to the database
+
+        Arguments:
+            * a different uri to connect to another database than the one in the config.py file (ie: for unittest)
         """
         sqlhub.processConnection = connectionForURI(database_uri) if database_uri else connectionForURI(DATABASE_ACCESS)
 
