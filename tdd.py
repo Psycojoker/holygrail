@@ -220,11 +220,9 @@ class TodoDB(object):
             * todo new description
         """
         try:
-            todo = self._Todo.get(id)
+            self._Todo.get(id).description = new_description
         except SQLObjectNotFound, e:
             raise TodoDoesntExist(id)
-
-        todo.description = new_description
 
     def toggle(self, id):
         """
