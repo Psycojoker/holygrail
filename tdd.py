@@ -102,9 +102,6 @@ class TodoDB(object):
         #next_todo = IntCol(default=None)
         #previous_todo = IntCol(default=None)
 
-    # TODO: how the fuck can I for the use of innodb for mysql ?
-    # maybe I should let the user configure his database, dunno
-    #def connect(selfuser = None, password = None, db_type = None):
     def connect(self, database_uri):
         """
         Connect to the database
