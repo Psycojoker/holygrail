@@ -35,8 +35,6 @@ class Test_TDD(unittest.TestCase):
         tododb.create_db()
         return tododb
 
-    def test_connect(self):
-        TodoDB()
 
     def test_connect_to_another_database(self):
         TodoDB("sqlite:/file")
