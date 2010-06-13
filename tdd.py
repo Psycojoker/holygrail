@@ -42,7 +42,15 @@ class TodoDoesntExist(exceptions.Exception):
         return 'this todo doesn\'t exist: %s' % self.todo
 
 class TodoDB(object):
+
     def __init__(self, database_uri = None):
+        """
+        The main object, it's the interface with the todo database.
+
+        Arguments:
+            * a different uri to connect to another database than the one into
+              the configuration file (ie for tests)
+        """
         self.connect(database_uri)
 
     #class Context(SQLObject):
