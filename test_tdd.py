@@ -28,6 +28,7 @@ class Test_TDD(unittest.TestCase):
     def reinitialise(self):
         """
         Reinitialise the db to make test with a clean one
+        Use a sqlite db in memory to avoid losing user/dev data
         """
         tododb = TodoDB('sqlite:/:memory:')
         tododb.drop_db()
