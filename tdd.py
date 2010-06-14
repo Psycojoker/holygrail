@@ -226,6 +226,12 @@ class TodoDB(object):
         todo.completed = not todo.completed
 
     def list_todos(self, all=False):
+        """
+        Return a list of todos, by default only uncompleted todos.
+
+        Arguments:
+            * all =False by default, if True return all the todos.
+        """
         return [i for i in self._Todo.select(self._Todo.q.completed == False)] if not all else [i for i in self._Todo.select()]
 
 if __name__ == "__main__":
