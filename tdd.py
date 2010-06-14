@@ -158,7 +158,7 @@ class TodoDB(object):
         if __debug__:
             try:
                 self._Todo.get(id)
-                raise AssertionError("This todo should have been destroyed: \"%s\"" % todo)
+                raise AssertionError("This todo should have been destroyed: \"%s\"" % id)
             except SQLObjectNotFound:
                 pass
 
