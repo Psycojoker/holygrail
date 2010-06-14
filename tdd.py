@@ -62,7 +62,8 @@ class TodoDB(object):
 
     #class Project(SQLObject):
         #description = StringCol()
-        #state = EnumCol(enumValues=('active', 'completed', 'hidden'), default="active")
+        #state = EnumCol(enumValues=('active', 'completed', 'hidden'),
+        # default="active")
         #created_at = DateTimeCol(default=datetime.now())
         #completed_at = DateTimeCol(default=None)
         #tickler = DateCol(default=None)
@@ -208,7 +209,7 @@ class TodoDB(object):
         """
         try:
             self._Todo.get(id).description = new_description
-        except SQLObjectNotFound, e:
+        except SQLObjectNotFound:
             raise TodoDoesntExist(id)
 
     def toggle(self, id):
@@ -220,7 +221,7 @@ class TodoDB(object):
         """
         try:
             todo = self._Todo.get(id)
-        except SQLObjectNotFound, e:
+        except SQLObjectNotFound:
             raise TodoDoesntExist(id)
 
         todo.completed = not todo.completed
