@@ -21,7 +21,7 @@ Toudoudone  Copyright (C) 2010  Laurent Peuch <cortex@worlddomination.be>
 """
 
 import unittest
-from tdd import TodoDB, TodoAlreadyExist, TodoDoesntExist
+from tdd import TodoDB, TodoDoesntExist
 
 class Test_TDD(unittest.TestCase):
 
@@ -49,23 +49,11 @@ class Test_TDD(unittest.TestCase):
         self.assertEqual(was + 1, len(tododb.list_todos()))
         self.assertTrue(todo in tododb.list_todos())
 
-    def test_cant_add_two_time_the_same_todo(self):
-        """
-        You shouldn't be able to add two time a todo with the same description
-        """
-        tododb = self.reinitialise()
-        tododb.add_todo("This is a new todo")
-        self.assertRaises(TodoAlreadyExist, tododb.add_todo, "This is a new todo")
-
-    def test_raise_if_todo_already_exist_multiple_time(self):
-        tododb = self.reinitialise()
-        was = len(tododb.list_todos())
-        tododb.add_todo("This is a new todo")
-        self.assertEqual(was + 1, len(tododb.list_todos()))
-        tododb._Todo(description="This is a new todo")
+        # check if we can add two time a todo with the same description
+        todo2 = tododb.add_todo("This is a new todo")
         self.assertEqual(was + 2, len(tododb.list_todos()))
-
-        self.assertRaises(AssertionError, tododb.add_todo, "This is a new todo")
+        self.assertTrue(todo in tododb.list_todos())
+        self.assertTrue(todo2 in tododb.list_todos())
 
     def test_get_todo_by_desc(self):
         tododb = self.reinitialise()

@@ -27,12 +27,12 @@ from sqlobject import *
 
 from config import DATABASE_ACCESS
 
-class TodoAlreadyExist(exceptions.Exception):
-    def __init__(self, todo):
-        self.todo = todo
+#class TodoAlreadyExist(exceptions.Exception):
+    #def __init__(self, todo):
+        #self.todo = todo
 
-    def __str__(self):
-        return 'this todo already exist in the database: "%s"' % self.todo
+    #def __str__(self):
+        #return 'this todo already exist in the database: "%s"' % self.todo
 
 class TodoDoesntExist(exceptions.Exception):
     def __init__(self, todo):
@@ -138,18 +138,7 @@ class TodoDB(object):
         Arguments:
             * the description of the todo
         """
-        assert self._Todo.select(self._Todo.q.description == new_description).count() <= 1,\
-            'multiple instance of this todo exist in the database: "%s"' % new_description
-
-        if self._Todo.select(self._Todo.q.description == new_description).count() > 0:
-            raise TodoAlreadyExist(new_description)
-
-        todo = self._Todo(description=new_description)
-
-        assert self._Todo.select(self._Todo.q.description == new_description).count() == 1,\
-            'The count of this new todo differt from 1, more than one or none of this todo has been add: "%s"' % new_description
-
-        return todo
+        return self._Todo(description=new_description)
 
     def remove_todo(self, id):
         """
@@ -182,7 +171,6 @@ class TodoDB(object):
         query = self._Todo.select(self._Todo.q.description == description)
         if query.count() == 0:
             raise TodoDoesntExist(description)
-        assert query.count() == 1, "There is more than one instance of this todo in the database: \"%s\"" % description
         return query[0]
 
     def search_for_todo(self, description):
