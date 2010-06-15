@@ -164,9 +164,9 @@ class Test_TDD(unittest.TestCase):
         self.assertTrue(t in tododb.list_todos())
         self.assertTrue(t2 not in tododb.list_todos())
         # everything
-        self.assertEqual(2, len(tododb.list_todos(all=True)))
-        self.assertTrue(t in tododb.list_todos(all=True))
-        self.assertTrue(t2 in tododb.list_todos(all=True))
+        self.assertEqual(2, len(tododb.list_todos(all_todos=True)))
+        self.assertTrue(t in tododb.list_todos(all_todos=True))
+        self.assertTrue(t2 in tododb.list_todos(all_todos=True))
 
 
 if __name__ == "__main__":
