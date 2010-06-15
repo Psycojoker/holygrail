@@ -145,7 +145,7 @@ class TodoDB(object):
             raise TodoAlreadyExist(new_description)
         return self._Todo(description=new_description)
 
-    def remove_todo(self, id):
+    def remove_todo(self, todo_id):
         """
         Revceived the id of a todo, delete it
 
@@ -153,15 +153,15 @@ class TodoDB(object):
             * todo id
         """
         try:
-            self._Todo.get(id).destroySelf()
+            self._Todo.get(todo_id).destroySelf()
         except sqlobject.SQLObjectNotFound:
-            raise TodoDoesntExist(id)
+            raise TodoDoesntExist(todo_id)
 
         # assert, only on contract programming purpose
         if __debug__:
             try:
-                self._Todo.get(id)
-                raise AssertionError("This todo should have been destroyed: \"%s\"" % id)
+                self._Todo.get(todo_id)
+                raise AssertionError("This todo should have been destroyed: \"%s\"" % todo_id)
             except sqlobject.SQLObjectNotFound:
                 pass
 
@@ -187,7 +187,7 @@ class TodoDB(object):
         """
         return [i for i in self._Todo.select() if description in i.description]
 
-    def get_todo(self, id):
+    def get_todo(self, todo_id):
         """
         Receive the id of a todo, return the todo
         Raise an exception if the todo doesn't exist
@@ -196,11 +196,11 @@ class TodoDB(object):
             * todo description
         """
         try:
-            return self._Todo.get(id)
+            return self._Todo.get(todo_id)
         except sqlobject.SQLObjectNotFound:
-            raise TodoDoesntExist(id)
+            raise TodoDoesntExist(todo_id)
 
-    def rename_todo(self, id, new_description):
+    def rename_todo(self, todo_id, new_description):
         """
         Receive an id and a new description, rename the todo with it
         Raise an exception if the todo doesn't exist.
@@ -210,11 +210,11 @@ class TodoDB(object):
             * todo new description
         """
         try:
-            self._Todo.get(id).description = new_description
+            self._Todo.get(todo_id).description = new_description
         except sqlobject.SQLObjectNotFound:
-            raise TodoDoesntExist(id)
+            raise TodoDoesntExist(todo_id)
 
-    def toggle(self, id):
+    def toggle(self, todo_id):
         """
         Receive an id, toggle the completion of a todo.
 
@@ -222,9 +222,9 @@ class TodoDB(object):
             * todo id
         """
         try:
-            todo = self._Todo.get(id)
+            todo = self._Todo.get(todo_id)
         except sqlobject.SQLObjectNotFound:
-            raise TodoDoesntExist(id)
+            raise TodoDoesntExist(todo_id)
 
         todo.completed = not todo.completed
 
