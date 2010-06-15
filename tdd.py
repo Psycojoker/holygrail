@@ -23,7 +23,7 @@ Toudoudone  Copyright (C) 2010  Laurent Peuch <cortex@worlddomination.be>
 
 import exceptions
 
-from sqlobject import *
+import sqlobject
 
 from config import DATABASE_ACCESS
 
@@ -80,7 +80,7 @@ class TodoDB(object):
         ##next_todo = IntCol(default=None)
         ##previous_todo = IntCol(default=None)
 
-    class _Todo(SQLObject):
+    class _Todo(sqlobject.SQLObject):
         """
         A Todo object.
 
@@ -91,7 +91,7 @@ class TodoDB(object):
         Arguments:
             * description: a text field that discribe the todo
         """
-        description = StringCol()
+        description = sqlobject.StringCol()
         #notes = StringCol(default=None)
         #context = ForeignKey('Context')
         #project = IntCol(default=None)
@@ -99,7 +99,7 @@ class TodoDB(object):
         #completed_at = DateTimeCol(default=None)
         #due = DateCol(default=None)
         #tickler = DateCol(default=None)
-        completed = BoolCol(default=False)
+        completed = sqlobject.BoolCol(default=False)
         #next_todo = IntCol(default=None)
         #previous_todo = IntCol(default=None)
 
@@ -110,7 +110,7 @@ class TodoDB(object):
         Arguments:
             * a different uri to connect to another database than the one in the config.py file (ie: for unittest)
         """
-        sqlhub.processConnection = connectionForURI(database_uri) if database_uri else connectionForURI(DATABASE_ACCESS)
+        sqlobject.sqlhub.processConnection = sqlobject.connectionForURI(database_uri) if database_uri else sqlobject.connectionForURI(DATABASE_ACCESS)
 
     def create_db(self):
         """
@@ -152,7 +152,7 @@ class TodoDB(object):
         """
         try:
             self._Todo.get(id).destroySelf()
-        except SQLObjectNotFound:
+        except sqlobject.SQLObjectNotFound:
             raise TodoDoesntExist(id)
 
         # assert, only on contract programming purpose
@@ -160,7 +160,7 @@ class TodoDB(object):
             try:
                 self._Todo.get(id)
                 raise AssertionError("This todo should have been destroyed: \"%s\"" % id)
-            except SQLObjectNotFound:
+            except sqlobject.SQLObjectNotFound:
                 pass
 
     def get_todo_by_desc(self, description):
@@ -195,7 +195,7 @@ class TodoDB(object):
         """
         try:
             return self._Todo.get(id)
-        except SQLObjectNotFound:
+        except sqlobject.SQLObjectNotFound:
             raise TodoDoesntExist(id)
 
     def rename_todo(self, id, new_description):
@@ -209,7 +209,7 @@ class TodoDB(object):
         """
         try:
             self._Todo.get(id).description = new_description
-        except SQLObjectNotFound:
+        except sqlobject.SQLObjectNotFound:
             raise TodoDoesntExist(id)
 
     def toggle(self, id):
@@ -221,7 +221,7 @@ class TodoDB(object):
         """
         try:
             todo = self._Todo.get(id)
-        except SQLObjectNotFound:
+        except sqlobject.SQLObjectNotFound:
             raise TodoDoesntExist(id)
 
         todo.completed = not todo.completed
