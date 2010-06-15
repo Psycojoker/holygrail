@@ -53,7 +53,7 @@ class TodoDB(object):
             * a different uri to connect to another database than the one into
               the configuration file (ie for tests)
         """
-        self.connect(database_uri)
+        self._connect(database_uri)
 
     #class Context(SQLObject):
         #description = StringCol()
