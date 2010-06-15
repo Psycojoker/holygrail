@@ -30,6 +30,7 @@ from config import DATABASE_ACCESS
 class TodoAlreadyExist(exceptions.Exception):
     def __init__(self, todo):
         self.todo = todo
+        super(TodoAlreadyExist, self).__init__()
 
     def __str__(self):
         return 'this todo already exist in the database: "%s"' % self.todo
@@ -37,6 +38,7 @@ class TodoAlreadyExist(exceptions.Exception):
 class TodoDoesntExist(exceptions.Exception):
     def __init__(self, todo):
         self.todo = todo
+        super(TodoDoesntExist, self).__init__()
 
     def __str__(self):
         return 'this todo doesn\'t exist: %s' % self.todo
