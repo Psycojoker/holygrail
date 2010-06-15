@@ -105,7 +105,7 @@ class TodoDB(object):
         #next_todo = IntCol(default=None)
         #previous_todo = IntCol(default=None)
 
-    def connect(self, database_uri):
+    def _connect(self, database_uri):
         """
         Connect to the database
 
