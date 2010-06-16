@@ -27,13 +27,13 @@ import sqlobject
 
 from config import DATABASE_ACCESS
 
-class TodoAlreadyExist(exceptions.Exception):
-    def __init__(self, todo):
-        self.todo = todo
-        super(TodoAlreadyExist, self).__init__()
+#class TodoAlreadyExist(exceptions.Exception):
+    #def __init__(self, todo):
+        #self.todo = todo
+        #super(TodoAlreadyExist, self).__init__()
 
-    def __str__(self):
-        return 'this todo already exist in the database: "%s"' % self.todo
+    #def __str__(self):
+        #return 'this todo already exist in the database: "%s"' % self.todo
 
 class TodoDoesntExist(exceptions.Exception):
     def __init__(self, todo):
@@ -142,7 +142,7 @@ class TodoDB(object):
             * the description of the todo
         """
         if unique and self._Todo.select(self._Todo.q.description == new_description).count() != 0:
-            raise TodoAlreadyExist(new_description)
+            return -1
         return self._Todo(description=new_description)
 
     def remove_todo(self, todo_id):

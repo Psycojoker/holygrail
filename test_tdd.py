@@ -21,7 +21,7 @@ Toudoudone  Copyright (C) 2010  Laurent Peuch <cortex@worlddomination.be>
 """
 
 import unittest
-from tdd import TodoDB, TodoDoesntExist, TodoAlreadyExist
+from tdd import TodoDB, TodoDoesntExist
 
 class Test_TDD(unittest.TestCase):
 
@@ -58,7 +58,7 @@ class Test_TDD(unittest.TestCase):
     def test_add_todo_unique(self):
         tododb = self.reinitialise()
         todo = tododb.add_todo("This is a new todo")
-        self.assertRaises(TodoAlreadyExist, tododb.add_todo, "This is a new todo", unique=True)
+        self.assertEqual(-1, tododb.add_todo("This is a new todo", unique=True))
 
     def test_get_todo_by_desc(self):
         tododb = self.reinitialise()
