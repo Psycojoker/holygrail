@@ -111,6 +111,9 @@ class TodoDB(object):
         def rename(self, description):
             self.description = description
 
+        def toggle(self):
+            self.completed = not self.completed
+
     def _connect(self, database_uri):
         """
         Connect to the database
@@ -186,21 +189,6 @@ class TodoDB(object):
         except sqlobject.SQLObjectNotFound:
             raise TodoDoesntExist(todo_id)
 
-
-    def toggle(self, todo_id):
-        """
-        Receive an id, toggle the completion of a todo.
-
-        Arguments:
-            * todo id
-        """
-        try:
-            todo = self._Todo.get(todo_id)
-        except sqlobject.SQLObjectNotFound:
-            raise TodoDoesntExist(todo_id)
-
-        todo.completed = not todo.completed
-
     def list_todos(self, all_todos=False):
         """
         Return a list of todos, by default only uncompleted todos.
@@ -211,5 +199,6 @@ class TodoDB(object):
         return [i for i in self._Todo.select(self._Todo.q.completed == False)] if not all_todos else [i for i in self._Todo.select()]
 
 if __name__ == "__main__":
-    t = TodoDB()
-    t.search_for_todo("t")
+    pass
+    #t = TodoDB()
+    #t.search_for_todo("t")

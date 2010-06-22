@@ -127,14 +127,10 @@ class Test_TDD(unittest.TestCase):
         t = tododb.add_todo("prout")
 
         self.assertFalse(t.completed)
-        tododb.toggle(t.id)
+        t.toggle()
         self.assertTrue(t.completed)
-        tododb.toggle(t.id)
+        t.toggle()
         self.assertFalse(t.completed)
-
-    def test_toggle_raise_doesnt_exist(self):
-        tododb = self.reinitialise()
-        self.assertRaises(TodoDoesntExist, tododb.toggle, 42)
 
     def test_list_todos(self):
         tododb = self.reinitialise()
@@ -150,7 +146,7 @@ class Test_TDD(unittest.TestCase):
         self.assertTrue(t in tododb.list_todos())
         self.assertTrue(t2 in tododb.list_todos())
         # only uncompleted
-        tododb.toggle(t2.id)
+        t2.toggle()
         self.assertEqual(1, len(tododb.list_todos()))
         self.assertTrue(t in tododb.list_todos())
         self.assertTrue(t2 not in tododb.list_todos())
