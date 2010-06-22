@@ -106,12 +106,24 @@ class TodoDB(object):
         #previous_todo = IntCol(default=None)
 
         def remove(self):
+            """
+            Remove the todo from the database.
+            """
             self.destroySelf()
 
         def rename(self, description):
+            """
+            Rename the todo with a new description
+
+            Arguments:
+                * new description
+            """
             self.description = description
 
         def toggle(self):
+            """
+            Toggle to todo completion state
+            """
             self.completed = not self.completed
 
     def _connect(self, database_uri):
