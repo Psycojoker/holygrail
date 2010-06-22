@@ -105,6 +105,9 @@ class TodoDB(object):
         #next_todo = IntCol(default=None)
         #previous_todo = IntCol(default=None)
 
+        def remove(self):
+            self.destroySelf()
+
     def _connect(self, database_uri):
         """
         Connect to the database
@@ -144,26 +147,6 @@ class TodoDB(object):
         if unique and self._Todo.select(self._Todo.q.description == new_description).count() != 0:
             return -1
         return self._Todo(description=new_description)
-
-    def remove_todo(self, todo_id):
-        """
-        Revceived the id of a todo, delete it
-
-        Arguments:
-            * todo id
-        """
-        try:
-            self._Todo.get(todo_id).destroySelf()
-        except sqlobject.SQLObjectNotFound:
-            raise TodoDoesntExist(todo_id)
-
-        # assert, only on contract programming purpose
-        if __debug__:
-            try:
-                self._Todo.get(todo_id)
-                raise AssertionError("This todo should have been destroyed: \"%s\"" % todo_id)
-            except sqlobject.SQLObjectNotFound:
-                pass
 
     def get_todo_by_desc(self, description):
         """
