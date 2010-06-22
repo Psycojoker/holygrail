@@ -108,6 +108,9 @@ class TodoDB(object):
         def remove(self):
             self.destroySelf()
 
+        def rename(self, description):
+            self.description = description
+
     def _connect(self, database_uri):
         """
         Connect to the database
@@ -183,19 +186,6 @@ class TodoDB(object):
         except sqlobject.SQLObjectNotFound:
             raise TodoDoesntExist(todo_id)
 
-    def rename_todo(self, todo_id, new_description):
-        """
-        Receive an id and a new description, rename the todo with it
-        Raise an exception if the todo doesn't exist.
-
-        Arguments:
-            * todo id
-            * todo new description
-        """
-        try:
-            self._Todo.get(todo_id).description = new_description
-        except sqlobject.SQLObjectNotFound:
-            raise TodoDoesntExist(todo_id)
 
     def toggle(self, todo_id):
         """

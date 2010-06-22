@@ -117,13 +117,9 @@ class Test_TDD(unittest.TestCase):
 
     def test_rename_todo(self):
         tododb = self.reinitialise()
-        t = tododb.add_todo("first name")
-        tododb.rename_todo(t.id, "second name")
-        self.assertEqual(t.description, "second name")
-
-    def test_rename_todo_should_raise_exception_if_doesnt_exist(self):
-        tododb = self.reinitialise()
-        self.assertRaises(TodoDoesntExist, tododb.rename_todo, 15, "haha I don't exist")
+        todo = tododb.add_todo("first name")
+        todo.rename("second name")
+        self.assertEqual(todo.description, "second name")
 
     def test_toggle_todo(self):
         tododb = self.reinitialise()
