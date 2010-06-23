@@ -104,6 +104,7 @@ class TodoDB(object):
         #due = DateCol(default=None)
         #tickler = DateCol(default=None)
         completed = sqlobject.BoolCol(default=False)
+        # do this in a new table ?
         #next_todo = IntCol(default=None)
         #previous_todo = IntCol(default=None)
 
