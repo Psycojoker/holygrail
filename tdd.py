@@ -182,7 +182,7 @@ class TodoDB(object):
         query = self._Todo.select(self._Todo.q.description == description)
         if query.count() == 0:
             raise TodoDoesntExist(description)
-        return query[0]
+        return [i for i in query]
 
     def search_for_todo(self, description):
         """

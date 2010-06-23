@@ -69,8 +69,17 @@ class Test_TDD(unittest.TestCase):
         t1 = tododb.add_todo("This is a new todo")
         t2 = tododb.add_todo("This is a new todo 2")
 
-        self.assertEqual(t1.id, tododb.get_todo_by_desc("This is a new todo").id)
-        self.assertEqual(t2.id, tododb.get_todo_by_desc("This is a new todo 2").id)
+        self.assertEqual(t1.id, tododb.get_todo_by_desc("This is a new todo")[0].id)
+        self.assertEqual(t2.id, tododb.get_todo_by_desc("This is a new todo 2")[0].id)
+
+    def test_get_todo_by_desc_mutiple(self):
+        tododb = self.reinitialise()
+
+        t1 = tododb.add_todo("This is a new todo")
+        t2 = tododb.add_todo("This is a new todo")
+
+        self.assertTrue(t1 in tododb.get_todo_by_desc("This is a new todo"))
+        self.assertTrue(t2 in tododb.get_todo_by_desc("This is a new todo"))
 
     def test_get_todo_by_desc_should_raise_an_exection_if_todo_doesnt_exist(self):
         tododb = self.reinitialise()
