@@ -96,7 +96,6 @@ class TodoDB(object):
             * description: a text field that discribe the todo
         """
         description = sqlobject.StringCol()
-        #notes = StringCol(default=None)
         #context = ForeignKey('Context')
         #project = IntCol(default=None)
         created_at = sqlobject.DateCol(default=date.today())
@@ -107,6 +106,8 @@ class TodoDB(object):
         # do this in a new table ?
         #next_todo = IntCol(default=None)
         #previous_todo = IntCol(default=None)
+        # will wait popular demand to be implemented
+        #notes = StringCol(default=None)
 
         def remove(self):
             """
