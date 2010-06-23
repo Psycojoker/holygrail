@@ -100,7 +100,7 @@ class TodoDB(object):
         #context = ForeignKey('Context')
         #project = IntCol(default=None)
         created_at = sqlobject.DateCol(default=date.today())
-        #completed_at = DateTimeCol(default=None)
+        completed_at = sqlobject.DateCol(default=None)
         #due = DateCol(default=None)
         #tickler = DateCol(default=None)
         completed = sqlobject.BoolCol(default=False)
@@ -127,6 +127,7 @@ class TodoDB(object):
             Toggle to todo completion state
             """
             self.completed = not self.completed
+            self.completed_at = date.today() if self.completed else None
 
     def _connect(self, database_uri):
         """

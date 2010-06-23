@@ -160,10 +160,21 @@ class Test_TDD(unittest.TestCase):
 
     def test_todo_should_be_created_today(self):
         tododb = self.reinitialise()
-
         todo = tododb.add_todo("this is a todo")
-
         self.assertEqual(todo.created_at, date.today())
+
+    def test_todo_completion_date(self):
+        tododb = self.reinitialise()
+        todo = tododb.add_todo("this is a todo")
+        self.assertEqual(todo.completed_at, None)
+        todo.toggle()
+        self.assertEqual(todo.completed_at, date.today())
+        todo.toggle()
+        self.assertEqual(todo.completed_at, None)
+        todo.toggle()
+        self.assertEqual(todo.completed_at, date.today())
+        todo.toggle()
+        self.assertEqual(todo.completed_at, None)
 
 if __name__ == "__main__":
    unittest.main()
