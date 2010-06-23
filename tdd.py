@@ -25,6 +25,8 @@ import exceptions
 
 import sqlobject
 
+from datetime import date
+
 from config import DATABASE_ACCESS
 
 #class TodoAlreadyExist(exceptions.Exception):
@@ -97,7 +99,7 @@ class TodoDB(object):
         #notes = StringCol(default=None)
         #context = ForeignKey('Context')
         #project = IntCol(default=None)
-        #created_at = DateTimeCol(default=datetime.now())
+        created_at = sqlobject.DateCol(default=date.today())
         #completed_at = DateTimeCol(default=None)
         #due = DateCol(default=None)
         #tickler = DateCol(default=None)

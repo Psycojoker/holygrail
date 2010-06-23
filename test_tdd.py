@@ -21,6 +21,9 @@ Toudoudone  Copyright (C) 2010  Laurent Peuch <cortex@worlddomination.be>
 """
 
 import unittest
+
+from datetime import date
+
 from tdd import TodoDB, TodoDoesntExist
 
 class Test_TDD(unittest.TestCase):
@@ -155,6 +158,12 @@ class Test_TDD(unittest.TestCase):
         self.assertTrue(t in tododb.list_todos(all_todos=True))
         self.assertTrue(t2 in tododb.list_todos(all_todos=True))
 
+    def test_todo_should_be_created_today(self):
+        tododb = self.reinitialise()
+
+        todo = tododb.add_todo("this is a todo")
+
+        self.assertEqual(todo.created_at, date.today())
 
 if __name__ == "__main__":
    unittest.main()
