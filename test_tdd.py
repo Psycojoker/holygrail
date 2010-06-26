@@ -22,7 +22,7 @@ Toudoudone  Copyright (C) 2010  Laurent Peuch <cortex@worlddomination.be>
 
 import unittest
 
-from datetime import date
+from datetime import date, datetime, timedelta
 
 from tdd import TodoDB, TodoDoesntExist
 
@@ -184,6 +184,38 @@ class Test_TDD(unittest.TestCase):
         self.assertEqual(todo.completed_at, date.today())
         todo.toggle()
         self.assertEqual(todo.completed_at, None)
+
+    def test_new_todo_shouldnt_have_tickler_by_default(self):
+        tododb = self.reinitialise()
+        todo = tododb.add_todo("new todo")
+        self.assertEquals(None, todo.tickler)
+
+    def test_tickler_at_creation(self):
+        tododb = self.reinitialise()
+        tickler = datetime(2010, 06, 25)
+        todo = tododb.add_todo("new todo", tickler=tickler)
+        self.assertEqual(tickler, todo.tickler)
+
+    def test_add_tickle(self):
+        tododb = self.reinitialise()
+        tickler = datetime(2010, 06, 25)
+        todo = tododb.add_todo("new todo")
+        todo.tickle(tickler)
+        self.assertEqual(tickler, todo.tickler)
+
+    def test_list_dont_show_tickle_task(self):
+        tododb = self.reinitialise()
+        # for tomorrow
+        tickler = datetime.now() + timedelta(1)
+        todo = tododb.add_todo("new todo", tickler)
+        self.assertTrue(todo not in tododb.list_todos())
+
+    def test_list_all_show_tickle_task(self):
+        tododb = self.reinitialise()
+        # for tomorrow
+        tickler = datetime.now() - timedelta(1)
+        todo = tododb.add_todo("new todo", tickler)
+        self.assertTrue(todo in tododb.list_todos())
 
 if __name__ == "__main__":
    unittest.main()

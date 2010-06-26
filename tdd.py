@@ -25,7 +25,7 @@ import exceptions
 
 import sqlobject
 
-from datetime import date
+from datetime import date, datetime
 
 from config import DATABASE_ACCESS
 
@@ -101,7 +101,7 @@ class TodoDB(object):
         created_at = sqlobject.DateCol(default=date.today())
         completed_at = sqlobject.DateCol(default=None)
         #due = DateCol(default=None)
-        #tickler = DateCol(default=None)
+        tickler = sqlobject.DateTimeCol(default=None)
         completed = sqlobject.BoolCol(default=False)
         # do this in a new table ?
         #next_todo = IntCol(default=None)
@@ -130,6 +130,12 @@ class TodoDB(object):
             """
             self.completed = not self.completed
             self.completed_at = date.today() if self.completed else None
+
+        def tickle(self, tickler):
+            """
+            Change thet todo tickler
+            """
+            self.tickler = tickler
 
     def _connect(self, database_uri):
         """
@@ -160,7 +166,7 @@ class TodoDB(object):
         #Item.dropTable(ifExists=True)
         self._Todo.dropTable(ifExists=True)
 
-    def add_todo(self, new_description, unique=False):
+    def add_todo(self, new_description, tickler=None, unique=False):
         """
         Add a new todo, return it
 
@@ -169,7 +175,7 @@ class TodoDB(object):
         """
         if unique and self._Todo.select(self._Todo.q.description == new_description).count() != 0:
             return -1
-        return self._Todo(description=new_description)
+        return self._Todo(description=new_description, tickler=tickler)
 
     def get_todo_by_desc(self, description):
         """
@@ -213,7 +219,9 @@ class TodoDB(object):
         Arguments:
             * all =False by default, if True return all the todos.
         """
-        return [i for i in self._Todo.select(self._Todo.q.completed == False)] if not all_todos else [i for i in self._Todo.select()]
+        return [i for i in self._Todo.select(sqlobject.AND(self._Todo.q.completed == False,
+               sqlobject.OR(self._Todo.q.tickler == None, self._Todo.q.tickler < datetime.now()))).orderBy('id')] if\
+                not all_todos else [i for i in self._Todo.select()]
 
 if __name__ == "__main__":
     pass
