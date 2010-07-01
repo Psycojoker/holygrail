@@ -37,6 +37,13 @@ from config import DATABASE_ACCESS
     #def __str__(self):
         #return 'this todo already exist in the database: "%s"' % self.todo
 
+class NeedAtLeastOneContext(exceptions.Exception):
+    def __init__(self):
+        super(NeedAtLeastOneContext, self).__init__()
+
+    def __str__(self):
+        return 'TDD need at least one context to work correctly'
+
 class TodoDoesntExist(exceptions.Exception):
     def __init__(self, todo):
         self.todo = todo
@@ -74,6 +81,12 @@ class TodoDB(object):
 
         def rename(self, new_description):
             self.description = new_description
+
+        def remove(self):
+            if self.select().count() == 1:
+                raise NeedAtLeastOneContext
+            else:
+                self.destroySelf()
 
     #class Project(SQLObject):
         #description = StringCol()
