@@ -248,6 +248,9 @@ class TodoDB(object):
                sqlobject.OR(self._Todo.q.tickler == None, self._Todo.q.tickler < datetime.now()))).orderBy('id')] if\
                 not all_todos else [i for i in self._Todo.select()]
 
+    def add_context(self, description):
+        return self._Context(description=description)
+
 if __name__ == "__main__":
     pass
     #t = TodoDB()

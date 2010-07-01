@@ -239,6 +239,13 @@ class Test_TDD(unittest.TestCase):
         tododb = self.reinitialise()
         self.assertRaises(TableAlreadyExist, tododb.create_db)
 
+    def test_add_context(self):
+        tododb = self.reinitialise()
+        context = tododb.add_context("new context")
+        self.assertEqual(context.description, "new context")
+        self.assertEqual(2, tododb._Context.select().count())
+
+
 if __name__ == "__main__":
    unittest.main()
 
