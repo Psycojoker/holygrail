@@ -161,6 +161,11 @@ class TodoDB(object):
         #Item.createTable(ifNotExists=True)
         self._Todo.createTable(ifNotExists=True)
 
+        try:
+            self._Context.get(1)
+        except sqlobject.SQLObjectNotFound:
+            self._Context(description="default context")
+
     def drop_db(self):
         """
         Drop the database if it isn't already drop

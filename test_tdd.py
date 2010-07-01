@@ -230,6 +230,10 @@ class Test_TDD(unittest.TestCase):
         todo.due_for(due)
         self.assertEqual(due, todo.due)
 
+    def test_tdd_should_have_a_context_at_creation(self):
+        tododb = self.reinitialise()
+        self.assertTrue(tododb._Context.get(1))
+
 if __name__ == "__main__":
    unittest.main()
 
