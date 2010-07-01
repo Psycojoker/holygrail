@@ -177,10 +177,8 @@ class TodoDB(object):
             else:
                 raise e
 
-        try:
-            self._Context.get(1)
-        except sqlobject.SQLObjectNotFound:
-            self._Context(description="default context")
+        # always have a context
+        self._Context(description="default context")
 
     def drop_db(self):
         """

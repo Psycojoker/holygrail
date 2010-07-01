@@ -232,7 +232,8 @@ class Test_TDD(unittest.TestCase):
 
     def test_tdd_should_have_a_context_at_creation(self):
         tododb = self.reinitialise()
-        self.assertTrue(tododb._Context.get(1))
+        self.assertEqual("default context", tododb._Context.get(1).description)
+        self.assertEqual(1, tododb._Context.select().count())
 
     def test_create_raise_if_table_already_exist(self):
         tododb = self.reinitialise()
