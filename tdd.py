@@ -45,6 +45,14 @@ class TodoDoesntExist(exceptions.Exception):
     def __str__(self):
         return 'this todo doesn\'t exist: %s' % self.todo
 
+class TableAlreadyExist(exceptions.Exception):
+    def __init__(self, table):
+        self.table = table
+        super(TableAlreadyExist, self).__init__()
+
+    def __str__(self):
+        return "%s" % self.table
+
 class TodoDB(object):
 
     def __init__(self, database_uri = None):
@@ -156,10 +164,18 @@ class TodoDB(object):
         """
         Create the database if it isn't already create
         """
-        self._Context.createTable(ifNotExists=True)
-        #Project.createTable(ifNotExists=True)
-        #Item.createTable(ifNotExists=True)
-        self._Todo.createTable(ifNotExists=True)
+        try:
+            self._Context.createTable()
+            #Project.createTable(ifNotExists=True)
+            #Item.createTable(ifNotExists=True)
+            self._Todo.createTable()
+        except Exception, e:
+            # ultimely dirty, I really don't know why I push this
+            # I haven't found another way to do this :(
+            if str(e).endswith("exists"):
+                raise TableAlreadyExist(str(e))
+            else:
+                raise e
 
         try:
             self._Context.get(1)

@@ -24,7 +24,7 @@ import unittest
 
 from datetime import date, datetime, timedelta
 
-from tdd import TodoDB, TodoDoesntExist
+from tdd import TodoDB, TodoDoesntExist, TableAlreadyExist
 
 class Test_TDD(unittest.TestCase):
 
@@ -233,6 +233,10 @@ class Test_TDD(unittest.TestCase):
     def test_tdd_should_have_a_context_at_creation(self):
         tododb = self.reinitialise()
         self.assertTrue(tododb._Context.get(1))
+
+    def test_create_raise_if_table_already_exist(self):
+        tododb = self.reinitialise()
+        self.assertRaises(TableAlreadyExist, tododb.create_db)
 
 if __name__ == "__main__":
    unittest.main()
