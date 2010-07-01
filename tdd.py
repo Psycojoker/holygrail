@@ -72,6 +72,9 @@ class TodoDB(object):
         #created_at = DateTimeCol(default=datetime.now())
         #completed_at = DateTimeCol(default=None)
 
+        def rename(self, new_description):
+            self.description = new_description
+
     #class Project(SQLObject):
         #description = StringCol()
         #state = EnumCol(enumValues=('active', 'completed', 'hidden'),

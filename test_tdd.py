@@ -245,6 +245,11 @@ class Test_TDD(unittest.TestCase):
         self.assertEqual(context.description, "new context")
         self.assertEqual(2, tododb._Context.select().count())
 
+    def test_rename_context(self):
+        tododb = self.reinitialise()
+        tododb._Context.get(1).rename("new description")
+        self.assertEqual("new description", tododb._Context.get(1).description)
+
 
 if __name__ == "__main__":
    unittest.main()
