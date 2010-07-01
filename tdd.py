@@ -57,8 +57,8 @@ class TodoDB(object):
         """
         self._connect(database_uri)
 
-    #class Context(SQLObject):
-        #description = StringCol()
+    class _Context(sqlobject.SQLObject):
+        description = sqlobject.StringCol()
         #position = IntCol(unique=True)
         #hide = BoolCol(default=False)
         #created_at = DateTimeCol(default=datetime.now())
@@ -156,7 +156,7 @@ class TodoDB(object):
         """
         Create the database if it isn't already create
         """
-        #Context.createTable(ifNotExists=True)
+        self._Context.createTable(ifNotExists=True)
         #Project.createTable(ifNotExists=True)
         #Item.createTable(ifNotExists=True)
         self._Todo.createTable(ifNotExists=True)
@@ -167,7 +167,7 @@ class TodoDB(object):
 
         WARNING: this will destroy *everything* in the database
         """
-        #Context.dropTable(ifExists=True)
+        self._Context.dropTable(ifExists=True)
         #Project.dropTable(ifExists=True)
         #Item.dropTable(ifExists=True)
         self._Todo.dropTable(ifExists=True)
