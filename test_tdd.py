@@ -217,6 +217,19 @@ class Test_TDD(unittest.TestCase):
         todo = tododb.add_todo("new todo", tickler)
         self.assertTrue(todo in tododb.list_todos())
 
+    def test_due_date_at_creation(self):
+        tododb = self.reinitialise()
+        due = datetime(2010, 06, 25)
+        todo = tododb.add_todo("new todo", due=due)
+        self.assertEqual(due, todo.due)
+
+    def test_add_due(self):
+        tododb = self.reinitialise()
+        due = datetime(2010, 06, 25)
+        todo = tododb.add_todo("new todo")
+        todo.due_for(due)
+        self.assertEqual(due, todo.due)
+
 if __name__ == "__main__":
    unittest.main()
 

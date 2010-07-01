@@ -100,7 +100,7 @@ class TodoDB(object):
         #project = IntCol(default=None)
         created_at = sqlobject.DateCol(default=date.today())
         completed_at = sqlobject.DateCol(default=None)
-        #due = DateCol(default=None)
+        due = sqlobject.DateTimeCol(default=None)
         tickler = sqlobject.DateTimeCol(default=None)
         completed = sqlobject.BoolCol(default=False)
         # do this in a new table ?
@@ -133,9 +133,15 @@ class TodoDB(object):
 
         def tickle(self, tickler):
             """
-            Change thet todo tickler
+            Change the todo tickler
             """
             self.tickler = tickler
+
+        def due_for(self, due):
+            """
+            Change the due date
+            """
+            self.due = due
 
     def _connect(self, database_uri):
         """
@@ -166,7 +172,7 @@ class TodoDB(object):
         #Item.dropTable(ifExists=True)
         self._Todo.dropTable(ifExists=True)
 
-    def add_todo(self, new_description, tickler=None, unique=False):
+    def add_todo(self, new_description, tickler=None, due=None, unique=False):
         """
         Add a new todo, return it
 
@@ -175,7 +181,7 @@ class TodoDB(object):
         """
         if unique and self._Todo.select(self._Todo.q.description == new_description).count() != 0:
             return -1
-        return self._Todo(description=new_description, tickler=tickler)
+        return self._Todo(description=new_description, tickler=tickler, due=due)
 
     def get_todo_by_desc(self, description):
         """
