@@ -77,7 +77,6 @@ class TodoDB(object):
         #position = IntCol(unique=True)
         #hide = BoolCol(default=False)
         #created_at = DateTimeCol(default=datetime.now())
-        #completed_at = DateTimeCol(default=None)
 
         def rename(self, new_description):
             self.description = new_description
