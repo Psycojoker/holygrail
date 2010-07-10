@@ -268,6 +268,20 @@ class Test_TDD(unittest.TestCase):
         self.assertEqual(1, context.id)
         self.assertEqual(True, context.default_context)
 
+    def test_change_default_context(self):
+        tododb = self.reinitialise()
+        context = tododb.add_context("new context")
+        context.set_default()
+        self.assertEqual(context.default_context, True)
+
+    def test_their_should_only_be_one_default_context(self):
+        tododb = self.reinitialise()
+        previous = tododb.get_default_context()
+        context = tododb.add_context("new context")
+        context.set_default()
+        self.assertEqual(False, previous.default_context)
+        self.assertEqual(context, tododb.get_default_context())
+
 if __name__ == "__main__":
    unittest.main()
 

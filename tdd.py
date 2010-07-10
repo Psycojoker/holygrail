@@ -88,6 +88,10 @@ class TodoDB(object):
             else:
                 self.destroySelf()
 
+        def set_default(self):
+            self.select(self.q.default_context == True)[0].default_context = False
+            self.default_context = True
+
     #class Project(SQLObject):
         #description = StringCol()
         #state = EnumCol(enumValues=('active', 'completed', 'hidden'),
