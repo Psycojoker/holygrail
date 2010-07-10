@@ -74,6 +74,7 @@ class TodoDB(object):
 
     class _Context(sqlobject.SQLObject):
         description = sqlobject.StringCol()
+        default_context = sqlobject.BoolCol(default=False)
         #position = IntCol(unique=True)
         #hide = BoolCol(default=False)
         #created_at = DateTimeCol(default=datetime.now())
@@ -193,7 +194,7 @@ class TodoDB(object):
                 raise e
 
         # always have a context
-        self._Context(description="default context")
+        self._Context(description="default context", default_context = True)
 
     def drop_db(self):
         """
@@ -265,6 +266,10 @@ class TodoDB(object):
 
     def add_context(self, description):
         return self._Context(description=description)
+
+    def get_default_context(self):
+        assert self._Context.select(self._Context.q.default_context == True).count() == 1
+        return self._Context.select(self._Context.q.default_context == True)[0]
 
 if __name__ == "__main__":
     pass

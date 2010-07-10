@@ -262,6 +262,12 @@ class Test_TDD(unittest.TestCase):
         context.remove()
         self.assertEqual(1, tododb._Context.select().count())
 
+    def test_default_context_at_init(self):
+        tododb = self.reinitialise()
+        context = tododb.get_default_context()
+        self.assertEqual(1, context.id)
+        self.assertEqual(True, context.default_context)
+
 if __name__ == "__main__":
    unittest.main()
 
