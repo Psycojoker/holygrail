@@ -250,10 +250,6 @@ class Test_TDD(unittest.TestCase):
         tododb._Context.get(1).rename("new description")
         self.assertEqual("new description", tododb._Context.get(1).description)
 
-    def test_cant_remove_context_if_their_is_only_one(self):
-        tododb = self.reinitialise()
-        self.assertRaises(NeedAtLeastOneContext, tododb._Context.get(1).remove)
-
     def test_remove_context(self):
         tododb = self.reinitialise()
         self.assertEqual(1, tododb._Context.select().count())

@@ -90,9 +90,7 @@ class TodoDB(object):
             self.description = new_description
 
         def remove(self):
-            if self.select().count() == 1:
-                raise NeedAtLeastOneContext
-            elif self.default_context:
+            if self.default_context:
                 raise CanRemoveTheDefaultContext
             else:
                 self.destroySelf()
