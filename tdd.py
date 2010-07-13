@@ -52,6 +52,14 @@ class TodoDoesntExist(exceptions.Exception):
     def __str__(self):
         return 'this todo doesn\'t exist: %s' % self.todo
 
+class ContextDoesntExist(exceptions.Exception):
+    def __init__(self, context):
+        self.context = context
+        super(ContextDoesntExist, self).__init__()
+
+    def __str__(self):
+        return 'this context doesn\'t exist: %s' % self.context
+
 class TableAlreadyExist(exceptions.Exception):
     def __init__(self, table):
         self.table = table
@@ -285,6 +293,8 @@ class TodoDB(object):
     def get_context_by_desc(self, description):
         # TODO docstring
         query = self._Context.select(self._Context.q.description == description)
+        if query.count() == 0:
+            raise ContextDoesntExist(description)
         return [i for i in query]
 
 if __name__ == "__main__":

@@ -24,7 +24,7 @@ import unittest
 
 from datetime import date, datetime, timedelta
 
-from tdd import TodoDB, TodoDoesntExist, TableAlreadyExist, NeedAtLeastOneContext, CanRemoveTheDefaultContext
+from tdd import TodoDB, TodoDoesntExist, TableAlreadyExist, NeedAtLeastOneContext, CanRemoveTheDefaultContext, ContextDoesntExist
 
 class Test_TDD(unittest.TestCase):
 
@@ -297,6 +297,10 @@ class Test_TDD(unittest.TestCase):
         tododb = self.reinitialise()
         context = tododb.add_context("youpla")
         self.assertEqual(context, tododb.get_context_by_desc("youpla")[0])
+
+    def test_get_context_by_desc_raise_if_dont_exist(self):
+        tododb = self.reinitialise()
+        self.assertRaises(ContextDoesntExist, tododb.get_context_by_desc, "I don't exist")
 
 
 if __name__ == "__main__":
