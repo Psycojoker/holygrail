@@ -307,6 +307,10 @@ class Test_TDD(unittest.TestCase):
         context = tododb.add_context("zoubiboulba suce mon zob")
         self.assertEqual(context, tododb.get_context(context.id))
 
+    def test_get_context_raise_if_dont_exist(self):
+        tododb = self.reinitialise()
+        self.assertRaises(ContextDoesntExist, tododb.get_context, 1337)
+
 
 if __name__ == "__main__":
    unittest.main()

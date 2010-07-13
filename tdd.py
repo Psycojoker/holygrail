@@ -298,7 +298,10 @@ class TodoDB(object):
         return [i for i in query]
 
     def get_context(self, context_id):
-        return self._Context.get(context_id)
+        try:
+            return self._Context.get(context_id)
+        except sqlobject.SQLObjectNotFound:
+            raise ContextDoesntExist(context_id)
 
 if __name__ == "__main__":
     pass
