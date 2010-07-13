@@ -284,5 +284,3 @@ class TodoDB(object):
 
 if __name__ == "__main__":
     pass
-    #t = TodoDB()
-    #t.search_for_todo("t")
