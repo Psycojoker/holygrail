@@ -186,6 +186,9 @@ class TodoDB(object):
             """
             self.due = due
 
+        def change_context(self, context_id):
+            self.context = context_id
+
     def _connect(self, database_uri):
         """
         Connect to the database
