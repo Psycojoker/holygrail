@@ -311,6 +311,12 @@ class Test_TDD(unittest.TestCase):
         tododb = self.reinitialise()
         self.assertRaises(ContextDoesntExist, tododb.get_context, 1337)
 
+    def test_add_todo_with_special_context(self):
+        tododb = self.reinitialise()
+        context = tododb.add_context("je devrais aller dormir")
+        todo = tododb.add_todo("mouhaha", context=context.id)
+        self.assertEqual(context, todo.context)
+
 
 if __name__ == "__main__":
    unittest.main()

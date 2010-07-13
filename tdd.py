@@ -226,16 +226,18 @@ class TodoDB(object):
         #Item.dropTable(ifExists=True)
         self._Todo.dropTable(ifExists=True)
 
-    def add_todo(self, new_description, tickler=None, due=None, unique=False):
+    def add_todo(self, new_description, tickler=None, due=None, context=None, unique=False):
         """
         Add a new todo, return it
 
         Arguments:
             * the description of the todo
         """
+        if not context:
+            context = self.get_default_context().id
         if unique and self._Todo.select(self._Todo.q.description == new_description).count() != 0:
             return -1
-        return self._Todo(description=new_description, tickler=tickler, due=due, context=self.get_default_context().id)
+        return self._Todo(description=new_description, tickler=tickler, due=due, context=context)
 
     def get_todo_by_desc(self, description):
         """
