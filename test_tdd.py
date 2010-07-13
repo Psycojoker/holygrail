@@ -281,6 +281,8 @@ class Test_TDD(unittest.TestCase):
         context.set_default()
         self.assertEqual(False, previous.default_context)
         self.assertEqual(context, tododb.get_default_context())
+        self.assertEqual(1, tododb._Context.select(tododb._Context.q.default_context == True).count())
+
 
 if __name__ == "__main__":
    unittest.main()
