@@ -60,6 +60,13 @@ class TableAlreadyExist(exceptions.Exception):
     def __str__(self):
         return "%s" % self.table
 
+class CanRemoveTheDefaultContext(exceptions.Exception):
+    def __init__(self):
+        super(CanRemoveTheDefaultContext, self).__init__()
+
+    def __str__(self):
+        return "can't remove the default context, change it before remove it"
+
 class TodoDB(object):
 
     def __init__(self, database_uri = None):
@@ -85,6 +92,8 @@ class TodoDB(object):
         def remove(self):
             if self.select().count() == 1:
                 raise NeedAtLeastOneContext
+            elif self.default_context:
+                raise CanRemoveTheDefaultContext
             else:
                 self.destroySelf()
 

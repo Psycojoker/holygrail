@@ -24,7 +24,7 @@ import unittest
 
 from datetime import date, datetime, timedelta
 
-from tdd import TodoDB, TodoDoesntExist, TableAlreadyExist, NeedAtLeastOneContext
+from tdd import TodoDB, TodoDoesntExist, TableAlreadyExist, NeedAtLeastOneContext, CanRemoveTheDefaultContext
 
 class Test_TDD(unittest.TestCase):
 
@@ -282,6 +282,13 @@ class Test_TDD(unittest.TestCase):
         self.assertEqual(False, previous.default_context)
         self.assertEqual(context, tododb.get_default_context())
         self.assertEqual(1, tododb._Context.select(tododb._Context.q.default_context == True).count())
+
+    def test_cant_remove_default_context(self):
+        tododb = self.reinitialise()
+        # to avoid having the exception NeedAtLeastOneContext if the exception we are waiting isn't raised
+        # yes it will crash anyway
+        tododb.add_context("prout")
+        self.assertRaises(CanRemoveTheDefaultContext, tododb.get_default_context().remove)
 
 
 if __name__ == "__main__":
