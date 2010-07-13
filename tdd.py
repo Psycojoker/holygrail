@@ -297,5 +297,8 @@ class TodoDB(object):
             raise ContextDoesntExist(description)
         return [i for i in query]
 
+    def get_context(self, context_id):
+        return self._Context.get(context_id)
+
 if __name__ == "__main__":
     pass
