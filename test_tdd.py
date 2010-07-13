@@ -286,6 +286,13 @@ class Test_TDD(unittest.TestCase):
         tododb.add_context("prout")
         self.assertRaises(CanRemoveTheDefaultContext, tododb.get_default_context().remove)
 
+    def test_a_todo_should_have_the_default_context(self):
+        tododb = self.reinitialise()
+        todo = tododb.add_todo("a todo")
+        self.assertEqual(todo.context, tododb.get_default_context())
+        todo = tododb.add_todo("another todo")
+        self.assertEqual(todo.context, tododb.get_default_context())
+
 
 if __name__ == "__main__":
    unittest.main()

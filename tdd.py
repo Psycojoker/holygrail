@@ -131,7 +131,7 @@ class TodoDB(object):
             * description: a text field that discribe the todo
         """
         description = sqlobject.StringCol()
-        #context = ForeignKey('Context')
+        context = sqlobject.ForeignKey('_Context')
         #project = IntCol(default=None)
         created_at = sqlobject.DateCol(default=date.today())
         completed_at = sqlobject.DateCol(default=None)
@@ -227,7 +227,7 @@ class TodoDB(object):
         """
         if unique and self._Todo.select(self._Todo.q.description == new_description).count() != 0:
             return -1
-        return self._Todo(description=new_description, tickler=tickler, due=due)
+        return self._Todo(description=new_description, tickler=tickler, due=due, context=self.get_default_context().id)
 
     def get_todo_by_desc(self, description):
         """
