@@ -282,5 +282,10 @@ class TodoDB(object):
         assert self._Context.select(self._Context.q.default_context == True).count() == 1
         return self._Context.select(self._Context.q.default_context == True)[0]
 
+    def get_context_by_desc(self, description):
+        # TODO docstring
+        query = self._Context.select(self._Context.q.description == description)
+        return [i for i in query]
+
 if __name__ == "__main__":
     pass
