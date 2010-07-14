@@ -23,7 +23,8 @@ Toudoudone  Copyright (C) 2010  Laurent Peuch <cortex@worlddomination.be>
 import sqlobject
 
 from tdd_exceptions import TableAlreadyExist, ContextDoesntExist,\
-    TodoDoesntExist, ContextStillHasTodos, CanRemoveTheDefaultContext
+    TodoDoesntExist, ContextStillHasTodos, CanRemoveTheDefaultContext,\
+    ProjectDoesntExist
 
 from datetime import date, datetime
 
@@ -276,7 +277,10 @@ class TodoDB(object):
         return _Project(description=description)
 
     def get_project(self, project_id):
-        return _Project.get(project_id)
+        try:
+            return _Project.get(project_id)
+        except sqlobject.SQLObjectNotFound:
+            raise ProjectDoesntExist(project_id)
 
     def get_project_by_desc(self, description):
         return [i for i in _Project.select(_Project.q.description == description)]

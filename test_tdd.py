@@ -24,7 +24,7 @@ import unittest
 
 from datetime import date, datetime, timedelta
 
-from tdd import TodoDB, TodoDoesntExist, TableAlreadyExist, CanRemoveTheDefaultContext, ContextDoesntExist, ContextStillHasTodos, _Context
+from tdd import TodoDB, TodoDoesntExist, TableAlreadyExist, CanRemoveTheDefaultContext, ContextDoesntExist, ContextStillHasTodos, _Context, ProjectDoesntExist
 
 class Test_TDD(unittest.TestCase):
 
@@ -359,6 +359,10 @@ class Test_TDD(unittest.TestCase):
         tododb = self.reinitialise()
         project = tododb.add_project("project manatan")
         self.assertEqual(project, tododb.get_project(project.id))
+
+    def test_get_project_raise_if_dont_exist(self):
+        tododb = self.reinitialise()
+        self.assertRaises(ProjectDoesntExist, tododb.get_project, 42)
 
     def test_get_project_by_desc(self):
         tododb = self.reinitialise()

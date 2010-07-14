@@ -41,3 +41,11 @@ class CanRemoveTheDefaultContext(exceptions.Exception):
 
     def __str__(self):
         return "can't remove the default context, change it before remove it"
+
+class ProjectDoesntExist(exceptions.Exception):
+    def __init__(self, project):
+        self.project = project
+        super(ProjectDoesntExist, self).__init__()
+
+    def __str__(self):
+        return 'this project doesn\'t exist: %s' % self.project
