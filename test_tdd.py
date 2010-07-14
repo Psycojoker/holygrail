@@ -24,7 +24,7 @@ import unittest
 
 from datetime import date, datetime, timedelta
 
-from tdd import TodoDB, TodoDoesntExist, TableAlreadyExist, NeedAtLeastOneContext, CanRemoveTheDefaultContext
+from tdd import TodoDB, TodoDoesntExist, TableAlreadyExist, CanRemoveTheDefaultContext, ContextDoesntExist, ContextStillHasTodos, _Context
 
 class Test_TDD(unittest.TestCase):
 
@@ -232,8 +232,8 @@ class Test_TDD(unittest.TestCase):
 
     def test_tdd_should_have_a_context_at_creation(self):
         tododb = self.reinitialise()
-        self.assertEqual("default context", tododb._Context.get(1).description)
-        self.assertEqual(1, tododb._Context.select().count())
+        self.assertEqual("default context", _Context.get(1).description)
+        self.assertEqual(1, _Context.select().count())
 
     def test_create_raise_if_table_already_exist(self):
         tododb = self.reinitialise()
@@ -243,20 +243,20 @@ class Test_TDD(unittest.TestCase):
         tododb = self.reinitialise()
         context = tododb.add_context("new context")
         self.assertEqual(context.description, "new context")
-        self.assertEqual(2, tododb._Context.select().count())
+        self.assertEqual(2, _Context.select().count())
 
     def test_rename_context(self):
         tododb = self.reinitialise()
-        tododb._Context.get(1).rename("new description")
-        self.assertEqual("new description", tododb._Context.get(1).description)
+        _Context.get(1).rename("new description")
+        self.assertEqual("new description", _Context.get(1).description)
 
     def test_remove_context(self):
         tododb = self.reinitialise()
-        self.assertEqual(1, tododb._Context.select().count())
+        self.assertEqual(1, _Context.select().count())
         context = tododb.add_context("new context")
-        self.assertEqual(2, tododb._Context.select().count())
+        self.assertEqual(2, _Context.select().count())
         context.remove()
-        self.assertEqual(1, tododb._Context.select().count())
+        self.assertEqual(1, _Context.select().count())
 
     def test_default_context_at_init(self):
         tododb = self.reinitialise()
@@ -277,7 +277,7 @@ class Test_TDD(unittest.TestCase):
         context.set_default()
         self.assertEqual(False, previous.default_context)
         self.assertEqual(context, tododb.get_default_context())
-        self.assertEqual(1, tododb._Context.select(tododb._Context.q.default_context == True).count())
+        self.assertEqual(1, _Context.select(_Context.q.default_context == True).count())
 
     def test_cant_remove_default_context(self):
         tododb = self.reinitialise()
@@ -285,6 +285,70 @@ class Test_TDD(unittest.TestCase):
         # yes it will crash anyway
         tododb.add_context("prout")
         self.assertRaises(CanRemoveTheDefaultContext, tododb.get_default_context().remove)
+
+    def test_a_todo_should_have_the_default_context(self):
+        tododb = self.reinitialise()
+        todo = tododb.add_todo("a todo")
+        self.assertEqual(todo.context, tododb.get_default_context())
+        todo = tododb.add_todo("another todo")
+        self.assertEqual(todo.context, tododb.get_default_context())
+
+    def test_get_context_by_desc(self):
+        tododb = self.reinitialise()
+        context = tododb.add_context("youpla")
+        self.assertEqual(context, tododb.get_context_by_desc("youpla")[0])
+
+    def test_get_context_by_desc_raise_if_dont_exist(self):
+        tododb = self.reinitialise()
+        self.assertRaises(ContextDoesntExist, tododb.get_context_by_desc, "I don't exist")
+
+    def test_get_context(self):
+        tododb = self.reinitialise()
+        context = tododb.add_context("zoubiboulba suce mon zob")
+        self.assertEqual(context, tododb.get_context(context.id))
+
+    def test_get_context_raise_if_dont_exist(self):
+        tododb = self.reinitialise()
+        self.assertRaises(ContextDoesntExist, tododb.get_context, 1337)
+
+    def test_add_todo_with_special_context(self):
+        tododb = self.reinitialise()
+        context = tododb.add_context("je devrais aller dormir")
+        todo = tododb.add_todo("mouhaha", context=context.id)
+        self.assertEqual(context, todo.context)
+
+    def test_change_todo_context(self):
+        tododb = self.reinitialise()
+        context = tododb.add_context("je vais encore me coucher à pas d'heure ...")
+        todo = tododb.add_todo("aller dormir")
+        todo.change_context(context.id)
+        self.assertEqual(context, todo.context)
+
+    def test_cant_delete_context_with_todos(self):
+        tododb = self.reinitialise()
+        context = tododb.add_context("TDD rosk")
+        todo = tododb.add_todo("HAHAHA I'M USING TEH INTERNETZ", context=context)
+        self.assertRaises(ContextStillHasTodos, context.remove)
+
+    def test_list_contexts(self):
+        tododb = self.reinitialise()
+        self.assertTrue(tododb.get_default_context() in tododb.list_contexts())
+        self.assertEqual(len(tododb.list_contexts()), 1)
+        context = tododb.add_context("foobar")
+        self.assertEqual(len(tododb.list_contexts()), 2)
+        context.remove()
+        self.assertEqual(len(tododb.list_contexts()), 1)
+
+    def test_add_Context_default(self):
+        tododb = self.reinitialise()
+        context = tododb.add_context("zomg, ils ont osé faire un flim sur les schtroumphs", default=True)
+        self.assertEqual(context, tododb.get_default_context())
+        self.assertTrue(context.default_context)
+
+    def test_context_should_have_a_creation_date(self):
+        tododb = self.reinitialise()
+        context = tododb.add_context("les fils de teuphu c'est super")
+        self.assertEqual(date.today(), context.created_at)
 
 
 if __name__ == "__main__":
