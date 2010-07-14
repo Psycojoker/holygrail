@@ -20,60 +20,15 @@ along with Toudoudone.  If not, see <http://www.gnu.org/licenses/>.
 Toudoudone  Copyright (C) 2010  Laurent Peuch <cortex@worlddomination.be>
 """
 
-
-import exceptions
-
 import sqlobject
+
+from tdd_exceptions import TableAlreadyExist, ContextDoesntExist,\
+    TodoDoesntExist, ContextStillHasTodos, CanRemoveTheDefaultContext
 
 from datetime import date, datetime
 
 from config import DATABASE_ACCESS
 
-#class TodoAlreadyExist(exceptions.Exception):
-    #def __init__(self, todo):
-        #self.todo = todo
-        #super(TodoAlreadyExist, self).__init__()
-
-    #def __str__(self):
-        #return 'this todo already exist in the database: "%s"' % self.todo
-
-class ContextStillHasTodos(exceptions.Exception):
-    def __init__(self):
-        super(ContextStillHasTodos, self).__init__()
-
-    def __str__(self):
-        return 'This context still containt todos, can\'t remove it'
-
-class TodoDoesntExist(exceptions.Exception):
-    def __init__(self, todo):
-        self.todo = todo
-        super(TodoDoesntExist, self).__init__()
-
-    def __str__(self):
-        return 'this todo doesn\'t exist: %s' % self.todo
-
-class ContextDoesntExist(exceptions.Exception):
-    def __init__(self, context):
-        self.context = context
-        super(ContextDoesntExist, self).__init__()
-
-    def __str__(self):
-        return 'this context doesn\'t exist: %s' % self.context
-
-class TableAlreadyExist(exceptions.Exception):
-    def __init__(self, table):
-        self.table = table
-        super(TableAlreadyExist, self).__init__()
-
-    def __str__(self):
-        return "%s" % self.table
-
-class CanRemoveTheDefaultContext(exceptions.Exception):
-    def __init__(self):
-        super(CanRemoveTheDefaultContext, self).__init__()
-
-    def __str__(self):
-        return "can't remove the default context, change it before remove it"
 
 class _Context(sqlobject.SQLObject):
     description = sqlobject.StringCol()
