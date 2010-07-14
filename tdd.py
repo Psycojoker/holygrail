@@ -37,6 +37,13 @@ from config import DATABASE_ACCESS
     #def __str__(self):
         #return 'this todo already exist in the database: "%s"' % self.todo
 
+class ContextStillHasTodos(exceptions.Exception):
+    def __init__(self):
+        super(ContextStillHasTodos, self).__init__()
+
+    def __str__(self):
+        return 'This context still containt todos, can\'t remove it'
+
 class TodoDoesntExist(exceptions.Exception):
     def __init__(self, todo):
         self.todo = todo
@@ -81,6 +88,8 @@ class _Context(sqlobject.SQLObject):
     def remove(self):
         if self.default_context:
             raise CanRemoveTheDefaultContext
+        elif _Todo.select(_Todo.q.context == self).count() != 0:
+            raise ContextStillHasTodos
         else:
             self.destroySelf()
 

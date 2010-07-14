@@ -324,6 +324,12 @@ class Test_TDD(unittest.TestCase):
         todo.change_context(context.id)
         self.assertEqual(context, todo.context)
 
+    def test_cant_delete_context_with_todos(self):
+        tododb = self.reinitialise()
+        context = tododb.add_context("TDD rosk")
+        todo = tododb.add_todo("HAHAHA I'M USING TEH INTERNETZ", context=context)
+        self.assertRaises(ContextStillHasTodos, context.remove)
+
 
 if __name__ == "__main__":
    unittest.main()
