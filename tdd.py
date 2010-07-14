@@ -125,6 +125,9 @@ class _Project(sqlobject.SQLObject):
     #due = DateCol(default=None)
     #default_context_id = IntCol(default=None)
 
+    def rename(self, new_description):
+        self.description = new_description
+
 #class Item(SQLObject):
     #description = StringCol()
     #context = ForeignKey('Context')

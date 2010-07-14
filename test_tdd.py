@@ -373,10 +373,14 @@ class Test_TDD(unittest.TestCase):
         self.assertEqual(len(tododb.get_project_by_desc("acheter du saucisson")), 2)
         self.assertEqual(len(tododb.get_project_by_desc("acheter des cornichons")), 0)
 
-    # def test_project_description(self):
+    def test_rename_project(self):
+        tododb = self.reinitialise()
+        project = tododb.add_project("j'ai envie de chocolat")
+        project.rename("the cake is a lie")
+        self.assertEqual(project.description, "the cake is a lie")
+
     # def test_list_projects(self):
     # def test_remove_project(self):
-    # def test_rename_project(self):
     # def test_set_default_context_to_project(self):
     # def test_set_default_context_to_project_at_creation(self):
     # def test_project_should_have_a_creation_date(self):
