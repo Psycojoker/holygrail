@@ -278,5 +278,8 @@ class TodoDB(object):
     def get_project(self, project_id):
         return _Project.get(project_id)
 
+    def get_project_by_desc(self, description):
+        return [i for i in _Project.select(_Project.q.description == description)]
+
 if __name__ == "__main__":
     pass

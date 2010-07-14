@@ -360,7 +360,15 @@ class Test_TDD(unittest.TestCase):
         project = tododb.add_project("project manatan")
         self.assertEqual(project, tododb.get_project(project.id))
 
-    # def test_get_project_by_desc(self):
+    def test_get_project_by_desc(self):
+        tododb = self.reinitialise()
+        project = tododb.add_project("acheter du saucisson")
+        self.assertEqual(tododb.get_project_by_desc("acheter du saucisson")[0], project)
+        self.assertEqual(len(tododb.get_project_by_desc("acheter du saucisson")), 1)
+        tododb.add_project("acheter du saucisson")
+        self.assertEqual(len(tododb.get_project_by_desc("acheter du saucisson")), 2)
+        self.assertEqual(len(tododb.get_project_by_desc("acheter des cornichons")), 0)
+
     # def test_project_description(self):
     # def test_list_projects(self):
     # def test_remove_project(self):
