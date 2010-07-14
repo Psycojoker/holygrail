@@ -345,6 +345,11 @@ class Test_TDD(unittest.TestCase):
         self.assertEqual(context, tododb.get_default_context())
         self.assertTrue(context.default_context)
 
+    def test_context_should_have_a_creation_date(self):
+        tododb = self.reinitialise()
+        context = tododb.add_context("les fils de teuphu c'est super")
+        self.assertEqual(date.today(), context.created_at)
+
 
 if __name__ == "__main__":
    unittest.main()

@@ -78,9 +78,9 @@ class CanRemoveTheDefaultContext(exceptions.Exception):
 class _Context(sqlobject.SQLObject):
     description = sqlobject.StringCol()
     default_context = sqlobject.BoolCol(default=False)
+    created_at = sqlobject.DateCol(default=datetime.now())
     #position = IntCol(unique=True)
     #hide = BoolCol(default=False)
-    #created_at = DateTimeCol(default=datetime.now())
 
     def rename(self, new_description):
         self.description = new_description
