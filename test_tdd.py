@@ -350,6 +350,10 @@ class Test_TDD(unittest.TestCase):
         context = tododb.add_context("les fils de teuphu c'est super")
         self.assertEqual(date.today(), context.created_at)
 
+    def test_add_project(self):
+        tododb = self.reinitialise()
+        project = tododb.add_project("project apocalypse")
+        self.assertEqual("project apocalypse", project.description)
 
 if __name__ == "__main__":
    unittest.main()

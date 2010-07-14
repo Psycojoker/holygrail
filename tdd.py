@@ -114,8 +114,8 @@ class _Todo(sqlobject.SQLObject):
     def change_context(self, context_id):
         self.context = context_id
 
-#class Project(SQLObject):
-    #description = StringCol()
+class _Project(sqlobject.SQLObject):
+    description = sqlobject.StringCol()
     #state = EnumCol(enumValues=('active', 'completed', 'hidden'),
     # default="active")
     #created_at = DateTimeCol(default=datetime.now())
@@ -161,7 +161,7 @@ class TodoDB(object):
         """
         try:
             _Context.createTable()
-            #Project.createTable(ifNotExists=True)
+            _Project.createTable(ifNotExists=True)
             #Item.createTable(ifNotExists=True)
             _Todo.createTable()
         except Exception, e:
@@ -182,7 +182,7 @@ class TodoDB(object):
         WARNING: this will destroy *everything* in the database
         """
         _Context.dropTable(ifExists=True)
-        #Project.dropTable(ifExists=True)
+        _Project.dropTable(ifExists=True)
         #Item.dropTable(ifExists=True)
         _Todo.dropTable(ifExists=True)
 
@@ -271,6 +271,9 @@ class TodoDB(object):
 
     def list_contexts(self):
         return [i for i in _Context.select()]
+
+    def add_project(self, description):
+        return _Project(description=description)
 
 if __name__ == "__main__":
     pass
