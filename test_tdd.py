@@ -360,6 +360,24 @@ class Test_TDD(unittest.TestCase):
         project = tododb.add_project("project manatan")
         self.assertEqual(project, tododb.get_project(project.id))
 
+    # def test_get_project_by_desc(self):
+    # def test_project_description(self):
+    # def test_list_projects(self):
+    # def test_remove_project(self):
+    # def test_rename_project(self):
+    # def test_set_default_context_to_project(self):
+    # def test_set_default_context_to_project_at_creation(self):
+    # def test_project_should_have_a_creation_date(self):
+    # def test_change_todo_project(self):
+    # def test_add_project_to_todo_at_creation(self):
+    # def test_set_hide_context(self):
+    # def test_hide_context_in_list_context(self):
+    # def test_hide_context_in_lit_todo(self):
+
+    # TODO: refactorer les exceptions, favoriser un message plutôt que plein d'exceptions différentes
+    # TODO faire un utils.py et rajouter plein de petits outils dedans comme un parseur de date etc ...
+    # TODO: faire marcher sd
+
 if __name__ == "__main__":
    unittest.main()
 
