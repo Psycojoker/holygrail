@@ -24,7 +24,7 @@ import unittest
 
 from datetime import date, datetime, timedelta
 
-from tdd import TodoDB, TodoDoesntExist, TableAlreadyExist, NeedAtLeastOneContext, CanRemoveTheDefaultContext, ContextDoesntExist
+from tdd import TodoDB, TodoDoesntExist, TableAlreadyExist, CanRemoveTheDefaultContext, ContextDoesntExist
 
 class Test_TDD(unittest.TestCase):
 
