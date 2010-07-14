@@ -381,6 +381,7 @@ class Test_TDD(unittest.TestCase):
 
     def test_list_projects(self):
         tododb = self.reinitialise()
+        self.assertEqual(0, len(tododb.list_projects()))
         project = tododb.add_project("ce truc a l'air super http://smarterware.org/6172/hilary-mason-how-to-replace-yourself-with-a-small-shell-script")
         self.assertTrue(project in tododb.list_projects())
         self.assertEqual(1, len(tododb.list_projects()))
