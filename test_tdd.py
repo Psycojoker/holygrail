@@ -355,6 +355,11 @@ class Test_TDD(unittest.TestCase):
         project = tododb.add_project("project apocalypse")
         self.assertEqual("project apocalypse", project.description)
 
+    def test_get_project(self):
+        tododb = self.reinitialise()
+        project = tododb.add_project("project manatan")
+        self.assertEqual(project, tododb.get_project(project.id))
+
 if __name__ == "__main__":
    unittest.main()
 

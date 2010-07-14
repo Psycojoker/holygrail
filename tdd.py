@@ -275,5 +275,8 @@ class TodoDB(object):
     def add_project(self, description):
         return _Project(description=description)
 
+    def get_project(self, project_id):
+        return _Project.get(project_id)
+
 if __name__ == "__main__":
     pass
