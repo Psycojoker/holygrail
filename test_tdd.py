@@ -339,6 +339,12 @@ class Test_TDD(unittest.TestCase):
         context.remove()
         self.assertEqual(len(tododb.list_contexts()), 1)
 
+    def test_add_Context_default(self):
+        tododb = self.reinitialise()
+        context = tododb.add_context("zomg, ils ont osé faire un flim sur les schtroumphs", default=True)
+        self.assertEqual(context, tododb.get_default_context())
+        self.assertTrue(context.default_context)
+
 
 if __name__ == "__main__":
    unittest.main()

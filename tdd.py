@@ -291,8 +291,12 @@ class TodoDB(object):
                sqlobject.OR(_Todo.q.tickler == None, _Todo.q.tickler < datetime.now()))).orderBy('id')] if\
                 not all_todos else [i for i in _Todo.select()]
 
-    def add_context(self, description):
-        return _Context(description=description)
+    def add_context(self, description, default=False):
+        # TODO docstring
+        new_context = _Context(description=description)
+        if default:
+            new_context.set_default()
+        return new_context
 
     def get_default_context(self):
         assert _Context.select(_Context.q.default_context == True).count() == 1
