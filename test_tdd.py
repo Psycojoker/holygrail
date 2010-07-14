@@ -330,6 +330,15 @@ class Test_TDD(unittest.TestCase):
         todo = tododb.add_todo("HAHAHA I'M USING TEH INTERNETZ", context=context)
         self.assertRaises(ContextStillHasTodos, context.remove)
 
+    def test_list_contexts(self):
+        tododb = self.reinitialise()
+        self.assertTrue(tododb.get_default_context() in tododb.list_contexts())
+        self.assertEqual(len(tododb.list_contexts()), 1)
+        context = tododb.add_context("foobar")
+        self.assertEqual(len(tododb.list_contexts()), 2)
+        context.remove()
+        self.assertEqual(len(tododb.list_contexts()), 1)
+
 
 if __name__ == "__main__":
    unittest.main()

@@ -311,5 +311,8 @@ class TodoDB(object):
         except sqlobject.SQLObjectNotFound:
             raise ContextDoesntExist(context_id)
 
+    def list_contexts(self):
+        return [i for i in _Context.select()]
+
 if __name__ == "__main__":
     pass
