@@ -128,6 +128,9 @@ class _Project(sqlobject.SQLObject):
     def rename(self, new_description):
         self.description = new_description
 
+    def remove(self):
+        self.destroySelf()
+
 #class Item(SQLObject):
     #description = StringCol()
     #context = ForeignKey('Context')

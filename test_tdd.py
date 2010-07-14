@@ -386,7 +386,16 @@ class Test_TDD(unittest.TestCase):
         self.assertTrue(project in tododb.list_projects())
         self.assertEqual(1, len(tododb.list_projects()))
 
-    # def test_remove_project(self):
+    def test_remove_project(self):
+        tododb = self.reinitialise()
+        self.assertEqual(0, len(tododb.list_projects()))
+        project = tododb.add_project("lovely code vortex")
+        self.assertEqual(1, len(tododb.list_projects()))
+        old_id = project.id
+        project.remove()
+        self.assertRaises(ProjectDoesntExist, tododb.get_project, old_id)
+        self.assertEqual(0, len(tododb.list_projects()))
+
     # def test_set_default_context_to_project(self):
     # def test_set_default_context_to_project_at_creation(self):
     # def test_project_should_have_a_creation_date(self):
