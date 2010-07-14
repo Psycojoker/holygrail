@@ -379,7 +379,12 @@ class Test_TDD(unittest.TestCase):
         project.rename("the cake is a lie")
         self.assertEqual(project.description, "the cake is a lie")
 
-    # def test_list_projects(self):
+    def test_list_projects(self):
+        tododb = self.reinitialise()
+        project = tododb.add_project("ce truc a l'air super http://smarterware.org/6172/hilary-mason-how-to-replace-yourself-with-a-small-shell-script")
+        self.assertTrue(project in tododb.list_projects())
+        self.assertEqual(1, len(tododb.list_projects()))
+
     # def test_remove_project(self):
     # def test_set_default_context_to_project(self):
     # def test_set_default_context_to_project_at_creation(self):
