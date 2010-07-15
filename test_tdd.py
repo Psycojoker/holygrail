@@ -396,6 +396,21 @@ class Test_TDD(unittest.TestCase):
         self.assertRaises(ProjectDoesntExist, tododb.get_project, old_id)
         self.assertEqual(0, len(tododb.list_projects()))
 
+    def test_list_todo_with_previous_todo(self):
+        tododb = self.reinitialise()
+        todo1 = tododb.add_todo("first todo")
+        todo2 = tododb.add_todo("second todo")
+        todo2.wait_for(todo1)
+        self.assertTrue(todo2 not in tododb.list_todos())
+
+    def test_list_todo_with_previous_todo_with_completed(self):
+        tododb = self.reinitialise()
+        todo1 = tododb.add_todo("first todo")
+        todo2 = tododb.add_todo("second todo")
+        todo2.wait_for(todo1)
+        todo1.toggle()
+        self.assertTrue(todo2 in tododb.list_todos())
+
     # def test_set_default_context_to_project(self):
     # def test_set_default_context_to_project_at_creation(self):
     # def test_project_should_have_a_creation_date(self):
