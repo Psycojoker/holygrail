@@ -402,6 +402,13 @@ class Test_TDD(unittest.TestCase):
         self.assertRaises(ProjectDoesntExist, tododb.get_project, old_id)
         self.assertEqual(0, len(tododb.list_projects()))
 
+    def test_change_todo_project(self):
+        tododb = self.reinitialise()
+        project = tododb.add_project("manger une pomme")
+        todo = tododb.add_todo("le nouveau leak d'ACTA est dégeulasse")
+        todo.change_project(project.id)
+        self.assertEqual(todo.project, project)
+
     def test_next_todo(self):
         tododb = self.reinitialise()
         todo1 = tododb.add_todo("first todo")
@@ -427,7 +434,6 @@ class Test_TDD(unittest.TestCase):
     # def test_set_default_context_to_project(self):
     # def test_set_default_context_to_project_at_creation(self):
     # def test_project_should_have_a_creation_date(self):
-    # def test_change_todo_project(self):
     # def test_add_project_to_todo_at_creation(self):
     # def test_set_hide_context(self):
     # def test_hide_context_in_list_context(self):

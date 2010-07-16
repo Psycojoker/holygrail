@@ -66,7 +66,7 @@ class _Todo(sqlobject.SQLObject):
     """
     description = sqlobject.StringCol()
     context = sqlobject.ForeignKey('_Context')
-    #project = IntCol(default=None)
+    project = sqlobject.ForeignKey('_Project', default=None)
     created_at = sqlobject.DateCol(default=date.today())
     completed_at = sqlobject.DateCol(default=None)
     due = sqlobject.DateTimeCol(default=None)
@@ -117,6 +117,9 @@ class _Todo(sqlobject.SQLObject):
 
     def change_context(self, context_id):
         self.context = context_id
+
+    def change_project(self, new_project_id):
+        self.project = new_project_id
 
 class _Project(sqlobject.SQLObject):
     description = sqlobject.StringCol()
