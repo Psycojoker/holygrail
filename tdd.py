@@ -129,13 +129,16 @@ class _Project(sqlobject.SQLObject):
     #completed_at = DateTimeCol(default=None)
     #tickler = DateCol(default=None)
     #due = DateCol(default=None)
-    #default_context_id = IntCol(default=None)
+    default_context = sqlobject.ForeignKey('_Context', default=None)
 
     def rename(self, new_description):
         self.description = new_description
 
     def remove(self):
         self.destroySelf()
+
+    def set_default_context(self, context_id):
+        self.default_context = context_id
 
 #class Item(SQLObject):
     #description = StringCol()
