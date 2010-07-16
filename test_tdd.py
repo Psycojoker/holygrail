@@ -437,6 +437,13 @@ class Test_TDD(unittest.TestCase):
         todo2 = tododb.add_todo("second todo", wait_for=todo1.id)
         self.assertEqual(todo1, todo2.previous_todo)
 
+    def test_add_todo_with_a_project(self):
+        tododb = self.reinitialise()
+        project = tododb.add_project("gare a Gallo")
+        todo = tododb.add_todo("first todo", project=project.id)
+        self.assertEqual(project, todo.project)
+
+
     # def test_set_default_context_to_project(self):
     # def test_set_default_context_to_project_at_creation(self):
     # def test_project_should_have_a_creation_date(self):

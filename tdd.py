@@ -199,7 +199,7 @@ class TodoDB(object):
         #Item.dropTable(ifExists=True)
         _Todo.dropTable(ifExists=True)
 
-    def add_todo(self, new_description, tickler=None, due=None, context=None, wait_for=None, unique=False):
+    def add_todo(self, new_description, tickler=None, due=None, project=None, context=None, wait_for=None, unique=False):
         """
         Add a new todo, return it
 
@@ -211,7 +211,7 @@ class TodoDB(object):
             context = self.get_default_context().id
         if unique and _Todo.select(sqlobject.AND(_Todo.q.description == new_description, _Todo.q.completed == False)).count() != 0:
             return -1
-        return _Todo(description=new_description, tickler=tickler, due=due, context=context, previous_todo=wait_for)
+        return _Todo(description=new_description, tickler=tickler, due=due, project=project, context=context, previous_todo=wait_for)
 
     def get_todo_by_desc(self, description):
         """
