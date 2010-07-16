@@ -63,6 +63,12 @@ class Test_TDD(unittest.TestCase):
         todo = tododb.add_todo("This is a new todo")
         self.assertEqual(-1, tododb.add_todo("This is a new todo", unique=True))
 
+    def test_add_todo_unique_toggle(self):
+        tododb = self.reinitialise()
+        todo = tododb.add_todo("This is a new todo")
+        todo.toggle()
+        self.assertNotEqual(-1, tododb.add_todo("This is a new todo", unique=True))
+
     def test_get_todo_by_desc(self):
         tododb = self.reinitialise()
 
