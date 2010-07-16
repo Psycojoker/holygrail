@@ -402,6 +402,13 @@ class Test_TDD(unittest.TestCase):
         self.assertRaises(ProjectDoesntExist, tododb.get_project, old_id)
         self.assertEqual(0, len(tododb.list_projects()))
 
+    def test_next_todo(self):
+        tododb = self.reinitialise()
+        todo1 = tododb.add_todo("first todo")
+        todo2 = tododb.add_todo("second todo")
+        todo2.wait_for(todo1)
+        self.assertEqual(todo1, todo2.previous_todo)
+
     def test_list_todo_with_previous_todo(self):
         tododb = self.reinitialise()
         todo1 = tododb.add_todo("first todo")
