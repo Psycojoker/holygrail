@@ -211,7 +211,10 @@ class TodoDB(object):
             * unique, don't add the todo if it's already exist AND INS'T COMPLETED
         """
         if not context:
-            context = self.get_default_context().id
+            if not project or not self.get_project(project).default_context:
+                context = self.get_default_context().id
+            else:
+                context = self.get_project(project).default_context.id
         if unique and _Todo.select(sqlobject.AND(_Todo.q.description == new_description, _Todo.q.completed == False)).count() != 0:
             return -1
         return _Todo(description=new_description, tickler=tickler, due=due, project=project, context=context, previous_todo=wait_for)
