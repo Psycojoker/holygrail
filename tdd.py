@@ -125,7 +125,7 @@ class _Project(sqlobject.SQLObject):
     description = sqlobject.StringCol()
     #state = EnumCol(enumValues=('active', 'completed', 'hidden'),
     # default="active")
-    #created_at = DateTimeCol(default=datetime.now())
+    created_at = sqlobject.DateCol(default=datetime.now())
     #completed_at = DateTimeCol(default=None)
     #tickler = DateCol(default=None)
     #due = DateCol(default=None)

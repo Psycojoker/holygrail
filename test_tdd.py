@@ -443,11 +443,13 @@ class Test_TDD(unittest.TestCase):
         todo = tododb.add_todo("first todo", project=project.id)
         self.assertEqual(project, todo.project)
 
+    def test_project_should_have_a_creation_date(self):
+        tododb = self.reinitialise()
+        project = tododb.add_project("youplaboum")
+        self.assertEqual(project.created_at, date.today())
 
     # def test_set_default_context_to_project(self):
     # def test_set_default_context_to_project_at_creation(self):
-    # def test_project_should_have_a_creation_date(self):
-    # def test_add_project_to_todo_at_creation(self):
     # def test_set_hide_context(self):
     # def test_hide_context_in_list_context(self):
     # def test_hide_context_in_lit_todo(self):
