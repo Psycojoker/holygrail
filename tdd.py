@@ -289,8 +289,8 @@ class TodoDB(object):
     def list_contexts(self):
         return [i for i in _Context.select()]
 
-    def add_project(self, description):
-        return _Project(description=description)
+    def add_project(self, description, default_context=None):
+        return _Project(description=description, default_context=default_context)
 
     def get_project(self, project_id):
         try:

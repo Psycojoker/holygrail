@@ -455,6 +455,12 @@ class Test_TDD(unittest.TestCase):
         project.set_default_context(context.id)
         self.assertEqual(context, project.default_context)
 
+    def test_set_default_context_to_project_at_creation(self):
+        tododb = self.reinitialise()
+        context = tododb.add_context("pc")
+        project = tododb.add_project("youmi, I love chocolate", default_context=context.id)
+        self.assertEqual(context, project.default_context)
+
     # def test_set_hide_context(self):
     # def test_hide_context_in_list_context(self):
     # def test_hide_context_in_lit_todo(self):
