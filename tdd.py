@@ -268,9 +268,9 @@ class TodoDB(object):
                sqlobject.OR(_Todo.q.tickler == None, _Todo.q.tickler < datetime.now()))).orderBy('id') if not i.previous_todo or i.previous_todo.completed] if\
                 not all_todos else [i for i in _Todo.select()]
 
-    def add_context(self, description, default=False):
+    def add_context(self, description, hide=False, default=False):
         # TODO docstring
-        new_context = _Context(description=description)
+        new_context = _Context(description=description, hide=hide)
         if default:
             new_context.set_default()
         return new_context

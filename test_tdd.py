@@ -494,7 +494,11 @@ class Test_TDD(unittest.TestCase):
         context.toggle_hide()
         self.assertFalse(context in tododb.list_contexts())
 
-    # def test_context_hide_at_creation(self):
+    def test_context_hide_at_creation(self):
+        tododb = self.reinitialise()
+        context = tododb.add_context("pc", hide=True)
+        self.assertTrue(context.hide)
+
     # def test_hide_context_in_lit_todo(self):
 
     # TODO: refactorer les exceptions, favoriser un message plutôt que plein d'exceptions différentes
