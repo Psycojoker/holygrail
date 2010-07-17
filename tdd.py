@@ -88,6 +88,9 @@ class _Todo(sqlobject.SQLObject):
         """
         Remove the todo from the database.
         """
+        # remove todo that wait for this todo to be completed
+        for i in self.select(_Todo.q.previous_todo == self):
+            i.previous_todo = None
         self.destroySelf()
 
     def rename(self, description):
