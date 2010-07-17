@@ -35,8 +35,8 @@ class _Context(sqlobject.SQLObject):
     description = sqlobject.StringCol()
     default_context = sqlobject.BoolCol(default=False)
     created_at = sqlobject.DateCol(default=datetime.now())
+    hide = sqlobject.BoolCol(default=False)
     #position = IntCol(unique=True)
-    #hide = BoolCol(default=False)
 
     def rename(self, new_description):
         self.description = new_description
@@ -52,6 +52,9 @@ class _Context(sqlobject.SQLObject):
     def set_default(self):
         self.select(self.q.default_context == True)[0].default_context = False
         self.default_context = True
+
+    def toggle_hide(self):
+        self.hide = not self.hide
 
 class _Todo(sqlobject.SQLObject):
     """
