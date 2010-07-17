@@ -265,7 +265,8 @@ class TodoDB(object):
             * all =False by default, if True return all the todos.
         """
         return [i for i in _Todo.select(sqlobject.AND(_Todo.q.completed == False,
-               sqlobject.OR(_Todo.q.tickler == None, _Todo.q.tickler < datetime.now()))).orderBy('id') if not i.previous_todo or i.previous_todo.completed] if\
+               sqlobject.OR(_Todo.q.tickler == None, _Todo.q.tickler < datetime.now()))).orderBy('id')\
+                if (not i.previous_todo or i.previous_todo.completed) and not i.context.hide] if\
                 not all_todos else [i for i in _Todo.select()]
 
     def add_context(self, description, hide=False, default=False):

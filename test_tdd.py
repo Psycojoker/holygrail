@@ -499,7 +499,12 @@ class Test_TDD(unittest.TestCase):
         context = tododb.add_context("pc", hide=True)
         self.assertTrue(context.hide)
 
-    # def test_hide_context_in_lit_todo(self):
+    def test_hide_context_in_list_todo(self):
+        tododb = self.reinitialise()
+        context = tododb.add_context("pc", hide=True)
+        todo = tododb.add_todo("atchoum", context=context)
+        self.assertFalse(todo in tododb.list_todos())
+        self.assertTrue(todo in tododb.list_todos(all_todos=True))
 
     # TODO: refactorer les exceptions, favoriser un message plutôt que plein d'exceptions différentes
     # TODO faire un utils.py et rajouter plein de petits outils dedans comme un parseur de date etc ...
