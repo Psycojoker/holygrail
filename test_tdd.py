@@ -513,6 +513,7 @@ class Test_TDD(unittest.TestCase):
         todo2.wait_for(todo1)
         todo1.remove()
         self.assertTrue(todo2 in tododb.list_todos())
+        self.assertEqual(None, todo2.previous_todo)
 
     # def test_remove_project_with_todos(self):
     # TODO: refactorer les exceptions, favoriser un message plutôt que plein d'exceptions différentes
