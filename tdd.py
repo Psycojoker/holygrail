@@ -141,6 +141,8 @@ class _Project(sqlobject.SQLObject):
         self.description = new_description
 
     def remove(self):
+        for i in _Todo.select(_Todo.q.project == self):
+            i.project = None
         self.destroySelf()
 
     def set_default_context(self, context_id):

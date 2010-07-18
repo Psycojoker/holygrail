@@ -515,7 +515,15 @@ class Test_TDD(unittest.TestCase):
         self.assertTrue(todo2 in tododb.list_todos())
         self.assertEqual(None, todo2.previous_todo)
 
-    # def test_remove_project_with_todos(self):
+    def test_remove_project_with_todos(self):
+        tododb = self.reinitialise()
+        project = tododb.add_project("tchikaboum")
+        todo = tododb.add_todo("arakiri", project=project.id)
+        todo2 = tododb.add_todo("arakirikiki", project=project.id)
+        project.remove()
+        self.assertEqual(None, todo.project)
+        self.assertEqual(None, todo2.project)
+
     # TODO: refactorer les exceptions, favoriser un message plutôt que plein d'exceptions différentes
     # TODO faire un utils.py et rajouter plein de petits outils dedans comme un parseur de date etc ...
     # TODO: faire marcher sd
