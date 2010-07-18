@@ -526,7 +526,8 @@ class Test_TDD(unittest.TestCase):
 
     # TODO: refactorer les exceptions, favoriser un message plutôt que plein d'exceptions différentes
     # TODO faire un utils.py et rajouter plein de petits outils dedans comme un parseur de date etc ...
-    # TODO: faire marcher sd
+    # TODO: faire marcher sd <- migrer vers lucid
+    # TODO peut être donner une méthode Todo pour dire si elle s'affiche
 
 if __name__ == "__main__":
    unittest.main()
