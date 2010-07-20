@@ -24,11 +24,13 @@ import sqlobject
 
 from tdd_exceptions import TableAlreadyExist, ContextDoesntExist,\
     TodoDoesntExist, ContextStillHasTodos, CanRemoveTheDefaultContext,\
-    ProjectDoesntExist
+    ProjectDoesntExist, NoDatabaseConfiguration
 
 from datetime import date, datetime
 
-from config import DATABASE_ACCESS
+import config
+
+DATABASE_ACCESS = config.DATABASE_ACCESS if hasattr(config, "DATABASE_ACCESS") else None
 
 
 class _Context(sqlobject.SQLObject):
@@ -168,6 +170,8 @@ class TodoDB(object):
             * a different uri to connect to another database than the one into
               the configuration file (ie for tests)
         """
+        if not database_uri and not DATABASE_ACCESS:
+            raise NoDatabaseConfiguration
         self._connect(database_uri)
 
     def _connect(self, database_uri):

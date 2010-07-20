@@ -49,3 +49,10 @@ class ProjectDoesntExist(exceptions.Exception):
 
     def __str__(self):
         return 'this project doesn\'t exist: %s' % self.project
+
+class NoDatabaseConfiguration(exceptions.Exception):
+    def __init__(self):
+        super(NoDatabaseConfiguration, self).__init__()
+
+    def __str__(self):
+        return "Their isn't any uri for the database, etheir give TodoDB an uri at creation or create a config file with a DATABASE_ACCESS variable that containt the string of the uri"
