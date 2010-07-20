@@ -17,7 +17,7 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with Toudoudone.  If not, see <http://www.gnu.org/licenses/>.
 
-Toudoudone  Copyright (C) 2010  Laurent Peuch <cortex@worlddomination.be>
+Toudoudone  Copyright (C) 2010  Laurent Peuch  <cortex@worlddomination.be>
 """
 
 import sqlobject
