@@ -77,8 +77,6 @@ class _Todo(sqlobject.SQLObject):
     due = sqlobject.DateTimeCol(default=None)
     tickler = sqlobject.DateTimeCol(default=None)
     completed = sqlobject.BoolCol(default=False)
-    # do this in a new table ?
-    #next_todo = sqlobject.ForeignKey('_Todo', default=None)
     previous_todo = sqlobject.ForeignKey('_Todo', default=None)
     # will wait popular demand to be implemented
     #notes = StringCol(default=None)
