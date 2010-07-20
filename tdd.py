@@ -160,7 +160,7 @@ class _Project(sqlobject.SQLObject):
 
 class TodoDB(object):
 
-    def __init__(self, database_uri = None):
+    def __init__(self, database_uri=None):
         """
         The main object, it's the interface with the todo database.
 
