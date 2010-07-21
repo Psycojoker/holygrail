@@ -86,8 +86,9 @@ class _Item(sqlobject.SQLObject):
     previous_todo = sqlobject.ForeignKey('_Todo', default=None)
 
     def visible(self):
-        return (not self.previous_todo or self.previous_todo.completed) and (not self.project or not self.project.hide)\
-            and not self.context.hide
+        return (not self.previous_todo or self.previous_todo.completed)\
+            and not self.context.hide\
+            and (not self.project or not self.project.hide)
 
     def remove(self):
         """
@@ -135,11 +136,6 @@ class _Todo(_Item):
     completed = sqlobject.BoolCol(default=False)
     # will wait popular demand to be implemented
     #notes = StringCol(default=None)
-
-    def visible(self):
-        return (not self.previous_todo or self.previous_todo.completed)\
-            and not self.context.hide\
-            and (not self.project or not self.project.hide)
 
     def remove(self):
         """
