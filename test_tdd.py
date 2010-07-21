@@ -798,7 +798,7 @@ class Test_TDD(unittest.TestCase):
         tododb = self.reinitialise()
         # for tomorrow
         tickler = datetime.now() + timedelta(1)
-        item = tododb.add_item("new item", tickler)
+        item = tododb.add_item("new item", tickler=tickler)
         self.assertTrue(item not in tododb.list_items())
 
     def test_list_all_show_tickle_items(self):
