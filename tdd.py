@@ -375,7 +375,10 @@ class TodoDB(object):
         return [i for i in query]
 
     def get_item(self, item_id):
-        return _Item.get(item_id)
+        try:
+            return _Item.get(item_id)
+        except sqlobject.SQLObjectNotFound:
+            raise ItemDoesntExist(item_id)
 
 if __name__ == "__main__":
     pass

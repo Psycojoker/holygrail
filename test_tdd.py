@@ -747,6 +747,10 @@ class Test_TDD(unittest.TestCase):
         self.assertTrue(item is tododb.get_item(item.id))
         self.assertEqual(item.description, "item")
 
+    def test_get_item_throw_except_if_doesnt_exist(self):
+        tododb = self.reinitialise()
+        self.assertRaises(ItemDoesntExist, tododb.get_item, 35)
+
     # def test_project_completion(self):
     # def test_todo_with_project_completion(self):
     # def test_project_completion_date(self):
