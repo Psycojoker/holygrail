@@ -144,6 +144,8 @@ class _Todo(_Item):
         # remove todo that wait for this todo to be completed
         for i in self.select(_Todo.q.previous_todo == self):
             i.previous_todo = None
+        for i in _Item.select(_Item.q.previous_todo == self):
+            i.previous_todo = None
         super(_Todo, self).remove()
 
     def toggle(self):
