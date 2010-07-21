@@ -100,6 +100,12 @@ class _Item(sqlobject.SQLObject):
         """
         self.description = description
 
+    def tickle(self, tickler):
+        """
+        Change the item tickler
+        """
+        self.tickler = tickler
+
 class _Todo(_Item):
     """
     A Todo object.
@@ -143,12 +149,6 @@ class _Todo(_Item):
         """
         self.completed = not self.completed
         self.completed_at = date.today() if self.completed else None
-
-    def tickle(self, tickler):
-        """
-        Change the todo tickler
-        """
-        self.tickler = tickler
 
     def due_for(self, due):
         """
