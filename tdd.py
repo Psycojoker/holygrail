@@ -82,7 +82,7 @@ class _Item(sqlobject.SQLObject):
     created_at = sqlobject.DateCol(default=date.today())
     tickler = sqlobject.DateTimeCol(default=None)
     context = sqlobject.ForeignKey('_Context')
-    #project = IntCol(default=None)
+    project = sqlobject.ForeignKey('_Project', default=None)
     #hidden = BoolCol(default=False)
     #previous_todo = IntCol(default=None)
 
@@ -110,6 +110,9 @@ class _Item(sqlobject.SQLObject):
     def change_context(self, context_id):
         self.context = context_id
 
+    def change_project(self, new_project_id):
+        self.project = new_project_id
+
 class _Todo(_Item):
     """
     A Todo object.
@@ -121,7 +124,6 @@ class _Todo(_Item):
     Arguments:
         * description: a text field that discribe the todo
     """
-    project = sqlobject.ForeignKey('_Project', default=None)
     completed_at = sqlobject.DateCol(default=None)
     due = sqlobject.DateTimeCol(default=None)
     completed = sqlobject.BoolCol(default=False)
@@ -158,9 +160,6 @@ class _Todo(_Item):
         Change the due date
         """
         self.due = due
-
-    def change_project(self, new_project_id):
-        self.project = new_project_id
 
 class _Project(sqlobject.SQLObject):
     description = sqlobject.StringCol()
