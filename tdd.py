@@ -39,7 +39,7 @@ class _Context(sqlobject.SQLObject):
     default_context = sqlobject.BoolCol(default=False)
     created_at = sqlobject.DateCol(default=datetime.now())
     hide = sqlobject.BoolCol(default=False)
-    #position = IntCol(unique=True)
+    position = sqlobject.IntCol(unique=True)
 
     def rename(self, new_description):
         self.description = new_description
@@ -209,7 +209,7 @@ class TodoDB(object):
                 raise e
 
         # always have a context
-        _Context(description="default context", default_context = True)
+        _Context(description="default context", default_context = True, position=1)
 
     def drop_db(self):
         """
@@ -288,7 +288,7 @@ class TodoDB(object):
 
     def add_context(self, description, hide=False, default=False):
         # TODO docstring
-        new_context = _Context(description=description, hide=hide)
+        new_context = _Context(position=_Context.select().count() + 1, description=description, hide=hide)
         if default:
             new_context.set_default()
         return new_context

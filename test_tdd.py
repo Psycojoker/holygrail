@@ -531,7 +531,11 @@ class Test_TDD(unittest.TestCase):
         self.assertTrue(_Context.tableExists())
         self.assertTrue(_Project.tableExists())
 
-    # def test_context_position(self):
+    def test_context_position(self):
+        tododb = self.reinitialise()
+        context = tododb.get_default_context()
+        self.assertEqual(1, context.position)
+
     # def test_new_context_position(self):
     # def test_change_context_position(self):
     # def test_change_multiple_context_position(self):
