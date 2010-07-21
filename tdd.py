@@ -164,11 +164,15 @@ class _Todo(_Item):
 class _Project(sqlobject.SQLObject):
     description = sqlobject.StringCol()
     created_at = sqlobject.DateCol(default=datetime.now())
+    completed = sqlobject.BoolCol(default=False)
     #completed_at = DateTimeCol(default=None)
     #tickler = DateCol(default=None)
     #due = DateCol(default=None)
     default_context = sqlobject.ForeignKey('_Context', default=None)
     hide = sqlobject.BoolCol(default=False)
+
+    def toggle(self):
+        self.completed = not self.completed
 
     def rename(self, new_description):
         self.description = new_description

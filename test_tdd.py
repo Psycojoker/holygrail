@@ -923,8 +923,15 @@ class Test_TDD(unittest.TestCase):
         self.assertFalse(item in tododb.list_items())
         self.assertTrue(item in tododb.list_items(all_items=True))
 
-    # def test_project_completion(self):
-    # def test_todo_with_project_completion(self):
+    def test_project_completion(self):
+        tododb = self.reinitialise()
+        project = tododb.add_project("bah")
+        self.assertFalse(project.completed)
+        project.toggle()
+        self.assertTrue(project.completed)
+        project.toggle()
+        self.assertFalse(project.completed)
+
     # def test_project_completion_date(self):
     # def test_project_tickler(self):
     # def tet_main_view(self):
