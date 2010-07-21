@@ -176,6 +176,8 @@ class _Project(sqlobject.SQLObject):
     def remove(self):
         for i in _Todo.select(_Todo.q.project == self):
             i.project = None
+        for i in _Item.select(_Item.q.project == self):
+            i.project = None
         self.destroySelf()
 
     def set_default_context(self, context_id):

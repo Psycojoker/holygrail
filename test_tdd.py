@@ -899,14 +899,14 @@ class Test_TDD(unittest.TestCase):
         self.assertTrue(item in tododb.list_items())
         self.assertEqual(None, item.previous_todo)
 
-    #def test_remove_project_with_todos(self):
-        #tododb = self.reinitialise()
-        #project = tododb.add_project("tchikaboum")
-        #todo = tododb.add_todo("arakiri", project=project.id)
-        #todo2 = tododb.add_todo("arakirikiki", project=project.id)
-        #project.remove()
-        #self.assertEqual(None, todo.project)
-        #self.assertEqual(None, todo2.project)
+    def test_remove_project_with_items(self):
+        tododb = self.reinitialise()
+        project = tododb.add_project("tchikaboum")
+        item = tododb.add_item("arakiri", project=project.id)
+        item2 = tododb.add_item("arakirikiki", project=project.id)
+        project.remove()
+        self.assertEqual(None, item.project)
+        self.assertEqual(None, item2.project)
 
     # def test_project_completion(self):
     # def test_todo_with_project_completion(self):
