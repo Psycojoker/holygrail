@@ -954,8 +954,13 @@ class Test_TDD(unittest.TestCase):
         project.toggle()
         self.assertFalse(item in tododb.list_items())
 
-    # def test_item_with_project_completion(self):
-    # def test_project_tickler(self):
+    def test_project_tickler(self):
+        tododb = self.reinitialise()
+        project = tododb.add_project("j'ai faim")
+        tickler = datetime(2010, 06, 25)
+        project.tickle(tickler)
+        self.assertEqual(tickler, project.tickler)
+
     # def test_todo_with_project_tickler(self):
     # def test_item_with_project_tickler(self):
     # def test_project_tickler_at_creation(self):

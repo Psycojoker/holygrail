@@ -171,6 +171,12 @@ class _Project(sqlobject.SQLObject):
     default_context = sqlobject.ForeignKey('_Context', default=None)
     hide = sqlobject.BoolCol(default=False)
 
+    def tickle(self, tickler):
+        """
+        Change the project tickler
+        """
+        self.tickler = tickler
+
     def toggle(self):
         self.completed = not self.completed
         self.completed_at = date.today() if self.completed else None
