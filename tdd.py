@@ -171,6 +171,11 @@ class TodoDB(object):
         if not database_uri and not DATABASE_ACCESS:
             raise NoDatabaseConfiguration
         self._connect(database_uri)
+        self._table_exist()
+
+    def _table_exist(self):
+        if not _Todo.tableExists() and not _Project.tableExists() and not _Context.tableExists():
+            self.create_db()
 
     def _connect(self, database_uri):
         """

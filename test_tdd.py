@@ -24,7 +24,7 @@ import unittest
 
 from datetime import date, datetime, timedelta
 
-from tdd import TodoDB, TodoDoesntExist, TableAlreadyExist, CanRemoveTheDefaultContext, ContextDoesntExist, ContextStillHasTodos, _Context, ProjectDoesntExist
+from tdd import TodoDB, TodoDoesntExist, TableAlreadyExist, CanRemoveTheDefaultContext, ContextDoesntExist, ContextStillHasTodos, _Context, ProjectDoesntExist, _Todo, _Project
 
 class Test_TDD(unittest.TestCase):
 
@@ -523,6 +523,25 @@ class Test_TDD(unittest.TestCase):
         project.remove()
         self.assertEqual(None, todo.project)
         self.assertEqual(None, todo2.project)
+
+    def test_auto_create_tables(self):
+        TodoDB('sqlite:/:memory:').drop_db()
+        TodoDB('sqlite:/:memory:')
+        self.assertTrue(_Todo.tableExists())
+        self.assertTrue(_Context.tableExists())
+        self.assertTrue(_Project.tableExists())
+
+    # def test_context_position(self):
+    # def test_new_context_position(self):
+    # def test_change_context_position(self):
+    # def test_change_multiple_context_position(self):
+    # def test_project_completion(self):
+    # def test_todo_with_project_completion(self):
+    # def test_project_hide(self):
+    # def test_todo_with_project_hide(self):
+    # def test_project_completion_date(self):
+    # def test_project_tickler(self):
+    # def test_todo_with_rpoject_hide(self):
 
     # TODO: refactorer les exceptions, favoriser un message plutôt que plein d'exceptions différentes
     # TODO faire un utils.py et rajouter plein de petits outils dedans comme un parseur de date etc ...
