@@ -385,8 +385,9 @@ class TodoDB(object):
         except sqlobject.SQLObjectNotFound:
             raise ItemDoesntExist(item_id)
 
-    def list_items(self):
-        return [i for i in _Item.select(sqlobject.OR(_Item.q.tickler == None, _Item.q.tickler < datetime.now()))]
+    def list_items(self, all_items=False):
+        return [i for i in _Item.select(sqlobject.OR(_Item.q.tickler == None, _Item.q.tickler < datetime.now()))]\
+                if not all_items else [i for i in _Item.select()]
 
 if __name__ == "__main__":
     pass

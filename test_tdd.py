@@ -801,6 +801,31 @@ class Test_TDD(unittest.TestCase):
         item = tododb.add_item("new item", tickler)
         self.assertTrue(item not in tododb.list_items())
 
+    def test_list_all_show_tickle_items(self):
+        tododb = self.reinitialise()
+        # for tomorrow
+        tickler = datetime.now() + timedelta(1)
+        item = tododb.add_item("new item", tickler)
+        self.assertTrue(item in tododb.list_items(all_items=True))
+
+    #def test_due_date_at_creation(self):
+        #tododb = self.reinitialise()
+        #due = datetime(2010, 06, 25)
+        #todo = tododb.add_todo("new todo", due=due)
+        #self.assertEqual(due, todo.due)
+
+    #def test_add_due(self):
+        #tododb = self.reinitialise()
+        #due = datetime(2010, 06, 25)
+        #todo = tododb.add_todo("new todo")
+        #todo.due_for(due)
+        #self.assertEqual(due, todo.due)
+
+    #def test_tdd_should_have_a_context_at_creation(self):
+        #tododb = self.reinitialise()
+        #self.assertEqual("default context", _Context.get(1).description)
+        #self.assertEqual(1, _Context.select().count())
+
     # def test_project_completion(self):
     # def test_todo_with_project_completion(self):
     # def test_project_completion_date(self):
