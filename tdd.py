@@ -152,8 +152,6 @@ class _Todo(sqlobject.SQLObject):
 
 class _Project(sqlobject.SQLObject):
     description = sqlobject.StringCol()
-    #state = EnumCol(enumValues=('active', 'completed', 'hidden'),
-    # default="active")
     created_at = sqlobject.DateCol(default=datetime.now())
     #completed_at = DateTimeCol(default=None)
     #tickler = DateCol(default=None)
@@ -181,9 +179,8 @@ class _Project(sqlobject.SQLObject):
     #project = IntCol(default=None)
     #created_at = DateTimeCol(default=datetime.now())
     #hidden = BoolCol(default=False)
-    ##tickler = DateCol(default=None)
-    ##next_todo = IntCol(default=None)
-    ##previous_todo = IntCol(default=None)
+    #tickler = DateCol(default=None)
+    #previous_todo = IntCol(default=None)
 
 class TodoDB(object):
 
