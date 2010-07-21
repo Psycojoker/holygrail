@@ -79,10 +79,10 @@ class _Context(sqlobject.SQLObject):
 class _Item(sqlobject.SQLObject):
     description = sqlobject.StringCol()
     created_at = sqlobject.DateCol(default=date.today())
+    tickler = sqlobject.DateTimeCol(default=None)
     #context = ForeignKey('Context')
     #project = IntCol(default=None)
     #hidden = BoolCol(default=False)
-    #tickler = DateCol(default=None)
     #previous_todo = IntCol(default=None)
 
     def remove(self):
@@ -115,7 +115,6 @@ class _Todo(_Item):
     project = sqlobject.ForeignKey('_Project', default=None)
     completed_at = sqlobject.DateCol(default=None)
     due = sqlobject.DateTimeCol(default=None)
-    tickler = sqlobject.DateTimeCol(default=None)
     completed = sqlobject.BoolCol(default=False)
     previous_todo = sqlobject.ForeignKey('_Todo', default=None)
     # will wait popular demand to be implemented
