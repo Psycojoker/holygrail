@@ -58,9 +58,6 @@ class _Context(sqlobject.SQLObject):
         for i in contexts:
             i.position = contexts.index(i)
 
-    def rename(self, new_description):
-        self.description = new_description
-
     def remove(self):
         if self.default_context:
             raise CanRemoveTheDefaultContext
@@ -70,12 +67,16 @@ class _Context(sqlobject.SQLObject):
         else:
             self.destroySelf()
 
+    def rename(self, new_description):
+        self.description = new_description
+
     def set_default(self):
         self.select(self.q.default_context == True)[0].default_context = False
         self.default_context = True
 
     def toggle_hide(self):
         self.hide = not self.hide
+
 
 class _Item(sqlobject.SQLObject):
     description = sqlobject.StringCol()
@@ -89,6 +90,12 @@ class _Item(sqlobject.SQLObject):
         return (not self.previous_todo or self.previous_todo.completed)\
             and not self.context.hide\
             and (not self.project or (not self.project.hide and not self.project.completed and (self.project.tickler < datetime.now())))
+
+    def change_context(self, context_id):
+        self.context = context_id
+
+    def change_project(self, new_project_id):
+        self.project = new_project_id
 
     def remove(self):
         """
@@ -111,14 +118,9 @@ class _Item(sqlobject.SQLObject):
         """
         self.tickler = tickler
 
-    def change_context(self, context_id):
-        self.context = context_id
-
-    def change_project(self, new_project_id):
-        self.project = new_project_id
-
     def wait_for(self, todo_id):
         self.previous_todo = todo_id
+
 
 class _Todo(_Item):
     """
@@ -136,6 +138,12 @@ class _Todo(_Item):
     completed = sqlobject.BoolCol(default=False)
     # will wait popular demand to be implemented
     #notes = StringCol(default=None)
+
+    def due_for(self, due):
+        """
+        Change the due date
+        """
+        self.due = due
 
     def remove(self):
         """
@@ -155,11 +163,6 @@ class _Todo(_Item):
         self.completed = not self.completed
         self.completed_at = datetime.now() if self.completed else None
 
-    def due_for(self, due):
-        """
-        Change the due date
-        """
-        self.due = due
 
 class _Project(sqlobject.SQLObject):
     description = sqlobject.StringCol()
@@ -171,19 +174,6 @@ class _Project(sqlobject.SQLObject):
     default_context = sqlobject.ForeignKey('_Context', default=None)
     hide = sqlobject.BoolCol(default=False)
 
-    def tickle(self, tickler):
-        """
-        Change the project tickler
-        """
-        self.tickler = tickler
-
-    def toggle(self):
-        self.completed = not self.completed
-        self.completed_at = date.today() if self.completed else None
-
-    def rename(self, new_description):
-        self.description = new_description
-
     def remove(self):
         for i in _Todo.select(_Todo.q.project == self):
             i.project = None
@@ -191,11 +181,25 @@ class _Project(sqlobject.SQLObject):
             i.project = None
         self.destroySelf()
 
+    def rename(self, new_description):
+        self.description = new_description
+
+    def tickle(self, tickler):
+        """
+        Change the project tickler
+        """
+        self.tickler = tickler
+
     def set_default_context(self, context_id):
         self.default_context = context_id
 
+    def toggle(self):
+        self.completed = not self.completed
+        self.completed_at = date.today() if self.completed else None
+
     def toggle_hide(self):
         self.hide = not self.hide
+
 
 class TodoDB(object):
 
