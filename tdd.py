@@ -91,6 +91,15 @@ class _Item(sqlobject.SQLObject):
         """
         self.destroySelf()
 
+    def rename(self, description):
+        """
+        Rename the todo with a new description
+
+        Arguments:
+            * new description
+        """
+        self.description = description
+
 class _Todo(_Item):
     """
     A Todo object.
