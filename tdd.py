@@ -356,5 +356,9 @@ class TodoDB(object):
     def add_item(self, description):
         return _Item(description=description)
 
+    def get_item_by_desc(self, description):
+        query = _Item.select(_Item.q.description == description)
+        return [i for i in query]
+
 if __name__ == "__main__":
     pass
