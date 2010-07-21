@@ -106,6 +106,9 @@ class _Item(sqlobject.SQLObject):
         """
         self.tickler = tickler
 
+    def change_context(self, context_id):
+        self.context = context_id
+
 class _Todo(_Item):
     """
     A Todo object.
@@ -154,9 +157,6 @@ class _Todo(_Item):
         Change the due date
         """
         self.due = due
-
-    def change_context(self, context_id):
-        self.context = context_id
 
     def change_project(self, new_project_id):
         self.project = new_project_id
