@@ -99,6 +99,11 @@ class _Todo(sqlobject.SQLObject):
     # will wait popular demand to be implemented
     #notes = StringCol(default=None)
 
+    def visible(self):
+        return (not self.previous_todo or self.previous_todo.completed)\
+            and not self.context.hide\
+            and (not self.project or not self.project.hide)
+
     def wait_for(self, todo_id):
         self.previous_todo = todo_id
 
@@ -304,7 +309,7 @@ class TodoDB(object):
         """
         return [i for i in _Todo.select(sqlobject.AND(_Todo.q.completed == False,
                sqlobject.OR(_Todo.q.tickler == None, _Todo.q.tickler < datetime.now()))).orderBy('id')\
-                if (not i.previous_todo or i.previous_todo.completed) and not i.context.hide and (not i.project or not i.project.hide)] if\
+                if i.visible()] if\
                 not all_todos else [i for i in _Todo.select()]
 
     def add_context(self, description, hide=False, default=False):

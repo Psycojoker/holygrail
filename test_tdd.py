@@ -704,7 +704,6 @@ class Test_TDD(unittest.TestCase):
     # def test_todo_with_project_completion(self):
     # def test_project_completion_date(self):
     # def test_project_tickler(self):
-    # def test_todo_with_rpoject_hide(self):
     # def test_add_item(self):
     # def tet_main_view(self):
 
