@@ -365,7 +365,7 @@ class TodoDB(object):
         return [i for i in _Project.select(_Project.q.description == description)]
 
     def list_projects(self, all_projects=False):
-        return [i for i in _Project.select(_Project.q.hide == False)]\
+        return [i for i in _Project.select(sqlobject.AND(_Project.q.hide == False, sqlobject.OR(_Project.q.tickler == None, _Project.q.tickler < datetime.now())))]\
                 if not all_projects else [i for i in _Project.select()]
 
     def add_item(self, description, context=None, tickler=None, project=None, wait_for=None):
