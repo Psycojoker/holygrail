@@ -650,6 +650,24 @@ class Test_TDD(unittest.TestCase):
         self.assertEqual(3, context5.position)
         self.assertEqual(5, context6.position)
 
+    def test_list_project_by_position(self):
+        tododb = self.reinitialise()
+        context1 = tododb.get_default_context()
+        context1.rename("context1")
+        context2 = tododb.add_context("context2")
+        context3 = tododb.add_context("context3")
+        context4 = tododb.add_context("context4")
+        context5 = tododb.add_context("context5")
+        context6 = tododb.add_context("context6")
+        context1.change_position(4)
+        contexts = tododb.list_contexts()
+        self.assertEqual(contexts[4], context1)
+        self.assertEqual(contexts[0], context2)
+        self.assertEqual(contexts[1], context3)
+        self.assertEqual(contexts[2], context4)
+        self.assertEqual(contexts[3], context5)
+        self.assertEqual(contexts[5], context6)
+
     # def test_project_completion(self):
     # def test_todo_with_project_completion(self):
     # def test_project_hide(self):
