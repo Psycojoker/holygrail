@@ -701,10 +701,6 @@ class Test_TDD(unittest.TestCase):
         self.assertTrue(project in tododb.list_projects(all_projects=True))
 
     def test_add_item(self):
-        """
-        You should be able to add a new todo.
-        This should inscrease the number of todos by one
-        """
         tododb = self.reinitialise()
         was = _Item.select().count()
         item = tododb.add_item("This is a new item")
