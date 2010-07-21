@@ -139,15 +139,6 @@ class _Todo(_Item):
             i.previous_todo = None
         super(_Todo, self).remove()
 
-    def rename(self, description):
-        """
-        Rename the todo with a new description
-
-        Arguments:
-            * new description
-        """
-        self.description = description
-
     def toggle(self):
         """
         Toggle to todo completion state
