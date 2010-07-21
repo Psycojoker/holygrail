@@ -84,8 +84,6 @@ class _Item(sqlobject.SQLObject):
     context = sqlobject.ForeignKey('_Context')
     project = sqlobject.ForeignKey('_Project', default=None)
     previous_todo = sqlobject.ForeignKey('_Todo', default=None)
-    #hidden = BoolCol(default=False)
-    #previous_todo = IntCol(default=None)
 
     def remove(self):
         """
