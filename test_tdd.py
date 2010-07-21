@@ -996,6 +996,41 @@ class Test_TDD(unittest.TestCase):
         # empty since the only context is empty
         self.assertEqual([], tododb.main_view())
 
+    def test_main_view_one_todo(self):
+        tododb = self.reinitialise()
+        todo = tododb.add_todo("kropotkine")
+        self.assertEqual([[tododb.get_default_context(), [], [todo]]], tododb.main_view())
+
+    def test_main_view_one_item(self):
+        tododb = self.reinitialise()
+        item = tododb.add_item("kropotkine")
+        self.assertEqual([[tododb.get_default_context(), [item], []]], tododb.main_view())
+
+    def test_main_view_one_item_one_todo(self):
+        tododb = self.reinitialise()
+        item = tododb.add_item("kropotkine")
+        todo = tododb.add_todo("kropotkikine")
+        self.assertEqual([[tododb.get_default_context(), [item], [todo]]], tododb.main_view())
+
+    def test_main_view_one_item_one_todo_one_empty_context(self):
+        tododb = self.reinitialise()
+        item = tododb.add_item("kropotkine")
+        todo = tododb.add_todo("kropotkikine")
+        tododb.add_context("empty context")
+        self.assertEqual([[tododb.get_default_context(), [item], [todo]]], tododb.main_view())
+
+    def test_main_view_one_item_one_todo_one_non_empty_context(self):
+        tododb = self.reinitialise()
+        item = tododb.add_item("kropotkine")
+        todo = tododb.add_todo("kropotkikine")
+        context = tododb.add_context("context")
+        other_todo = tododb.add_todo("James Joyce a l'air terrible", context=context)
+        self.assertEqual([[tododb.get_default_context(), [item], [todo]],
+                          [context, [], [other_todo]]], tododb.main_view())
+        other_item = tododb.add_item("yiha !", context=context)
+        self.assertEqual([[tododb.get_default_context(), [item], [todo]],
+                          [context, [other_item], [other_todo]]], tododb.main_view())
+
     # TODO: refactorer les exceptions, favoriser un message plutôt que plein d'exceptions différentes
     # TODO: faire un utils.py et rajouter plein de petits outils dedans comme un parseur de date etc ...
     # TODO: faire marcher sd <- migrer vers lucid

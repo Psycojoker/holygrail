@@ -410,8 +410,18 @@ class TodoDB(object):
         items = self.list_items()
         todos = self.list_todos()
         contexts = self.list_contexts()
+        main_view = []
         if not items and not todos:
-            return []
+            return main_view
+        for context in contexts:
+            context_items = [i for i in items if i.context == context]
+            context_todos = [i for i in todos if i.context == context]
+            if context_todos or context_items:
+                main_view.append([context, context_items, context_todos])
+
+        return main_view
+
+
 
 if __name__ == "__main__":
     pass
