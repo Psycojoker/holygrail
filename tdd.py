@@ -64,7 +64,8 @@ class _Context(sqlobject.SQLObject):
     def remove(self):
         if self.default_context:
             raise CanRemoveTheDefaultContext
-        elif _Todo.select(_Todo.q.context == self).count() != 0 or _Item.select(_Item.q.context == self).count() != 0:
+        elif _Todo.select(_Todo.q.context == self).count() != 0\
+            or _Item.select(_Item.q.context == self).count() != 0:
             raise ContextStillHasElems
         else:
             self.destroySelf()
