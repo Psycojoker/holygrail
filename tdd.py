@@ -128,7 +128,7 @@ class _Todo(_Item):
         # remove todo that wait for this todo to be completed
         for i in self.select(_Todo.q.previous_todo == self):
             i.previous_todo = None
-        self.destroySelf()
+        super(_Todo, self).remove()
 
     def rename(self, description):
         """
