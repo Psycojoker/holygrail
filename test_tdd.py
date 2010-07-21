@@ -757,6 +757,20 @@ class Test_TDD(unittest.TestCase):
         item.rename("second name")
         self.assertEqual(item.description, "second name")
 
+    def test_list_items(self):
+        tododb = self.reinitialise()
+        # empty
+        self.assertEqual(0, len(tododb.list_items()))
+        item = tododb.add_item("item")
+        # one todo
+        self.assertEqual(1, len(tododb.list_items()))
+        self.assertTrue(item in tododb.list_items())
+        # two todo
+        t2 = tododb.add_item("item 2")
+        self.assertEqual(2, len(tododb.list_items()))
+        self.assertTrue(item in tododb.list_items())
+        self.assertTrue(t2 in tododb.list_items())
+
     # def test_project_completion(self):
     # def test_todo_with_project_completion(self):
     # def test_project_completion_date(self):

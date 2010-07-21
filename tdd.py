@@ -387,5 +387,8 @@ class TodoDB(object):
         except sqlobject.SQLObjectNotFound:
             raise ItemDoesntExist(item_id)
 
+    def list_items(self):
+        return [i for i in _Item.select()]
+
 if __name__ == "__main__":
     pass
