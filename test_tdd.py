@@ -861,6 +861,14 @@ class Test_TDD(unittest.TestCase):
         item.wait_for(todo)
         self.assertTrue(item not in tododb.list_items())
 
+    def test_list_item_with_previous_todo_with_completed(self):
+        tododb = self.reinitialise()
+        todo = tododb.add_todo("first todo")
+        item = tododb.add_item("second todo")
+        item.wait_for(todo)
+        todo.toggle()
+        self.assertTrue(item in tododb.list_items())
+
     # def test_project_completion(self):
     # def test_todo_with_project_completion(self):
     # def test_project_completion_date(self):
