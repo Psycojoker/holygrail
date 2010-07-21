@@ -875,6 +875,21 @@ class Test_TDD(unittest.TestCase):
         item = tododb.add_item("second item", wait_for=todo.id)
         self.assertEqual(todo, item.previous_todo)
 
+    def test_new_item_with_project_with_default_context(self):
+        tododb = self.reinitialise()
+        context = tododb.add_context("pc")
+        project = tododb.add_project("youmi, I love chocolate", default_context=context.id)
+        item = tododb.add_item("pataplouf", project=project.id)
+        self.assertEqual(item.context, context)
+
+    #def test_new_todo_with_project_with_default_context_and_context(self):
+        #tododb = self.reinitialise()
+        #context = tododb.add_context("pc")
+        #other_context = tododb.add_context("mouhaha")
+        #project = tododb.add_project("youmi, I love chocolate", default_context=context.id)
+        #todo = tododb.add_todo("pataplouf", context=other_context, project=project.id)
+        #self.assertEqual(todo.context, other_context)
+
     # def test_project_completion(self):
     # def test_todo_with_project_completion(self):
     # def test_project_completion_date(self):
