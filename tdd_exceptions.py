@@ -4,12 +4,12 @@ Custom exceptions for toudoudone
 
 import exceptions
 
-class ContextStillHasTodos(exceptions.Exception):
+class ContextStillHasElems(exceptions.Exception):
     def __init__(self):
-        super(ContextStillHasTodos, self).__init__()
+        super(ContextStillHasElems, self).__init__()
 
     def __str__(self):
-        return 'This context still containt todos, can\'t remove it'
+        return 'This context still containt elems, can\'t remove it'
 
 class TodoDoesntExist(exceptions.Exception):
     def __init__(self, todo):

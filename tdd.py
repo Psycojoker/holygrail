@@ -23,7 +23,7 @@ Toudoudone  Copyright (C) 2010  Laurent Peuch  <cortex@worlddomination.be>
 import sqlobject
 
 from tdd_exceptions import TableAlreadyExist, ContextDoesntExist,\
-    TodoDoesntExist, ContextStillHasTodos, CanRemoveTheDefaultContext,\
+    TodoDoesntExist, ContextStillHasElems, CanRemoveTheDefaultContext,\
     ProjectDoesntExist, NoDatabaseConfiguration, ItemDoesntExist
 
 from datetime import date, datetime
@@ -64,8 +64,8 @@ class _Context(sqlobject.SQLObject):
     def remove(self):
         if self.default_context:
             raise CanRemoveTheDefaultContext
-        elif _Todo.select(_Todo.q.context == self).count() != 0:
-            raise ContextStillHasTodos
+        elif _Todo.select(_Todo.q.context == self).count() != 0 or _Item.select(_Item.q.context == self).count() != 0:
+            raise ContextStillHasElems
         else:
             self.destroySelf()
 

@@ -24,7 +24,7 @@ import unittest
 
 from datetime import date, datetime, timedelta
 
-from tdd import TodoDB, TodoDoesntExist, TableAlreadyExist, CanRemoveTheDefaultContext, ContextDoesntExist, ContextStillHasTodos, _Context, ProjectDoesntExist, _Todo, _Project, _Item, ItemDoesntExist
+from tdd import TodoDB, TodoDoesntExist, TableAlreadyExist, CanRemoveTheDefaultContext, ContextDoesntExist, ContextStillHasElems, _Context, ProjectDoesntExist, _Todo, _Project, _Item, ItemDoesntExist
 
 class Test_TDD(unittest.TestCase):
 
@@ -334,7 +334,7 @@ class Test_TDD(unittest.TestCase):
         tododb = self.reinitialise()
         context = tododb.add_context("TDD rosk")
         todo = tododb.add_todo("HAHAHA I'M USING TEH INTERNETZ", context=context)
-        self.assertRaises(ContextStillHasTodos, context.remove)
+        self.assertRaises(ContextStillHasElems, context.remove)
 
     def test_list_contexts(self):
         tododb = self.reinitialise()
@@ -827,6 +827,12 @@ class Test_TDD(unittest.TestCase):
         item = tododb.add_item("aller dormir")
         item.change_context(context.id)
         self.assertEqual(context, item.context)
+
+    def test_cant_delete_context_with_items(self):
+        tododb = self.reinitialise()
+        context = tododb.add_context("TDD rosk")
+        item = tododb.add_item("HAHAHA I'M USING TEH INTERNETZ", context=context)
+        self.assertRaises(ContextStillHasElems, context.remove)
 
     # def test_project_completion(self):
     # def test_todo_with_project_completion(self):
