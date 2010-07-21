@@ -971,9 +971,17 @@ class Test_TDD(unittest.TestCase):
         tododb = self.reinitialise()
         # for tomorrow
         tickler = datetime.now() + timedelta(1)
-        project = tododb.add_project("new project", tickler=tickler)
+        project = tododb.add_project("haha, j'ai visité LA brasserie de Guiness", tickler=tickler)
         self.assertFalse(project in tododb.list_projects())
         self.assertTrue(project in tododb.list_projects(all_projects=True))
+
+    def test_todo_with_project_tickler(self):
+        tododb = self.reinitialise()
+        tickler = datetime.now() + timedelta(1)
+        project = tododb.add_project("j'avais pas réalisé que c'était eux qui avaient inventé le guiness world record book", tickler=tickler)
+        todo = tododb.add_todo("chier, il pleut", project=project.id)
+        self.assertFalse(todo in tododb.list_todos())
+        self.assertTrue(todo in tododb.list_todos(all_todos=True))
 
     # def test_item_with_project_tickler(self):
     # def test_project_tickler_at_creation(self):
