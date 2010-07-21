@@ -85,6 +85,12 @@ class _Item(sqlobject.SQLObject):
     #tickler = DateCol(default=None)
     #previous_todo = IntCol(default=None)
 
+    def remove(self):
+        """
+        Remove the item from the database.
+        """
+        self.destroySelf()
+
 class _Todo(sqlobject.SQLObject):
     """
     A Todo object.

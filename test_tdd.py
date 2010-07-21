@@ -733,6 +733,14 @@ class Test_TDD(unittest.TestCase):
         tododb = self.reinitialise()
         self.assertRaises(ItemDoesntExist, tododb.get_item_by_desc, "toto")
 
+    def test_remove_item(self):
+        tododb = self.reinitialise()
+        was = _Item.select().count()
+        item = tododb.add_item("This is a new item")
+        self.assertEqual(was + 1, _Item.select().count())
+        item.remove()
+        self.assertEqual(was, _Item.select().count())
+
     # def test_project_completion(self):
     # def test_todo_with_project_completion(self):
     # def test_project_completion_date(self):
