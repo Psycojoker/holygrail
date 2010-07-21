@@ -771,6 +771,11 @@ class Test_TDD(unittest.TestCase):
         self.assertTrue(item in tododb.list_items())
         self.assertTrue(t2 in tododb.list_items())
 
+    def test_item_should_be_created_today(self):
+        tododb = self.reinitialise()
+        item = tododb.add_item("this is a item")
+        self.assertEqual(item.created_at, date.today())
+
     # def test_project_completion(self):
     # def test_todo_with_project_completion(self):
     # def test_project_completion_date(self):

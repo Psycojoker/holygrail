@@ -78,9 +78,9 @@ class _Context(sqlobject.SQLObject):
 
 class _Item(sqlobject.SQLObject):
     description = sqlobject.StringCol()
+    created_at = sqlobject.DateCol(default=date.today())
     #context = ForeignKey('Context')
     #project = IntCol(default=None)
-    #created_at = DateTimeCol(default=datetime.now())
     #hidden = BoolCol(default=False)
     #tickler = DateCol(default=None)
     #previous_todo = IntCol(default=None)
