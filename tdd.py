@@ -421,6 +421,10 @@ class TodoDB(object):
 
         return main_view
 
+    def last_completed_todos(self):
+        to_return = [i for i in _Todo.select(_Todo.q.completed == True).orderBy("completed_at")]
+        to_return.reverse()
+        return to_return
 
 
 if __name__ == "__main__":

@@ -1043,6 +1043,31 @@ class Test_TDD(unittest.TestCase):
         self.assertEqual([[tododb.get_default_context(), [item], [todo]],
                           [context, [other_item], [other_todo]]], tododb.main_view())
 
+    def test_last_completed_todos_empty(self):
+        tododb = self.reinitialise()
+        last_completed_todos = tododb.last_completed_todos()
+        self.assertEqual([], last_completed_todos)
+
+    def test_last_completed_todos_one_todo(self):
+        tododb = self.reinitialise()
+        todo = tododb.add_todo("pouet")
+        todo.toggle()
+        last_completed_todos = tododb.last_completed_todos()
+        self.assertEqual([todo], last_completed_todos)
+
+    def test_last_completed_todos_multiple_todos(self):
+        tododb = self.reinitialise()
+        todo1 = tododb.add_todo("pouet")
+        todo2 = tododb.add_todo("pouet pouet")
+        todo3 = tododb.add_todo("taratata pouet pouet")
+        todo1.toggle()
+        time.sleep(1)
+        todo3.toggle()
+        time.sleep(1)
+        todo2.toggle()
+        last_completed_todos = tododb.last_completed_todos()
+        self.assertEqual([todo2, todo3, todo1], last_completed_todos)
+
     # TODO: refactorer les exceptions, favoriser un message plutôt que plein d'exceptions différentes
     # TODO: faire un utils.py et rajouter plein de petits outils dedans comme un parseur de date etc ...
     # TODO: faire marcher sd <- migrer vers lucid
