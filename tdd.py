@@ -347,7 +347,7 @@ class TodoDB(object):
         return [i for i in _Project.select(_Project.q.description == description)]
 
     def list_projects(self):
-        return [i for i in _Project.select()]
+        return [i for i in _Project.select(_Project.q.hide == False)]
 
 if __name__ == "__main__":
     pass

@@ -683,6 +683,13 @@ class Test_TDD(unittest.TestCase):
         project.toggle_hide()
         todo = tododb.add_todo("toto", project=project.id)
         self.assertFalse(todo in tododb.list_todos())
+        self.assertTrue(todo in tododb.list_todos(all_todos=True))
+
+    def test_list_project_and_project_hide(self):
+        tododb = self.reinitialise()
+        project = tododb.add_project("huhu")
+        project.toggle_hide()
+        self.assertFalse(project in tododb.list_projects())
 
     # def test_project_completion(self):
     # def test_todo_with_project_completion(self):
