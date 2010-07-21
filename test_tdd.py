@@ -916,6 +916,13 @@ class Test_TDD(unittest.TestCase):
         self.assertFalse(item in tododb.list_items())
         self.assertTrue(item in tododb.list_items(all_items=True))
 
+    def test_hide_context_in_list_item(self):
+        tododb = self.reinitialise()
+        context = tododb.add_context("pc", hide=True)
+        item = tododb.add_item("atchoum", context=context)
+        self.assertFalse(item in tododb.list_items())
+        self.assertTrue(item in tododb.list_items(all_items=True))
+
     # def test_project_completion(self):
     # def test_todo_with_project_completion(self):
     # def test_project_completion_date(self):

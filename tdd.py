@@ -86,7 +86,8 @@ class _Item(sqlobject.SQLObject):
     previous_todo = sqlobject.ForeignKey('_Todo', default=None)
 
     def visible(self):
-        return (not self.previous_todo or self.previous_todo.completed) and (not self.project or not self.project.hide)
+        return (not self.previous_todo or self.previous_todo.completed) and (not self.project or not self.project.hide)\
+            and not self.context.hide
 
     def remove(self):
         """
