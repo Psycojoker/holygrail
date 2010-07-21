@@ -165,7 +165,7 @@ class _Project(sqlobject.SQLObject):
     description = sqlobject.StringCol()
     created_at = sqlobject.DateCol(default=datetime.now())
     completed = sqlobject.BoolCol(default=False)
-    #completed_at = DateTimeCol(default=None)
+    completed_at = sqlobject.DateTimeCol(default=None)
     #tickler = DateCol(default=None)
     #due = DateCol(default=None)
     default_context = sqlobject.ForeignKey('_Context', default=None)
@@ -173,6 +173,7 @@ class _Project(sqlobject.SQLObject):
 
     def toggle(self):
         self.completed = not self.completed
+        self.completed_at = date.today() if self.completed else None
 
     def rename(self, new_description):
         self.description = new_description

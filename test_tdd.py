@@ -932,7 +932,14 @@ class Test_TDD(unittest.TestCase):
         project.toggle()
         self.assertFalse(project.completed)
 
-    # def test_project_completion_date(self):
+    def test_project_completion_date(self):
+        tododb = self.reinitialise()
+        project = tododb.add_project("yamakasi")
+        project.toggle()
+        self.assertEqual(date.today(), project.completed_at)
+        project.toggle()
+        self.assertEqual(None, project.completed_at)
+
     # def test_project_tickler(self):
     # def tet_main_view(self):
 
