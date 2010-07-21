@@ -357,6 +357,13 @@ class TodoDB(object):
         return _Item(description=description)
 
     def get_item_by_desc(self, description):
+        """
+        Receive a the description of an item, return it
+        Raise an exception if the item doesn't exist
+
+        Arguments:
+            * item description
+        """
         query = _Item.select(_Item.q.description == description)
         if query.count() == 0:
             raise ItemDoesntExist(description)
