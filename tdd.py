@@ -355,9 +355,9 @@ class TodoDB(object):
         return [i for i in _Project.select(_Project.q.hide == False)]\
                 if not all_projects else [i for i in _Project.select()]
 
-    def add_item(self, description, context=None, tickler=None, project=None):
+    def add_item(self, description, context=None, tickler=None, project=None, wait_for=None):
         context = self.get_default_context() if not context else context
-        return _Item(description=description, tickler=tickler, context=context, project=project)
+        return _Item(description=description, tickler=tickler, context=context, project=project, previous_todo=wait_for)
 
     def get_item_by_desc(self, description):
         """
