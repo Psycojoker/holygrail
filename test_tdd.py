@@ -677,10 +677,11 @@ class Test_TDD(unittest.TestCase):
     # def test_todo_with_rpoject_hide(self):
 
     # TODO: refactorer les exceptions, favoriser un message plutôt que plein d'exceptions différentes
-    # TODO faire un utils.py et rajouter plein de petits outils dedans comme un parseur de date etc ...
+    # TODO: faire un utils.py et rajouter plein de petits outils dedans comme un parseur de date etc ...
     # TODO: faire marcher sd <- migrer vers lucid
-    # TODO peut être donner une méthode Todo pour dire si elle s'affiche
+    # TODO: peut être donner une méthode Todo pour dire si elle s'affiche
     # TODO: tien et si je faisais un nouveau attribut "drop" en plus de completed
+    # TODO: réorganiser les méthodes pour les grouper de manière similaire (par add, par list etc ...)
 
 if __name__ == "__main__":
    unittest.main()
