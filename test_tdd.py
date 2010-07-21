@@ -794,6 +794,13 @@ class Test_TDD(unittest.TestCase):
         item.tickle(tickler)
         self.assertEqual(tickler, item.tickler)
 
+    def test_list_dont_show_tickle_item(self):
+        tododb = self.reinitialise()
+        # for tomorrow
+        tickler = datetime.now() + timedelta(1)
+        item = tododb.add_item("new item", tickler)
+        self.assertTrue(item not in tododb.list_items())
+
     # def test_project_completion(self):
     # def test_todo_with_project_completion(self):
     # def test_project_completion_date(self):
