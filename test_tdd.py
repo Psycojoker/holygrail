@@ -219,9 +219,9 @@ class Test_TDD(unittest.TestCase):
     def test_list_all_show_tickle_task(self):
         tododb = self.reinitialise()
         # for tomorrow
-        tickler = datetime.now() - timedelta(1)
+        tickler = datetime.now() + timedelta(1)
         todo = tododb.add_todo("new todo", tickler)
-        self.assertTrue(todo in tododb.list_todos())
+        self.assertTrue(todo in tododb.list_todos(all_todos=True))
 
     def test_due_date_at_creation(self):
         tododb = self.reinitialise()
