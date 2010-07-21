@@ -940,7 +940,20 @@ class Test_TDD(unittest.TestCase):
         project.toggle()
         self.assertEqual(None, project.completed_at)
 
-    # def test_todo_with_project_completion(self):
+    def test_todo_with_project_completion(self):
+        tododb = self.reinitialise()
+        project = tododb.add_project("the wild rover")
+        todo = tododb.add_todo("s", project=project.id)
+        project.toggle()
+        self.assertFalse(todo in tododb.list_todos())
+
+    def test_item_with_project_completion(self):
+        tododb = self.reinitialise()
+        project = tododb.add_project("the wild rover")
+        item = tododb.add_item("s", project=project.id)
+        project.toggle()
+        self.assertFalse(item in tododb.list_items())
+
     # def test_item_with_project_completion(self):
     # def test_project_tickler(self):
     # def test_todo_with_project_tickler(self):

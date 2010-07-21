@@ -88,7 +88,7 @@ class _Item(sqlobject.SQLObject):
     def visible(self):
         return (not self.previous_todo or self.previous_todo.completed)\
             and not self.context.hide\
-            and (not self.project or not self.project.hide)
+            and (not self.project or (not self.project.hide and not self.project.completed))
 
     def remove(self):
         """
