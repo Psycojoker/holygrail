@@ -24,7 +24,7 @@ import unittest
 
 from datetime import date, datetime, timedelta
 
-from tdd import TodoDB, TodoDoesntExist, TableAlreadyExist, CanRemoveTheDefaultContext, ContextDoesntExist, ContextStillHasTodos, _Context, ProjectDoesntExist, _Todo, _Project, _Item
+from tdd import TodoDB, TodoDoesntExist, TableAlreadyExist, CanRemoveTheDefaultContext, ContextDoesntExist, ContextStillHasTodos, _Context, ProjectDoesntExist, _Todo, _Project, _Item, ItemDoesntExist
 
 class Test_TDD(unittest.TestCase):
 
@@ -728,6 +728,10 @@ class Test_TDD(unittest.TestCase):
 
         self.assertTrue(t1 in tododb.get_item_by_desc("This is a new item"))
         self.assertTrue(t2 in tododb.get_item_by_desc("This is a new item"))
+
+    def test_get_item_by_desc_should_raise_an_exection_if_todo_doesnt_exist(self):
+        tododb = self.reinitialise()
+        self.assertRaises(ItemDoesntExist, tododb.get_item_by_desc, "toto")
 
     # def test_project_completion(self):
     # def test_todo_with_project_completion(self):

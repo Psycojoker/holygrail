@@ -24,7 +24,7 @@ import sqlobject
 
 from tdd_exceptions import TableAlreadyExist, ContextDoesntExist,\
     TodoDoesntExist, ContextStillHasTodos, CanRemoveTheDefaultContext,\
-    ProjectDoesntExist, NoDatabaseConfiguration
+    ProjectDoesntExist, NoDatabaseConfiguration, ItemDoesntExist
 
 from datetime import date, datetime
 
@@ -358,6 +358,8 @@ class TodoDB(object):
 
     def get_item_by_desc(self, description):
         query = _Item.select(_Item.q.description == description)
+        if query.count() == 0:
+            raise ItemDoesntExist(description)
         return [i for i in query]
 
 if __name__ == "__main__":

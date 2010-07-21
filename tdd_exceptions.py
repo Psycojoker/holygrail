@@ -19,6 +19,14 @@ class TodoDoesntExist(exceptions.Exception):
     def __str__(self):
         return 'this todo doesn\'t exist: %s' % self.todo
 
+class ItemDoesntExist(exceptions.Exception):
+    def __init__(self, item):
+        self.item = item
+        super(ItemDoesntExist, self).__init__()
+
+    def __str__(self):
+        return 'this item doesn\'t exist: %s' % self.item
+
 class ContextDoesntExist(exceptions.Exception):
     def __init__(self, context):
         self.context = context
