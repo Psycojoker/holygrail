@@ -131,7 +131,7 @@ class _Todo(_Item):
     Arguments:
         * description: a text field that discribe the todo
     """
-    completed_at = sqlobject.DateCol(default=None)
+    completed_at = sqlobject.DateTimeCol(default=None)
     due = sqlobject.DateTimeCol(default=None)
     completed = sqlobject.BoolCol(default=False)
     # will wait popular demand to be implemented
@@ -153,7 +153,7 @@ class _Todo(_Item):
         Toggle to todo completion state
         """
         self.completed = not self.completed
-        self.completed_at = date.today() if self.completed else None
+        self.completed_at = datetime.now() if self.completed else None
 
     def due_for(self, due):
         """

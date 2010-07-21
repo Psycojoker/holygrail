@@ -20,7 +20,7 @@ along with Toudoudone.  If not, see <http://www.gnu.org/licenses/>.
 Toudoudone  Copyright (C) 2010  Laurent Peuch <cortex@worlddomination.be>
 """
 
-import unittest
+import unittest, time
 
 from datetime import date, datetime, timedelta
 
@@ -179,15 +179,27 @@ class Test_TDD(unittest.TestCase):
         self.assertEqual(todo.created_at, date.today())
 
     def test_todo_completion_date(self):
+        def comp_datetime(a, b):
+            if a.year != b.year:
+                return False
+            if a.month != b.month:
+                return False
+            if a.day != b.day:
+                return False
+            if a.hour != b.hour:
+                return False
+            if a.second - b.second > 2:
+                return False
+            return True
         tododb = self.reinitialise()
         todo = tododb.add_todo("this is a todo")
         self.assertEqual(todo.completed_at, None)
         todo.toggle()
-        self.assertEqual(todo.completed_at, date.today())
+        self.assertTrue(comp_datetime(todo.completed_at, datetime.now()))
         todo.toggle()
         self.assertEqual(todo.completed_at, None)
         todo.toggle()
-        self.assertEqual(todo.completed_at, date.today())
+        self.assertTrue(comp_datetime(todo.completed_at, datetime.now()))
         todo.toggle()
         self.assertEqual(todo.completed_at, None)
 
