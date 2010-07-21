@@ -991,8 +991,10 @@ class Test_TDD(unittest.TestCase):
         self.assertFalse(item in tododb.list_items())
         self.assertTrue(item in tododb.list_items(all_items=True))
 
-    # def test_project_tickler_at_creation(self):
-    # def test_main_view(self):
+    def test_main_view(self):
+        tododb = self.reinitialise()
+        # empty since the only context is empty
+        self.assertEqual([], tododb.main_view())
 
     # TODO: refactorer les exceptions, favoriser un message plutôt que plein d'exceptions différentes
     # TODO: faire un utils.py et rajouter plein de petits outils dedans comme un parseur de date etc ...

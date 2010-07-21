@@ -406,5 +406,12 @@ class TodoDB(object):
         return [i for i in _Item.select(sqlobject.OR(_Item.q.tickler == None, _Item.q.tickler < datetime.now())) if i.visible()]\
                 if not all_items else [i for i in _Item.select()]
 
+    def main_view(self):
+        items = self.list_items()
+        todos = self.list_todos()
+        contexts = self.list_contexts()
+        if not items and not todos:
+            return []
+
 if __name__ == "__main__":
     pass
