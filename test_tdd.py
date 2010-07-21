@@ -834,6 +834,12 @@ class Test_TDD(unittest.TestCase):
         item = tododb.add_item("HAHAHA I'M USING TEH INTERNETZ", context=context)
         self.assertRaises(ContextStillHasElems, context.remove)
 
+    def test_add_item_with_a_project(self):
+        tododb = self.reinitialise()
+        project = tododb.add_project("gare a Gallo")
+        item = tododb.add_item("first item", project=project.id)
+        self.assertEqual(project, item.project)
+
     def test_change_item_project(self):
         tododb = self.reinitialise()
         project = tododb.add_project("manger une pomme")
