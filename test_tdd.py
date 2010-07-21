@@ -908,6 +908,14 @@ class Test_TDD(unittest.TestCase):
         self.assertEqual(None, item.project)
         self.assertEqual(None, item2.project)
 
+    def test_list_item_with_project_hide(self):
+        tododb = self.reinitialise()
+        project = tododb.add_project("qsd")
+        project.toggle_hide()
+        item = tododb.add_item("toto", project=project.id)
+        self.assertFalse(item in tododb.list_items())
+        self.assertTrue(item in tododb.list_items(all_items=True))
+
     # def test_project_completion(self):
     # def test_todo_with_project_completion(self):
     # def test_project_completion_date(self):
