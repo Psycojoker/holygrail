@@ -83,6 +83,7 @@ class _Item(sqlobject.SQLObject):
     tickler = sqlobject.DateTimeCol(default=None)
     context = sqlobject.ForeignKey('_Context')
     project = sqlobject.ForeignKey('_Project', default=None)
+    previous_todo = sqlobject.ForeignKey('_Todo', default=None)
     #hidden = BoolCol(default=False)
     #previous_todo = IntCol(default=None)
 
@@ -113,6 +114,9 @@ class _Item(sqlobject.SQLObject):
     def change_project(self, new_project_id):
         self.project = new_project_id
 
+    def wait_for(self, todo_id):
+        self.previous_todo = todo_id
+
 class _Todo(_Item):
     """
     A Todo object.
@@ -127,7 +131,6 @@ class _Todo(_Item):
     completed_at = sqlobject.DateCol(default=None)
     due = sqlobject.DateTimeCol(default=None)
     completed = sqlobject.BoolCol(default=False)
-    previous_todo = sqlobject.ForeignKey('_Todo', default=None)
     # will wait popular demand to be implemented
     #notes = StringCol(default=None)
 
@@ -135,9 +138,6 @@ class _Todo(_Item):
         return (not self.previous_todo or self.previous_todo.completed)\
             and not self.context.hide\
             and (not self.project or not self.project.hide)
-
-    def wait_for(self, todo_id):
-        self.previous_todo = todo_id
 
     def remove(self):
         """

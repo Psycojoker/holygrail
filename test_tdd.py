@@ -847,6 +847,13 @@ class Test_TDD(unittest.TestCase):
         item.change_project(project.id)
         self.assertEqual(item.project, project)
 
+    def test_next_todo_for_item(self):
+        tododb = self.reinitialise()
+        todo = tododb.add_todo("todo")
+        item = tododb.add_item("item")
+        item.wait_for(todo)
+        self.assertEqual(todo, item.previous_todo)
+
     # def test_project_completion(self):
     # def test_todo_with_project_completion(self):
     # def test_project_completion_date(self):
