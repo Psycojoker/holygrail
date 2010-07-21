@@ -386,7 +386,7 @@ class TodoDB(object):
             raise ItemDoesntExist(item_id)
 
     def list_items(self, all_items=False):
-        return [i for i in _Item.select(sqlobject.OR(_Item.q.tickler == None, _Item.q.tickler < datetime.now()))]\
+        return [i for i in _Item.select(sqlobject.AND(sqlobject.OR(_Item.q.tickler == None, _Item.q.tickler < datetime.now()), _Item.q.previous_todo == None))]\
                 if not all_items else [i for i in _Item.select()]
 
 if __name__ == "__main__":
