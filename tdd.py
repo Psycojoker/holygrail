@@ -76,6 +76,15 @@ class _Context(sqlobject.SQLObject):
     def toggle_hide(self):
         self.hide = not self.hide
 
+class _Item(sqlobject.SQLObject):
+    description = sqlobject.StringCol()
+    #context = ForeignKey('Context')
+    #project = IntCol(default=None)
+    #created_at = DateTimeCol(default=datetime.now())
+    #hidden = BoolCol(default=False)
+    #tickler = DateCol(default=None)
+    #previous_todo = IntCol(default=None)
+
 class _Todo(sqlobject.SQLObject):
     """
     A Todo object.
@@ -173,15 +182,6 @@ class _Project(sqlobject.SQLObject):
     def toggle_hide(self):
         self.hide = not self.hide
 
-#class Item(SQLObject):
-    #description = StringCol()
-    #context = ForeignKey('Context')
-    #project = IntCol(default=None)
-    #created_at = DateTimeCol(default=datetime.now())
-    #hidden = BoolCol(default=False)
-    #tickler = DateCol(default=None)
-    #previous_todo = IntCol(default=None)
-
 class TodoDB(object):
 
     def __init__(self, database_uri=None):
@@ -199,8 +199,8 @@ class TodoDB(object):
 
     def _table_exist(self):
         # check that everything if normal (all table created or not created)
-        assert (not _Todo.tableExists() and not _Project.tableExists() and not _Context.tableExists()) or (_Todo.tableExists() and _Project.tableExists() and _Context.tableExists())
-        if not _Todo.tableExists() and not _Project.tableExists() and not _Context.tableExists():
+        assert (not _Item.tableExists() and not _Todo.tableExists() and not _Project.tableExists() and not _Context.tableExists()) or (_Todo.tableExists() and _Project.tableExists() and _Context.tableExists() and _Item.tableExists())
+        if not _Todo.tableExists() and not _Project.tableExists() and not _Context.tableExists() and not _Item.tableExists():
             # TODO uncomment for release
             #print "DB doesn't exist, I'll create it"
             self.create_db()
@@ -223,6 +223,7 @@ class TodoDB(object):
             _Project.createTable(ifNotExists=True)
             #Item.createTable(ifNotExists=True)
             _Todo.createTable()
+            _Item.createTable()
         except Exception, e:
             # ultimely dirty, I really don't know why I push this
             # I haven't found another way to do this :(
@@ -242,7 +243,7 @@ class TodoDB(object):
         """
         _Context.dropTable(ifExists=True)
         _Project.dropTable(ifExists=True)
-        #Item.dropTable(ifExists=True)
+        _Item.dropTable(ifExists=True)
         _Todo.dropTable(ifExists=True)
 
     def add_todo(self, new_description, tickler=None, due=None, project=None, context=None, wait_for=None, unique=False):
@@ -351,6 +352,9 @@ class TodoDB(object):
     def list_projects(self, all_projects=False):
         return [i for i in _Project.select(_Project.q.hide == False)]\
                 if not all_projects else [i for i in _Project.select()]
+
+    def add_item(self, description):
+        return _Item(description=description)
 
 if __name__ == "__main__":
     pass

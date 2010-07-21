@@ -24,7 +24,7 @@ import unittest
 
 from datetime import date, datetime, timedelta
 
-from tdd import TodoDB, TodoDoesntExist, TableAlreadyExist, CanRemoveTheDefaultContext, ContextDoesntExist, ContextStillHasTodos, _Context, ProjectDoesntExist, _Todo, _Project
+from tdd import TodoDB, TodoDoesntExist, TableAlreadyExist, CanRemoveTheDefaultContext, ContextDoesntExist, ContextStillHasTodos, _Context, ProjectDoesntExist, _Todo, _Project, _Item
 
 class Test_TDD(unittest.TestCase):
 
@@ -700,11 +700,25 @@ class Test_TDD(unittest.TestCase):
         self.assertFalse(project in tododb.list_projects())
         self.assertTrue(project in tododb.list_projects(all_projects=True))
 
+    def test_add_item(self):
+        """
+        You should be able to add a new todo.
+        This should inscrease the number of todos by one
+        """
+        tododb = self.reinitialise()
+        was = _Item.select().count()
+        item = tododb.add_item("This is a new item")
+        self.assertEqual(item.description, "This is a new item")
+        self.assertEqual(was + 1, _Item.select().count())
+
+        # check if we can add two time a todo with the same description
+        item2 = tododb.add_item("This is a new item")
+        self.assertEqual(was + 2, _Item.select().count())
+
     # def test_project_completion(self):
     # def test_todo_with_project_completion(self):
     # def test_project_completion_date(self):
     # def test_project_tickler(self):
-    # def test_add_item(self):
     # def tet_main_view(self):
 
     # TODO: refactorer les exceptions, favoriser un message plutôt que plein d'exceptions différentes
