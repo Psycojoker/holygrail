@@ -677,12 +677,20 @@ class Test_TDD(unittest.TestCase):
         project.toggle_hide()
         self.assertFalse(project.hide)
 
+    def test_list_todo_with_project_hide(self):
+        tododb = self.reinitialise()
+        project = tododb.add_project("qsd")
+        project.toggle_hide()
+        todo = tododb.add_todo("toto", project=project.id)
+        self.assertFalse(todo in tododb.list_todos())
+
     # def test_project_completion(self):
     # def test_todo_with_project_completion(self):
-    # def test_todo_with_project_hide(self):
     # def test_project_completion_date(self):
     # def test_project_tickler(self):
     # def test_todo_with_rpoject_hide(self):
+    # def test_add_item(self):
+    # def tet_main_view(self):
 
     # TODO: refactorer les exceptions, favoriser un message plutôt que plein d'exceptions différentes
     # TODO: faire un utils.py et rajouter plein de petits outils dedans comme un parseur de date etc ...
