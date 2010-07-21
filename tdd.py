@@ -80,7 +80,7 @@ class _Item(sqlobject.SQLObject):
     description = sqlobject.StringCol()
     created_at = sqlobject.DateCol(default=date.today())
     tickler = sqlobject.DateTimeCol(default=None)
-    #context = ForeignKey('Context')
+    context = sqlobject.ForeignKey('_Context')
     #project = IntCol(default=None)
     #hidden = BoolCol(default=False)
     #previous_todo = IntCol(default=None)
@@ -117,7 +117,6 @@ class _Todo(_Item):
     Arguments:
         * description: a text field that discribe the todo
     """
-    context = sqlobject.ForeignKey('_Context')
     project = sqlobject.ForeignKey('_Project', default=None)
     completed_at = sqlobject.DateCol(default=None)
     due = sqlobject.DateTimeCol(default=None)
@@ -357,7 +356,7 @@ class TodoDB(object):
                 if not all_projects else [i for i in _Project.select()]
 
     def add_item(self, description, tickler=None):
-        return _Item(description=description, tickler=tickler)
+        return _Item(description=description, tickler=tickler, context=self.get_default_context())
 
     def get_item_by_desc(self, description):
         """
