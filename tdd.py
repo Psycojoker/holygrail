@@ -85,6 +85,9 @@ class _Item(sqlobject.SQLObject):
     project = sqlobject.ForeignKey('_Project', default=None)
     previous_todo = sqlobject.ForeignKey('_Todo', default=None)
 
+    def visible(self):
+        return (not self.previous_todo or self.previous_todo.completed) and (not self.project or not self.project.hide)
+
     def remove(self):
         """
         Remove the item from the database.
@@ -392,7 +395,7 @@ class TodoDB(object):
             raise ItemDoesntExist(item_id)
 
     def list_items(self, all_items=False):
-        return [i for i in _Item.select(sqlobject.OR(_Item.q.tickler == None, _Item.q.tickler < datetime.now())) if (not i.previous_todo or i.previous_todo.completed) and (not i.project or not i.project.hide)]\
+        return [i for i in _Item.select(sqlobject.OR(_Item.q.tickler == None, _Item.q.tickler < datetime.now())) if i.visible()]\
                 if not all_items else [i for i in _Item.select()]
 
 if __name__ == "__main__":
