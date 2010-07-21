@@ -983,7 +983,14 @@ class Test_TDD(unittest.TestCase):
         self.assertFalse(todo in tododb.list_todos())
         self.assertTrue(todo in tododb.list_todos(all_todos=True))
 
-    # def test_item_with_project_tickler(self):
+    def test_item_with_project_tickler(self):
+        tododb = self.reinitialise()
+        tickler = datetime.now() + timedelta(1)
+        project = tododb.add_project("j'avais pas réalisé que c'était eux qui avaient inventé le guiness world record book", tickler=tickler)
+        item = tododb.add_item("chier, il pleut", project=project.id)
+        self.assertFalse(item in tododb.list_items())
+        self.assertTrue(item in tododb.list_items(all_items=True))
+
     # def test_project_tickler_at_creation(self):
     # def test_main_view(self):
 
