@@ -668,9 +668,17 @@ class Test_TDD(unittest.TestCase):
         self.assertEqual(contexts[3], context5)
         self.assertEqual(contexts[5], context6)
 
+    def test_project_hide(self):
+        tododb = self.reinitialise()
+        project = tododb.add_project("lalala")
+        self.assertFalse(project.hide)
+        project.toggle_hide()
+        self.assertTrue(project.hide)
+        project.toggle_hide()
+        self.assertFalse(project.hide)
+
     # def test_project_completion(self):
     # def test_todo_with_project_completion(self):
-    # def test_project_hide(self):
     # def test_todo_with_project_hide(self):
     # def test_project_completion_date(self):
     # def test_project_tickler(self):

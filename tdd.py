@@ -154,6 +154,7 @@ class _Project(sqlobject.SQLObject):
     #tickler = DateCol(default=None)
     #due = DateCol(default=None)
     default_context = sqlobject.ForeignKey('_Context', default=None)
+    hide = sqlobject.BoolCol(default=False)
 
     def rename(self, new_description):
         self.description = new_description
@@ -165,6 +166,9 @@ class _Project(sqlobject.SQLObject):
 
     def set_default_context(self, context_id):
         self.default_context = context_id
+
+    def toggle_hide(self):
+        self.hide = not self.hide
 
 #class Item(SQLObject):
     #description = StringCol()
