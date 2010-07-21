@@ -166,7 +166,7 @@ class _Project(sqlobject.SQLObject):
     created_at = sqlobject.DateCol(default=datetime.now())
     completed = sqlobject.BoolCol(default=False)
     completed_at = sqlobject.DateTimeCol(default=None)
-    #tickler = DateCol(default=None)
+    tickler = sqlobject.DateTimeCol(default=None)
     #due = DateCol(default=None)
     default_context = sqlobject.ForeignKey('_Context', default=None)
     hide = sqlobject.BoolCol(default=False)
@@ -352,8 +352,8 @@ class TodoDB(object):
     def list_contexts(self):
         return [i for i in _Context.select(_Context.q.hide == False).orderBy("position")]
 
-    def add_project(self, description, default_context=None):
-        return _Project(description=description, default_context=default_context)
+    def add_project(self, description, default_context=None, tickler=None):
+        return _Project(description=description, default_context=default_context, tickler=tickler)
 
     def get_project(self, project_id):
         try:
