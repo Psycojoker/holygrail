@@ -91,7 +91,7 @@ class _Item(sqlobject.SQLObject):
         """
         self.destroySelf()
 
-class _Todo(sqlobject.SQLObject):
+class _Todo(_Item):
     """
     A Todo object.
 
@@ -102,7 +102,6 @@ class _Todo(sqlobject.SQLObject):
     Arguments:
         * description: a text field that discribe the todo
     """
-    description = sqlobject.StringCol()
     context = sqlobject.ForeignKey('_Context')
     project = sqlobject.ForeignKey('_Project', default=None)
     created_at = sqlobject.DateCol(default=date.today())
