@@ -374,5 +374,8 @@ class TodoDB(object):
             raise ItemDoesntExist(description)
         return [i for i in query]
 
+    def get_item(self, item_id):
+        return _Item.get(item_id)
+
 if __name__ == "__main__":
     pass
