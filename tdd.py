@@ -356,8 +356,8 @@ class TodoDB(object):
         return [i for i in _Project.select(_Project.q.hide == False)]\
                 if not all_projects else [i for i in _Project.select()]
 
-    def add_item(self, description):
-        return _Item(description=description)
+    def add_item(self, description, tickler=None):
+        return _Item(description=description, tickler=tickler)
 
     def get_item_by_desc(self, description):
         """
