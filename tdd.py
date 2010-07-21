@@ -113,7 +113,6 @@ class _Todo(_Item):
     """
     context = sqlobject.ForeignKey('_Context')
     project = sqlobject.ForeignKey('_Project', default=None)
-    created_at = sqlobject.DateCol(default=date.today())
     completed_at = sqlobject.DateCol(default=None)
     due = sqlobject.DateTimeCol(default=None)
     tickler = sqlobject.DateTimeCol(default=None)
