@@ -47,6 +47,7 @@ class _Context(sqlobject.SQLObject):
 
         contexts = [i for i in self.select().orderBy("position")]
         if new_position > self.position:
+            # since insert() insert before
             contexts.insert(new_position + 1, self)
             contexts.remove(self)
         else:
