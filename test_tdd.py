@@ -815,6 +815,12 @@ class Test_TDD(unittest.TestCase):
         item = tododb.add_item("another item")
         self.assertEqual(item.context, tododb.get_default_context())
 
+    def test_add_item_with_special_context(self):
+        tododb = self.reinitialise()
+        context = tododb.add_context("je devrais aller dormir")
+        item = tododb.add_item("mouhaha", context=context.id)
+        self.assertEqual(context, item.context)
+
     # def test_project_completion(self):
     # def test_todo_with_project_completion(self):
     # def test_project_completion_date(self):
