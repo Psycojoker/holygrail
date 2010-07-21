@@ -534,11 +534,122 @@ class Test_TDD(unittest.TestCase):
     def test_context_position(self):
         tododb = self.reinitialise()
         context = tododb.get_default_context()
-        self.assertEqual(1, context.position)
+        self.assertEqual(0, context.position)
 
-    # def test_new_context_position(self):
-    # def test_change_context_position(self):
-    # def test_change_multiple_context_position(self):
+    def test_new_context_position(self):
+        tododb = self.reinitialise()
+        context = tododb.add_context("In Dublin fair city ...")
+        self.assertEqual(1, context.position)
+        context = tododb.add_context("where the girl are so pretty ...")
+        self.assertEqual(2, context.position)
+
+    def test_change_context_position_alone_default_to_max(self):
+        tododb = self.reinitialise()
+        context1 = tododb.get_default_context()
+        context1.change_position(4)
+        self.assertEqual(0, context1.position)
+
+    def test_change_context_position_2_contexts_no_change(self):
+        tododb = self.reinitialise()
+        context1 = tododb.get_default_context()
+        context2 = tododb.add_context("context2")
+        context1.change_position(0)
+        self.assertEqual(0, context1.position)
+        self.assertEqual(1, context2.position)
+
+    def test_change_context_position_2_contexts(self):
+        tododb = self.reinitialise()
+        context1 = tododb.get_default_context()
+        context2 = tododb.add_context("context2")
+        context1.change_position(1)
+        self.assertEqual(1, context1.position)
+        self.assertEqual(0, context2.position)
+
+    def test_change_context_position_2_contexts_default_to_max(self):
+        tododb = self.reinitialise()
+        context1 = tododb.get_default_context()
+        context2 = tododb.add_context("context2")
+        context1.change_position(4)
+        self.assertEqual(1, context1.position)
+        self.assertEqual(0, context2.position)
+
+    def test_change_context_position_2_contexts_swap(self):
+        tododb = self.reinitialise()
+        context1 = tododb.get_default_context()
+        context2 = tododb.add_context("context2")
+        context2.change_position(0)
+        self.assertEqual(0, context2.position)
+        self.assertEqual(1, context1.position)
+
+    def test_change_context_position_2_contexts_swap_reverse(self):
+        tododb = self.reinitialise()
+        context1 = tododb.get_default_context()
+        context2 = tododb.add_context("context2")
+        context1.change_position(1)
+        self.assertEqual(0, context2.position)
+        self.assertEqual(1, context1.position)
+
+    def test_change_context_position_2_contexts_swap_reverse_default_to_max(self):
+        tododb = self.reinitialise()
+        context1 = tododb.get_default_context()
+        context2 = tododb.add_context("context2")
+        context1.change_position(6)
+        self.assertEqual(0, context2.position)
+        self.assertEqual(1, context1.position)
+
+    def test_change_context_position_3_contexts(self):
+        tododb = self.reinitialise()
+        context1 = tododb.get_default_context()
+        context2 = tododb.add_context("context2")
+        context3 = tododb.add_context("context3")
+        context1.change_position(6)
+        self.assertEqual(1, context3.position)
+        self.assertEqual(0, context2.position)
+        self.assertEqual(2, context1.position)
+
+    def test_change_context_position_3_contexts_full(self):
+        tododb = self.reinitialise()
+        context1 = tododb.get_default_context()
+        context2 = tododb.add_context("context2")
+        context3 = tododb.add_context("context3")
+        context2.change_position(6)
+        self.assertEqual(1, context3.position)
+        self.assertEqual(2, context2.position)
+        self.assertEqual(0, context1.position)
+        context1.change_position(6)
+        self.assertEqual(0, context3.position)
+        self.assertEqual(1, context2.position)
+        self.assertEqual(2, context1.position)
+        context3.change_position(6)
+        self.assertEqual(2, context3.position)
+        self.assertEqual(0, context2.position)
+        self.assertEqual(1, context1.position)
+        context3.change_position(0)
+        self.assertEqual(0, context3.position)
+        self.assertEqual(1, context2.position)
+        self.assertEqual(2, context1.position)
+        context2.change_position(1)
+        self.assertEqual(0, context3.position)
+        self.assertEqual(1, context2.position)
+        self.assertEqual(2, context1.position)
+
+    def test_change_context_position_6_contexts(self):
+        tododb = self.reinitialise()
+        context1 = tododb.get_default_context()
+        context1.rename("context1")
+        context2 = tododb.add_context("context2")
+        context3 = tododb.add_context("context3")
+        context4 = tododb.add_context("context4")
+        context5 = tododb.add_context("context5")
+        context6 = tododb.add_context("context6")
+        context1.change_position(4)
+        self.assertEqual(4, context1.position)
+        self.assertEqual(0, context2.position)
+        self.assertEqual(1, context3.position)
+        self.assertEqual(2, context4.position)
+        self.assertEqual(3, context5.position)
+        self.assertEqual(5, context6.position)
+
     # def test_project_completion(self):
     # def test_todo_with_project_completion(self):
     # def test_project_hide(self):

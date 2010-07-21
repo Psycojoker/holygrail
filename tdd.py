@@ -41,6 +41,22 @@ class _Context(sqlobject.SQLObject):
     hide = sqlobject.BoolCol(default=False)
     position = sqlobject.IntCol(unique=True)
 
+    def change_position(self, new_position):
+        if new_position == self.position:
+            return
+
+        contexts = [i for i in self.select().orderBy("position")]
+        if new_position > self.position:
+            contexts.insert(new_position + 1, self)
+            contexts.remove(self)
+        else:
+            contexts.remove(self)
+            contexts.insert(new_position, self)
+        for i in contexts:
+            i.position = None
+        for i in contexts:
+            i.position = contexts.index(i)
+
     def rename(self, new_description):
         self.description = new_description
 
@@ -209,7 +225,7 @@ class TodoDB(object):
                 raise e
 
         # always have a context
-        _Context(description="default context", default_context = True, position=1)
+        _Context(description="default context", default_context = True, position=0)
 
     def drop_db(self):
         """
@@ -288,7 +304,7 @@ class TodoDB(object):
 
     def add_context(self, description, hide=False, default=False):
         # TODO docstring
-        new_context = _Context(position=_Context.select().count() + 1, description=description, hide=hide)
+        new_context = _Context(position=_Context.select().count(), description=description, hide=hide)
         if default:
             new_context.set_default()
         return new_context
