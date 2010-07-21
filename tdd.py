@@ -175,7 +175,11 @@ class TodoDB(object):
         self._table_exist()
 
     def _table_exist(self):
+        # check that everything if normal (all table created or not created)
+        assert (not _Todo.tableExists() and not _Project.tableExists() and not _Context.tableExists()) or (_Todo.tableExists() and _Project.tableExists() and _Context.tableExists())
         if not _Todo.tableExists() and not _Project.tableExists() and not _Context.tableExists():
+            # TODO uncomment for release
+            #print "DB doesn't exist, I'll create it"
             self.create_db()
 
     def _connect(self, database_uri):
