@@ -131,7 +131,7 @@ class Test_TDD(unittest.TestCase):
 
     def test_get_todo_throw_except_if_doesnt_exist(self):
         tododb = self.reinitialise()
-        self.assertRaises(TodoDoesntExist, tododb.get_todo_by_desc, "haha I don't exist")
+        self.assertRaises(TodoDoesntExist, tododb.get_todo, 1337)
 
     def test_rename_todo(self):
         tododb = self.reinitialise()
