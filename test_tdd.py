@@ -1072,6 +1072,8 @@ class Test_TDD(unittest.TestCase):
     # TODO: faire un utils.py et rajouter plein de petits outils dedans comme un parseur de date etc ...
     # TODO: faire marcher sd <- migrer vers lucid
     # TODO: tien et si je faisais un nouveau attribut "drop" en plus de completed
+    # TODO: réfléchir à une façon de modifier Todo et Item pour n'avoir qu'une seule table, ce sera plus simple et élégant
+    # TODO: faire l'accès sur due pour _Todo
 
 if __name__ == "__main__":
    unittest.main()
