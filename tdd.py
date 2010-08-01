@@ -263,9 +263,18 @@ class _Project(sqlobject.SQLObject):
     completed = sqlobject.BoolCol(default=False)
     completed_at = sqlobject.DateTimeCol(default=None)
     tickler = sqlobject.DateTimeCol(default=None)
-    #due = DateCol(default=None)
+    due = sqlobject.DateCol(default=None)
     default_context = sqlobject.ForeignKey('_Context', default=None)
     hide = sqlobject.BoolCol(default=False)
+
+    def due_for(self, due):
+        """
+        Change the due date.
+
+        Argument:
+            * the *datetime* for witch the todo is due.
+        """
+        self.due = due
 
     def remove(self):
         """

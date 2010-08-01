@@ -1080,6 +1080,13 @@ class Test_TDD(unittest.TestCase):
         last_completed_todos = tododb.last_completed_todos()
         self.assertEqual([todo2, todo3, todo1], last_completed_todos)
 
+    def test_project_due(self):
+        tododb = self.reinitialise()
+        project = tododb.add_project("je code dans un avion qui revient d'irlande")
+        due = date.today()
+        project.due_for(due)
+        self.assertEqual(project.due, due)
+
     # TODO: refactorer les exceptions, favoriser un message plutôt que plein d'exceptions différentes
     # TODO: faire un utils.py et rajouter plein de petits outils dedans comme un parseur de date etc ...
     # TODO: faire marcher sd <- migrer vers lucid
