@@ -20,11 +20,24 @@ along with Toudoudone.  If not, see <http://www.gnu.org/licenses/>.
 Toudoudone  Copyright (C) 2010  Laurent Peuch <cortex@worlddomination.be>
 """
 
-import unittest
+import unittest, time
 
 from datetime import date, datetime, timedelta
 
-from tdd import TodoDB, TodoDoesntExist, TableAlreadyExist, CanRemoveTheDefaultContext, ContextDoesntExist, ContextStillHasTodos, _Context, ProjectDoesntExist
+from tdd import TodoDB, TodoDoesntExist, TableAlreadyExist, CanRemoveTheDefaultContext, ContextDoesntExist, ContextStillHasElems, _Context, ProjectDoesntExist, _Todo, _Project, _Item, ItemDoesntExist
+
+def comp_datetime(a, b):
+    if a.year != b.year:
+        return False
+    if a.month != b.month:
+        return False
+    if a.day != b.day:
+        return False
+    if a.hour != b.hour:
+        return False
+    if a.second - b.second > 2:
+        return False
+    return True
 
 class Test_TDD(unittest.TestCase):
 
@@ -131,7 +144,7 @@ class Test_TDD(unittest.TestCase):
 
     def test_get_todo_throw_except_if_doesnt_exist(self):
         tododb = self.reinitialise()
-        self.assertRaises(TodoDoesntExist, tododb.get_todo_by_desc, "haha I don't exist")
+        self.assertRaises(TodoDoesntExist, tododb.get_todo, 1337)
 
     def test_rename_todo(self):
         tododb = self.reinitialise()
@@ -183,11 +196,11 @@ class Test_TDD(unittest.TestCase):
         todo = tododb.add_todo("this is a todo")
         self.assertEqual(todo.completed_at, None)
         todo.toggle()
-        self.assertEqual(todo.completed_at, date.today())
+        self.assertTrue(comp_datetime(todo.completed_at, datetime.now()))
         todo.toggle()
         self.assertEqual(todo.completed_at, None)
         todo.toggle()
-        self.assertEqual(todo.completed_at, date.today())
+        self.assertTrue(comp_datetime(todo.completed_at, datetime.now()))
         todo.toggle()
         self.assertEqual(todo.completed_at, None)
 
@@ -219,9 +232,9 @@ class Test_TDD(unittest.TestCase):
     def test_list_all_show_tickle_task(self):
         tododb = self.reinitialise()
         # for tomorrow
-        tickler = datetime.now() - timedelta(1)
+        tickler = datetime.now() + timedelta(1)
         todo = tododb.add_todo("new todo", tickler)
-        self.assertTrue(todo in tododb.list_todos())
+        self.assertTrue(todo in tododb.list_todos(all_todos=True))
 
     def test_due_date_at_creation(self):
         tododb = self.reinitialise()
@@ -334,7 +347,7 @@ class Test_TDD(unittest.TestCase):
         tododb = self.reinitialise()
         context = tododb.add_context("TDD rosk")
         todo = tododb.add_todo("HAHAHA I'M USING TEH INTERNETZ", context=context)
-        self.assertRaises(ContextStillHasTodos, context.remove)
+        self.assertRaises(ContextStillHasElems, context.remove)
 
     def test_list_contexts(self):
         tododb = self.reinitialise()
@@ -494,6 +507,12 @@ class Test_TDD(unittest.TestCase):
         context.toggle_hide()
         self.assertFalse(context in tododb.list_contexts())
 
+    def test_list_all_contexts(self):
+        tododb = self.reinitialise()
+        context = tododb.add_context("pc", hide=True)
+        self.assertFalse(context in tododb.list_contexts())
+        self.assertTrue(context in tododb.list_contexts(all_contexts=True))
+
     def test_context_hide_at_creation(self):
         tododb = self.reinitialise()
         context = tododb.add_context("pc", hide=True)
@@ -524,10 +543,585 @@ class Test_TDD(unittest.TestCase):
         self.assertEqual(None, todo.project)
         self.assertEqual(None, todo2.project)
 
+    def test_auto_create_tables(self):
+        TodoDB('sqlite:/:memory:').drop_db()
+        TodoDB('sqlite:/:memory:')
+        self.assertTrue(_Todo.tableExists())
+        self.assertTrue(_Context.tableExists())
+        self.assertTrue(_Project.tableExists())
+
+    def test_context_position(self):
+        tododb = self.reinitialise()
+        context = tododb.get_default_context()
+        self.assertEqual(0, context.position)
+
+    def test_new_context_position(self):
+        tododb = self.reinitialise()
+        context = tododb.add_context("In Dublin fair city ...")
+        self.assertEqual(1, context.position)
+        context = tododb.add_context("where the girl are so pretty ...")
+        self.assertEqual(2, context.position)
+
+    def test_change_context_position_alone_default_to_max(self):
+        tododb = self.reinitialise()
+        context1 = tododb.get_default_context()
+        context1.change_position(4)
+        self.assertEqual(0, context1.position)
+
+    def test_change_context_position_2_contexts_no_change(self):
+        tododb = self.reinitialise()
+        context1 = tododb.get_default_context()
+        context2 = tododb.add_context("context2")
+        context1.change_position(0)
+        self.assertEqual(0, context1.position)
+        self.assertEqual(1, context2.position)
+
+    def test_change_context_position_2_contexts(self):
+        tododb = self.reinitialise()
+        context1 = tododb.get_default_context()
+        context2 = tododb.add_context("context2")
+        context1.change_position(1)
+        self.assertEqual(1, context1.position)
+        self.assertEqual(0, context2.position)
+
+    def test_change_context_position_2_contexts_default_to_max(self):
+        tododb = self.reinitialise()
+        context1 = tododb.get_default_context()
+        context2 = tododb.add_context("context2")
+        context1.change_position(4)
+        self.assertEqual(1, context1.position)
+        self.assertEqual(0, context2.position)
+
+    def test_change_context_position_2_contexts_swap(self):
+        tododb = self.reinitialise()
+        context1 = tododb.get_default_context()
+        context2 = tododb.add_context("context2")
+        context2.change_position(0)
+        self.assertEqual(0, context2.position)
+        self.assertEqual(1, context1.position)
+
+    def test_change_context_position_2_contexts_swap_reverse(self):
+        tododb = self.reinitialise()
+        context1 = tododb.get_default_context()
+        context2 = tododb.add_context("context2")
+        context1.change_position(1)
+        self.assertEqual(0, context2.position)
+        self.assertEqual(1, context1.position)
+
+    def test_change_context_position_2_contexts_swap_reverse_default_to_max(self):
+        tododb = self.reinitialise()
+        context1 = tododb.get_default_context()
+        context2 = tododb.add_context("context2")
+        context1.change_position(6)
+        self.assertEqual(0, context2.position)
+        self.assertEqual(1, context1.position)
+
+    def test_change_context_position_3_contexts(self):
+        tododb = self.reinitialise()
+        context1 = tododb.get_default_context()
+        context2 = tododb.add_context("context2")
+        context3 = tododb.add_context("context3")
+        context1.change_position(6)
+        self.assertEqual(1, context3.position)
+        self.assertEqual(0, context2.position)
+        self.assertEqual(2, context1.position)
+
+    def test_change_context_position_3_contexts_full(self):
+        tododb = self.reinitialise()
+        context1 = tododb.get_default_context()
+        context2 = tododb.add_context("context2")
+        context3 = tododb.add_context("context3")
+        context2.change_position(6)
+        self.assertEqual(1, context3.position)
+        self.assertEqual(2, context2.position)
+        self.assertEqual(0, context1.position)
+        context1.change_position(6)
+        self.assertEqual(0, context3.position)
+        self.assertEqual(1, context2.position)
+        self.assertEqual(2, context1.position)
+        context3.change_position(6)
+        self.assertEqual(2, context3.position)
+        self.assertEqual(0, context2.position)
+        self.assertEqual(1, context1.position)
+        context3.change_position(0)
+        self.assertEqual(0, context3.position)
+        self.assertEqual(1, context2.position)
+        self.assertEqual(2, context1.position)
+        context2.change_position(1)
+        self.assertEqual(0, context3.position)
+        self.assertEqual(1, context2.position)
+        self.assertEqual(2, context1.position)
+
+    def test_change_context_position_6_contexts(self):
+        tododb = self.reinitialise()
+        context1 = tododb.get_default_context()
+        context1.rename("context1")
+        context2 = tododb.add_context("context2")
+        context3 = tododb.add_context("context3")
+        context4 = tododb.add_context("context4")
+        context5 = tododb.add_context("context5")
+        context6 = tododb.add_context("context6")
+        context1.change_position(4)
+        self.assertEqual(4, context1.position)
+        self.assertEqual(0, context2.position)
+        self.assertEqual(1, context3.position)
+        self.assertEqual(2, context4.position)
+        self.assertEqual(3, context5.position)
+        self.assertEqual(5, context6.position)
+
+    def test_list_project_by_position(self):
+        tododb = self.reinitialise()
+        context1 = tododb.get_default_context()
+        context1.rename("context1")
+        context2 = tododb.add_context("context2")
+        context3 = tododb.add_context("context3")
+        context4 = tododb.add_context("context4")
+        context5 = tododb.add_context("context5")
+        context6 = tododb.add_context("context6")
+        context1.change_position(4)
+        contexts = tododb.list_contexts()
+        self.assertEqual(contexts[4], context1)
+        self.assertEqual(contexts[0], context2)
+        self.assertEqual(contexts[1], context3)
+        self.assertEqual(contexts[2], context4)
+        self.assertEqual(contexts[3], context5)
+        self.assertEqual(contexts[5], context6)
+
+    def test_project_hide(self):
+        tododb = self.reinitialise()
+        project = tododb.add_project("lalala")
+        self.assertFalse(project.hide)
+        project.toggle_hide()
+        self.assertTrue(project.hide)
+        project.toggle_hide()
+        self.assertFalse(project.hide)
+
+    def test_project_hide_at_creation(self):
+        tododb = self.reinitialise()
+        project = tododb.add_project("lalala", hide=True)
+        self.assertTrue(project.hide)
+
+    def test_list_todo_with_project_hide(self):
+        tododb = self.reinitialise()
+        project = tododb.add_project("qsd")
+        project.toggle_hide()
+        todo = tododb.add_todo("toto", project=project.id)
+        self.assertFalse(todo in tododb.list_todos())
+        self.assertTrue(todo in tododb.list_todos(all_todos=True))
+
+    def test_list_project_and_project_hide(self):
+        tododb = self.reinitialise()
+        project = tododb.add_project("huhu")
+        project.toggle_hide()
+        self.assertFalse(project in tododb.list_projects())
+
+    def test_list_all_projects(self):
+        tododb = self.reinitialise()
+        project = tododb.add_project("huhu")
+        self.assertTrue(project in tododb.list_projects())
+        self.assertTrue(project in tododb.list_projects(all_projects=True))
+        project.toggle_hide()
+        self.assertFalse(project in tododb.list_projects())
+        self.assertTrue(project in tododb.list_projects(all_projects=True))
+
+    def test_add_item(self):
+        tododb = self.reinitialise()
+        was = _Item.select().count()
+        item = tododb.add_item("This is a new item")
+        self.assertEqual(item.description, "This is a new item")
+        self.assertEqual(was + 1, _Item.select().count())
+
+        # check if we can add two time a todo with the same description
+        item2 = tododb.add_item("This is a new item")
+        self.assertEqual(was + 2, _Item.select().count())
+
+    def test_get_item_by_desc(self):
+        tododb = self.reinitialise()
+
+        t1 = tododb.add_item("This is a new item")
+        t2 = tododb.add_item("This is a new item 2")
+
+        self.assertEqual(t1.id, tododb.get_item_by_desc("This is a new item")[0].id)
+        self.assertEqual(t2.id, tododb.get_item_by_desc("This is a new item 2")[0].id)
+
+    def test_get_item_by_desc_mutiple(self):
+        tododb = self.reinitialise()
+
+        t1 = tododb.add_item("This is a new item")
+        t2 = tododb.add_item("This is a new item")
+
+        self.assertTrue(t1 in tododb.get_item_by_desc("This is a new item"))
+        self.assertTrue(t2 in tododb.get_item_by_desc("This is a new item"))
+
+    def test_get_item_by_desc_should_raise_an_exection_if_todo_doesnt_exist(self):
+        tododb = self.reinitialise()
+        self.assertRaises(ItemDoesntExist, tododb.get_item_by_desc, "toto")
+
+    def test_remove_item(self):
+        tododb = self.reinitialise()
+        was = _Item.select().count()
+        item = tododb.add_item("This is a new item")
+        self.assertEqual(was + 1, _Item.select().count())
+        item.remove()
+        self.assertEqual(was, _Item.select().count())
+
+    def test_get_item(self):
+        tododb = self.reinitialise()
+        item = tododb.add_item("item")
+        self.assertTrue(item is tododb.get_item(item.id))
+        self.assertEqual(item.description, "item")
+
+    def test_get_item_throw_except_if_doesnt_exist(self):
+        tododb = self.reinitialise()
+        self.assertRaises(ItemDoesntExist, tododb.get_item, 35)
+
+    def test_rename_item(self):
+        tododb = self.reinitialise()
+        item = tododb.add_item("first name")
+        item.rename("second name")
+        self.assertEqual(item.description, "second name")
+
+    def test_list_items(self):
+        tododb = self.reinitialise()
+        # empty
+        self.assertEqual(0, len(tododb.list_items()))
+        item = tododb.add_item("item")
+        # one todo
+        self.assertEqual(1, len(tododb.list_items()))
+        self.assertTrue(item in tododb.list_items())
+        # two todo
+        t2 = tododb.add_item("item 2")
+        self.assertEqual(2, len(tododb.list_items()))
+        self.assertTrue(item in tododb.list_items())
+        self.assertTrue(t2 in tododb.list_items())
+
+    def test_item_should_be_created_today(self):
+        tododb = self.reinitialise()
+        item = tododb.add_item("this is a item")
+        self.assertEqual(item.created_at, date.today())
+
+    def test_new_item_shouldnt_have_tickler_by_default(self):
+        tododb = self.reinitialise()
+        item = tododb.add_item("new item")
+        self.assertEquals(None, item.tickler)
+
+    def test_item_tickler_at_creation(self):
+        tododb = self.reinitialise()
+        tickler = datetime(2010, 06, 25)
+        item = tododb.add_item("new item", tickler=tickler)
+        self.assertEqual(tickler, item.tickler)
+
+    def test_item_add_tickle(self):
+        tododb = self.reinitialise()
+        tickler = datetime(2010, 06, 25)
+        item = tododb.add_item("new item")
+        item.tickle(tickler)
+        self.assertEqual(tickler, item.tickler)
+
+    def test_list_dont_show_tickle_item(self):
+        tododb = self.reinitialise()
+        # for tomorrow
+        tickler = datetime.now() + timedelta(1)
+        item = tododb.add_item("new item", tickler=tickler)
+        self.assertTrue(item not in tododb.list_items())
+
+    def test_list_all_show_tickle_items(self):
+        tododb = self.reinitialise()
+        # for tomorrow
+        tickler = datetime.now() + timedelta(1)
+        item = tododb.add_item("new item", tickler)
+        self.assertTrue(item in tododb.list_items(all_items=True))
+
+    def test_a_item_should_have_the_default_context(self):
+        tododb = self.reinitialise()
+        item = tododb.add_item("a item")
+        self.assertEqual(item.context, tododb.get_default_context())
+        item = tododb.add_item("another item")
+        self.assertEqual(item.context, tododb.get_default_context())
+
+    def test_add_item_with_special_context(self):
+        tododb = self.reinitialise()
+        context = tododb.add_context("je devrais aller dormir")
+        item = tododb.add_item("mouhaha", context=context.id)
+        self.assertEqual(context, item.context)
+
+    def test_change_item_context(self):
+        tododb = self.reinitialise()
+        context = tododb.add_context("je vais encore me coucher à pas d'heure ...")
+        item = tododb.add_item("aller dormir")
+        item.change_context(context.id)
+        self.assertEqual(context, item.context)
+
+    def test_cant_delete_context_with_items(self):
+        tododb = self.reinitialise()
+        context = tododb.add_context("TDD rosk")
+        item = tododb.add_item("HAHAHA I'M USING TEH INTERNETZ", context=context)
+        self.assertRaises(ContextStillHasElems, context.remove)
+
+    def test_add_item_with_a_project(self):
+        tododb = self.reinitialise()
+        project = tododb.add_project("gare a Gallo")
+        item = tododb.add_item("first item", project=project.id)
+        self.assertEqual(project, item.project)
+
+    def test_change_item_project(self):
+        tododb = self.reinitialise()
+        project = tododb.add_project("manger une pomme")
+        item = tododb.add_item("le nouveau leak d'ACTA est dégeulasse")
+        item.change_project(project.id)
+        self.assertEqual(item.project, project)
+
+    def test_next_todo_for_item(self):
+        tododb = self.reinitialise()
+        todo = tododb.add_todo("todo")
+        item = tododb.add_item("item")
+        item.wait_for(todo)
+        self.assertEqual(todo, item.previous_todo)
+
+    def test_list_item_with_previous_todo(self):
+        tododb = self.reinitialise()
+        todo = tododb.add_todo("todo")
+        item = tododb.add_item("item")
+        item.wait_for(todo)
+        self.assertTrue(item not in tododb.list_items())
+
+    def test_list_item_with_previous_todo_with_completed(self):
+        tododb = self.reinitialise()
+        todo = tododb.add_todo("first todo")
+        item = tododb.add_item("second todo")
+        item.wait_for(todo)
+        todo.toggle()
+        self.assertTrue(item in tododb.list_items())
+
+    def test_add_item_wait_for(self):
+        tododb = self.reinitialise()
+        todo = tododb.add_todo("first todo")
+        item = tododb.add_item("second item", wait_for=todo.id)
+        self.assertEqual(todo, item.previous_todo)
+
+    def test_new_item_with_project_with_default_context(self):
+        tododb = self.reinitialise()
+        context = tododb.add_context("pc")
+        project = tododb.add_project("youmi, I love chocolate", default_context=context.id)
+        item = tododb.add_item("pataplouf", project=project.id)
+        self.assertEqual(item.context, context)
+
+    def test_new_item_with_project_with_default_context_and_context(self):
+        tododb = self.reinitialise()
+        context = tododb.add_context("pc")
+        other_context = tododb.add_context("mouhaha")
+        project = tododb.add_project("youmi, I love chocolate", default_context=context.id)
+        item = tododb.add_item("pataplouf", context=other_context, project=project.id)
+        self.assertEqual(item.context, other_context)
+
+    def test_list_item_with_previous_item_with_deleted(self):
+        tododb = self.reinitialise()
+        todo = tododb.add_todo("todo")
+        item = tododb.add_item("item")
+        item.wait_for(todo)
+        todo.remove()
+        self.assertTrue(item in tododb.list_items())
+        self.assertEqual(None, item.previous_todo)
+
+    def test_remove_project_with_items(self):
+        tododb = self.reinitialise()
+        project = tododb.add_project("tchikaboum")
+        item = tododb.add_item("arakiri", project=project.id)
+        item2 = tododb.add_item("arakirikiki", project=project.id)
+        project.remove()
+        self.assertEqual(None, item.project)
+        self.assertEqual(None, item2.project)
+
+    def test_list_item_with_project_hide(self):
+        tododb = self.reinitialise()
+        project = tododb.add_project("qsd")
+        project.toggle_hide()
+        item = tododb.add_item("toto", project=project.id)
+        self.assertFalse(item in tododb.list_items())
+        self.assertTrue(item in tododb.list_items(all_items=True))
+
+    def test_hide_context_in_list_item(self):
+        tododb = self.reinitialise()
+        context = tododb.add_context("pc", hide=True)
+        item = tododb.add_item("atchoum", context=context)
+        self.assertFalse(item in tododb.list_items())
+        self.assertTrue(item in tododb.list_items(all_items=True))
+
+    def test_project_completion(self):
+        tododb = self.reinitialise()
+        project = tododb.add_project("bah")
+        self.assertFalse(project.completed)
+        project.toggle()
+        self.assertTrue(project.completed)
+        project.toggle()
+        self.assertFalse(project.completed)
+
+    def test_project_completion_date(self):
+        tododb = self.reinitialise()
+        project = tododb.add_project("yamakasi")
+        project.toggle()
+        self.assertTrue(comp_datetime(datetime.now(), project.completed_at))
+        project.toggle()
+        self.assertEqual(None, project.completed_at)
+
+    def test_todo_with_project_completion(self):
+        tododb = self.reinitialise()
+        project = tododb.add_project("the wild rover")
+        todo = tododb.add_todo("s", project=project.id)
+        project.toggle()
+        self.assertFalse(todo in tododb.list_todos())
+
+    def test_item_with_project_completion(self):
+        tododb = self.reinitialise()
+        project = tododb.add_project("the wild rover")
+        item = tododb.add_item("s", project=project.id)
+        project.toggle()
+        self.assertFalse(item in tododb.list_items())
+
+    def test_project_tickler(self):
+        tododb = self.reinitialise()
+        project = tododb.add_project("j'ai faim")
+        tickler = datetime(2010, 06, 25)
+        project.tickle(tickler)
+        self.assertEqual(tickler, project.tickler)
+
+    def test_project_tickler_at_creation(self):
+        tododb = self.reinitialise()
+        tickler = datetime(2010, 06, 25)
+        project = tododb.add_project("j'ai faim", tickler=tickler)
+        self.assertEqual(tickler, project.tickler)
+
+    def test_list_project_tickler(self):
+        tododb = self.reinitialise()
+        # for tomorrow
+        tickler = datetime.now() + timedelta(1)
+        project = tododb.add_project("haha, j'ai visité LA brasserie de Guiness", tickler=tickler)
+        self.assertFalse(project in tododb.list_projects())
+        self.assertTrue(project in tododb.list_projects(all_projects=True))
+
+    def test_todo_with_project_tickler(self):
+        tododb = self.reinitialise()
+        tickler = datetime.now() + timedelta(1)
+        project = tododb.add_project("j'avais pas réalisé que c'était eux qui avaient inventé le guiness world record book", tickler=tickler)
+        todo = tododb.add_todo("chier, il pleut", project=project.id)
+        self.assertFalse(todo in tododb.list_todos())
+        self.assertTrue(todo in tododb.list_todos(all_todos=True))
+
+    def test_item_with_project_tickler(self):
+        tododb = self.reinitialise()
+        tickler = datetime.now() + timedelta(1)
+        project = tododb.add_project("j'avais pas réalisé que c'était eux qui avaient inventé le guiness world record book", tickler=tickler)
+        item = tododb.add_item("chier, il pleut", project=project.id)
+        self.assertFalse(item in tododb.list_items())
+        self.assertTrue(item in tododb.list_items(all_items=True))
+
+    def test_main_view(self):
+        tododb = self.reinitialise()
+        # empty since the only context is empty
+        self.assertEqual([], tododb.main_view())
+
+    def test_main_view_one_todo(self):
+        tododb = self.reinitialise()
+        todo = tododb.add_todo("kropotkine")
+        self.assertEqual([[tododb.get_default_context(), [], [todo]]], tododb.main_view())
+
+    def test_main_view_one_item(self):
+        tododb = self.reinitialise()
+        item = tododb.add_item("kropotkine")
+        self.assertEqual([[tododb.get_default_context(), [item], []]], tododb.main_view())
+
+    def test_main_view_one_item_one_todo(self):
+        tododb = self.reinitialise()
+        item = tododb.add_item("kropotkine")
+        todo = tododb.add_todo("kropotkikine")
+        self.assertEqual([[tododb.get_default_context(), [item], [todo]]], tododb.main_view())
+
+    def test_main_view_one_item_one_todo_one_empty_context(self):
+        tododb = self.reinitialise()
+        item = tododb.add_item("kropotkine")
+        todo = tododb.add_todo("kropotkikine")
+        tododb.add_context("empty context")
+        self.assertEqual([[tododb.get_default_context(), [item], [todo]]], tododb.main_view())
+
+    def test_main_view_one_item_one_todo_one_non_empty_context(self):
+        tododb = self.reinitialise()
+        item = tododb.add_item("kropotkine")
+        todo = tododb.add_todo("kropotkikine")
+        context = tododb.add_context("context")
+        other_todo = tododb.add_todo("James Joyce a l'air terrible", context=context)
+        self.assertEqual([[tododb.get_default_context(), [item], [todo]],
+                          [context, [], [other_todo]]], tododb.main_view())
+        other_item = tododb.add_item("yiha !", context=context)
+        self.assertEqual([[tododb.get_default_context(), [item], [todo]],
+                          [context, [other_item], [other_todo]]], tododb.main_view())
+
+    def test_last_completed_todos_empty(self):
+        tododb = self.reinitialise()
+        last_completed_todos = tododb.last_completed_todos()
+        self.assertEqual([], last_completed_todos)
+
+    def test_last_completed_todos_one_todo(self):
+        tododb = self.reinitialise()
+        todo = tododb.add_todo("pouet")
+        todo.toggle()
+        last_completed_todos = tododb.last_completed_todos()
+        self.assertEqual([todo], last_completed_todos)
+
+    def test_last_completed_todos_multiple_todos(self):
+        tododb = self.reinitialise()
+        todo1 = tododb.add_todo("pouet")
+        todo2 = tododb.add_todo("pouet pouet")
+        todo3 = tododb.add_todo("taratata pouet pouet")
+        todo1.toggle()
+        time.sleep(1)
+        todo3.toggle()
+        time.sleep(1)
+        todo2.toggle()
+        last_completed_todos = tododb.last_completed_todos()
+        self.assertEqual([todo2, todo3, todo1], last_completed_todos)
+
+    def test_project_due(self):
+        tododb = self.reinitialise()
+        project = tododb.add_project("je code dans un avion qui revient d'irlande")
+        due = date.today()
+        project.due_for(due)
+        self.assertEqual(project.due, due)
+
+    def test_project_due_at_creation(self):
+        tododb = self.reinitialise()
+        due = datetime.now()
+        project = tododb.add_project("je code dans un avion qui revient d'irlande", due=due)
+        self.assertTrue(comp_datetime(project.due, due))
+
+    def test_project_due_date_on_a_todo(self):
+        tododb = self.reinitialise()
+        due = datetime.now()
+        project = tododb.add_project("je code dans un avion qui revient d'irlande", due=due)
+        todo = tododb.add_todo("la gamine qui est dans le siège devant moi arrête pas de faire plein de conneries", project=project.id)
+        self.assertTrue(comp_datetime(todo.due, due))
+
+    def test_project_due_date_on_a_todo_with_earlier_todo(self):
+        tododb = self.reinitialise()
+        due = datetime.now()
+        project = tododb.add_project("je code dans un avion qui revient d'irlande", due=(due + timedelta(1)))
+        todo = tododb.add_todo("la gamine qui est dans le siège devant moi arrête pas de faire plein de conneries", project=project.id, due=due)
+        self.assertTrue(comp_datetime(todo.due, due))
+
+    def test_project_due_date_on_a_todo_with_later_todo(self):
+        tododb = self.reinitialise()
+        due = datetime.now()
+        project = tododb.add_project("je code dans un avion qui revient d'irlande", due=due)
+        todo = tododb.add_todo("la gamine qui est dans le siège devant moi arrête pas de faire plein de conneries", project=project.id, due=(due + timedelta(1)))
+        self.assertTrue(comp_datetime(todo.due, due))
+
     # TODO: refactorer les exceptions, favoriser un message plutôt que plein d'exceptions différentes
-    # TODO faire un utils.py et rajouter plein de petits outils dedans comme un parseur de date etc ...
+    # TODO: faire un utils.py et rajouter plein de petits outils dedans comme un parseur de date etc ...
     # TODO: faire marcher sd <- migrer vers lucid
-    # TODO peut être donner une méthode Todo pour dire si elle s'affiche
+    # TODO: tien et si je faisais un nouveau attribut "drop" en plus de completed
+    # TODO: faire une méthode de converstion d'un item en todo
+    # TODO: envisager de changer le fichier de config pour qu'écrire l'accès à la bdd soit plus simple
+    # TODO: add a due date at the creation of a project
+    # TODO: add other search methods
 
 if __name__ == "__main__":
    unittest.main()

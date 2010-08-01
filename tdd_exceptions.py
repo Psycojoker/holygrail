@@ -4,12 +4,12 @@ Custom exceptions for toudoudone
 
 import exceptions
 
-class ContextStillHasTodos(exceptions.Exception):
+class ContextStillHasElems(exceptions.Exception):
     def __init__(self):
-        super(ContextStillHasTodos, self).__init__()
+        super(ContextStillHasElems, self).__init__()
 
     def __str__(self):
-        return 'This context still containt todos, can\'t remove it'
+        return 'This context still containt elems, can\'t remove it'
 
 class TodoDoesntExist(exceptions.Exception):
     def __init__(self, todo):
@@ -18,6 +18,14 @@ class TodoDoesntExist(exceptions.Exception):
 
     def __str__(self):
         return 'this todo doesn\'t exist: %s' % self.todo
+
+class ItemDoesntExist(exceptions.Exception):
+    def __init__(self, item):
+        self.item = item
+        super(ItemDoesntExist, self).__init__()
+
+    def __str__(self):
+        return 'this item doesn\'t exist: %s' % self.item
 
 class ContextDoesntExist(exceptions.Exception):
     def __init__(self, context):
@@ -49,3 +57,10 @@ class ProjectDoesntExist(exceptions.Exception):
 
     def __str__(self):
         return 'this project doesn\'t exist: %s' % self.project
+
+class NoDatabaseConfiguration(exceptions.Exception):
+    def __init__(self):
+        super(NoDatabaseConfiguration, self).__init__()
+
+    def __str__(self):
+        return "Their isn't any uri for the database, etheir give TodoDB an uri at creation or create a config file with a DATABASE_ACCESS variable that containt the string of the uri"
