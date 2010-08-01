@@ -267,7 +267,7 @@ class _Project(sqlobject.SQLObject):
     completed = sqlobject.BoolCol(default=False)
     completed_at = sqlobject.DateTimeCol(default=None)
     tickler = sqlobject.DateTimeCol(default=None)
-    due = sqlobject.DateCol(default=None)
+    due = sqlobject.DateTimeCol(default=None)
     default_context = sqlobject.ForeignKey('_Context', default=None)
     hide = sqlobject.BoolCol(default=False)
 

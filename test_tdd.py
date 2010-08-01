@@ -1089,16 +1089,16 @@ class Test_TDD(unittest.TestCase):
 
     def test_project_due_at_creation(self):
         tododb = self.reinitialise()
-        due = date.today()
+        due = datetime.now()
         project = tododb.add_project("je code dans un avion qui revient d'irlande", due=due)
-        self.assertEqual(project.due, due)
+        self.assertTrue(comp_datetime(project.due, due))
 
     def test_project_due_date_on_a_todo(self):
         tododb = self.reinitialise()
-        due = date.today()
+        due = datetime.now()
         project = tododb.add_project("je code dans un avion qui revient d'irlande", due=due)
         todo = tododb.add_todo("la gamine qui est dans le siège devant moi arrête pas de faire plein de conneries", project=project.id)
-        self.assertEqual(todo.due, due)
+        self.assertTrue(comp_datetime(todo.due, due))
 
     # TODO: refactorer les exceptions, favoriser un message plutôt que plein d'exceptions différentes
     # TODO: faire un utils.py et rajouter plein de petits outils dedans comme un parseur de date etc ...
