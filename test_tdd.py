@@ -1076,6 +1076,9 @@ class Test_TDD(unittest.TestCase):
     # TODO: envisager de changer le fichier de config pour que écrrire l'accès à la bdd soi plus simple
     # TODO: faire l'accès sur due pour _Todo
     # TODO: je complete un project avec une date alors qu'il faut une datetime
+    # TODO: add a due date and hide at the creation of a project
+    # TODO: add a all_context option for list_contexts
+    # TODO: add other search methods
 
 if __name__ == "__main__":
    unittest.main()
