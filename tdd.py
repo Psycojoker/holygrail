@@ -128,7 +128,7 @@ class _Item(sqlobject.SQLObject):
     attribute, prefer the api, and if you do that be really SURE to know
     what you are doing. You don't want to break anything, right ?
 
-    Your are not supposed to create a context directly from this class, use
+    Your are not supposed to create a item directly from this class, use
     add_item() instead.
     """
     description = sqlobject.StringCol()
