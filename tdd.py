@@ -111,12 +111,26 @@ class _Context(sqlobject.SQLObject):
 
     def toggle_hide(self):
         """
-        Toggle if this context is diplay in the main view.
+        Toggle if this context is display in the main view.
         """
         self.hide = not self.hide
 
 
 class _Item(sqlobject.SQLObject):
+    """
+    An item.
+
+    An item is a non checkable todo. It can be used to list stuff you don't
+    want to be checkable. It can (will, hit me with a stick) be easily
+    transform into a todo.
+
+    WARNING avoid as much as possible to modify directly the todo
+    attribute, prefer the api, and if you do that be really SURE to know
+    what you are doing. You don't want to break anything, right ?
+
+    Your are not supposed to create a context directly from this class, use
+    add_item() instead.
+    """
     description = sqlobject.StringCol()
     created_at = sqlobject.DateCol(default=date.today())
     tickler = sqlobject.DateTimeCol(default=None)
@@ -125,14 +139,28 @@ class _Item(sqlobject.SQLObject):
     previous_todo = sqlobject.ForeignKey('_Todo', default=None)
 
     def visible(self):
+        """
+        A method that return True if the item will be display in the main_view
+        or in list_items. You normaly needn't use it.
+        """
         return (not self.previous_todo or self.previous_todo.completed)\
             and not self.context.hide\
             and (not self.project or (not self.project.hide and not self.project.completed and (self.project.tickler < datetime.now())))
 
     def change_context(self, context_id):
+        """
+        Change the context in witch the item belongs.
+        """
         self.context = context_id
 
     def change_project(self, new_project_id):
+        """
+        Change the project in witch the item is. Set it to None if you don't
+        want this item in a project.
+
+        Argument:
+            * the new project *id*
+        """
         self.project = new_project_id
 
     def remove(self):
@@ -153,10 +181,23 @@ class _Item(sqlobject.SQLObject):
     def tickle(self, tickler):
         """
         Change the item tickler
+
+        An item with a tickle superior to now won't be display in list_items
+        or the main_view.
+
+        Argument:
+            * the new tickle *datetime*
         """
         self.tickler = tickler
 
     def wait_for(self, todo_id):
+        """
+        Define the todo that this item will wait to be completed to appears in
+        list_items or the main_view.
+
+        Argument:
+            * the todo *id*
+        """
         self.previous_todo = todo_id
 
 
