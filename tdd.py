@@ -218,8 +218,14 @@ class _Todo(_Item):
 
     @property
     def due(self):
+        # return my due date if
+        # I don't have a project
+        # my project don't have a due date
+        # my due date is earlier than the project one
+        # else, return project due date
         return self._due if None == self.project or\
-                            (not self.project.due or (self._due != None and self.project.due > self._due))\
+                            (not self.project.due or
+                                (self._due != None and self.project.due > self._due))\
                             else self.project.due
 
     def due_for(self, due):
