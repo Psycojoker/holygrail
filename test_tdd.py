@@ -1120,7 +1120,6 @@ class Test_TDD(unittest.TestCase):
     # TODO: tien et si je faisais un nouveau attribut "drop" en plus de completed
     # TODO: faire une méthode de converstion d'un item en todo
     # TODO: envisager de changer le fichier de config pour qu'écrire l'accès à la bdd soit plus simple
-    # TODO: faire l'accès sur due pour _Todo
     # TODO: add a due date at the creation of a project
     # TODO: add other search methods
 
