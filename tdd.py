@@ -206,21 +206,22 @@ class _Todo(_Item):
     A Todo object.
 
     WARNING avoid as much as possible to modify directly the todo
-    attribute, prefere the api, and if you do that be really SURE to know
+    attribute, prefer the api, and if you do that be really SURE to know
     what you are doing. You don't want to break anything, right ?
 
-    Arguments:
-        * description: a text field that discribe the todo
+    Your are not supposed to create a todo directly from this class, use
+    add_todo() instead.
     """
     completed_at = sqlobject.DateTimeCol(default=None)
     due = sqlobject.DateTimeCol(default=None)
     completed = sqlobject.BoolCol(default=False)
-    # will wait popular demand to be implemented
-    #notes = StringCol(default=None)
 
     def due_for(self, due):
         """
-        Change the due date
+        Change the due date.
+
+        Argument:
+            * the *datetime* for witch the todo is due.
         """
         self.due = due
 
@@ -228,7 +229,7 @@ class _Todo(_Item):
         """
         Remove the todo from the database.
         """
-        # remove todo that wait for this todo to be completed
+        # remove from todo that wait for this todo to be completed
         for i in self.select(_Todo.q.previous_todo == self):
             i.previous_todo = None
         for i in _Item.select(_Item.q.previous_todo == self):
