@@ -600,14 +600,15 @@ class TodoDB(object):
         return [i for i in _Project.select(sqlobject.AND(_Project.q.hide == False, sqlobject.OR(_Project.q.tickler == None, _Project.q.tickler < datetime.now())))]\
                 if not all_projects else [i for i in _Project.select()]
 
-    def list_contexts(self):
+    def list_contexts(self, all_contexts=False):
         """
         Return a list of visible contexts.
 
         Arguments:
             * all_contexts=False by default, if True return all the contexts.
         """
-        return [i for i in _Context.select(_Context.q.hide == False).orderBy("position")]
+        return [i for i in _Context.select(_Context.q.hide == False).orderBy("position")] if not all_contexts\
+            else [i for i in _Context.select()]
 
     def last_completed_todos(self):
         """
