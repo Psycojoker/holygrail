@@ -213,8 +213,12 @@ class _Todo(_Item):
     add_todo() instead.
     """
     completed_at = sqlobject.DateTimeCol(default=None)
-    due = sqlobject.DateTimeCol(default=None)
+    _due = sqlobject.DateTimeCol(default=None)
     completed = sqlobject.BoolCol(default=False)
+
+    @property
+    def due(self):
+        return self._due if None == self.project or not self.project.due else self.project.due
 
     def due_for(self, due):
         """
@@ -223,7 +227,7 @@ class _Todo(_Item):
         Argument:
             * the *datetime* for witch the todo is due.
         """
-        self.due = due
+        self._due = due
 
     def remove(self):
         """
@@ -424,7 +428,7 @@ class TodoDB(object):
                 context = self.get_project(project).default_context.id
         if unique and _Todo.select(sqlobject.AND(_Todo.q.description == new_description, _Todo.q.completed == False)).count() != 0:
             return -1
-        return _Todo(description=new_description, tickler=tickler, due=due, project=project, context=context, previous_todo=wait_for)
+        return _Todo(description=new_description, tickler=tickler, _due=due, project=project, context=context, previous_todo=wait_for)
 
     def add_item(self, description, context=None, tickler=None, project=None, wait_for=None):
         """
