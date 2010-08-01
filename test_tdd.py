@@ -26,6 +26,19 @@ from datetime import date, datetime, timedelta
 
 from tdd import TodoDB, TodoDoesntExist, TableAlreadyExist, CanRemoveTheDefaultContext, ContextDoesntExist, ContextStillHasElems, _Context, ProjectDoesntExist, _Todo, _Project, _Item, ItemDoesntExist
 
+def comp_datetime(a, b):
+    if a.year != b.year:
+        return False
+    if a.month != b.month:
+        return False
+    if a.day != b.day:
+        return False
+    if a.hour != b.hour:
+        return False
+    if a.second - b.second > 2:
+        return False
+    return True
+
 class Test_TDD(unittest.TestCase):
 
     def reinitialise(self):
@@ -179,18 +192,6 @@ class Test_TDD(unittest.TestCase):
         self.assertEqual(todo.created_at, date.today())
 
     def test_todo_completion_date(self):
-        def comp_datetime(a, b):
-            if a.year != b.year:
-                return False
-            if a.month != b.month:
-                return False
-            if a.day != b.day:
-                return False
-            if a.hour != b.hour:
-                return False
-            if a.second - b.second > 2:
-                return False
-            return True
         tododb = self.reinitialise()
         todo = tododb.add_todo("this is a todo")
         self.assertEqual(todo.completed_at, None)
@@ -959,7 +960,7 @@ class Test_TDD(unittest.TestCase):
         tododb = self.reinitialise()
         project = tododb.add_project("yamakasi")
         project.toggle()
-        self.assertEqual(date.today(), project.completed_at)
+        self.assertTrue(comp_datetime(datetime.now(), project.completed_at))
         project.toggle()
         self.assertEqual(None, project.completed_at)
 

@@ -315,7 +315,7 @@ class _Project(sqlobject.SQLObject):
         set to completed.
         """
         self.completed = not self.completed
-        self.completed_at = date.today() if self.completed else None
+        self.completed_at = datetime.now() if self.completed else None
 
     def toggle_hide(self):
         """
