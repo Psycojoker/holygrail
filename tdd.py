@@ -218,7 +218,9 @@ class _Todo(_Item):
 
     @property
     def due(self):
-        return self._due if None == self.project or not self.project.due else self.project.due
+        return self._due if None == self.project or\
+                            (not self.project.due or (self._due != None and self.project.due > self._due))\
+                            else self.project.due
 
     def due_for(self, due):
         """
