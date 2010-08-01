@@ -36,13 +36,13 @@ __version__ = "Ignus 0.1"
 
 class _Context(sqlobject.SQLObject):
     """
-    A Context.
+    A context.
 
-    Context containt todos and items. It can be, for example, "at home", "at
+    Context contains todos and items. It can be, for example, "at home", "at
     work" etc...
 
     WARNING avoid as much as possible to modify directly the todo
-    attribute, prefere the api, and if you do that be really SURE to know
+    attribute, prefer the api, and if you do that be really SURE to know
     what you are doing. You don't want to break anything, right ?
 
     Your are not supposed to create a context directly from this class, use
@@ -83,7 +83,7 @@ class _Context(sqlobject.SQLObject):
         Remove the context.
 
         You can't remove the default context, CanRemoveTheDefaultContext will
-        be raised if your tryed to.
+        be raised if you tried to.
         """
         if self.default_context:
             raise CanRemoveTheDefaultContext
