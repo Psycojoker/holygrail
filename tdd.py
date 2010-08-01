@@ -238,13 +238,26 @@ class _Todo(_Item):
 
     def toggle(self):
         """
-        Toggle to todo completion state
+        Toggle to todo completion state.
         """
         self.completed = not self.completed
         self.completed_at = datetime.now() if self.completed else None
 
 
 class _Project(sqlobject.SQLObject):
+    """
+    A project object.
+
+    A project is made of items and/or todos. It's basically everything you want
+    to do that need more than one next action.
+
+    WARNING avoid as much as possible to modify directly the todo
+    attribute, prefer the api, and if you do that be really SURE to know
+    what you are doing. You don't want to break anything, right ?
+
+    Your are not supposed to create a project directly from this class, use
+    add_project() instead.
+    """
     description = sqlobject.StringCol()
     created_at = sqlobject.DateCol(default=datetime.now())
     completed = sqlobject.BoolCol(default=False)
@@ -255,6 +268,9 @@ class _Project(sqlobject.SQLObject):
     hide = sqlobject.BoolCol(default=False)
 
     def remove(self):
+        """
+        Remove this project.
+        """
         for i in _Todo.select(_Todo.q.project == self):
             i.project = None
         for i in _Item.select(_Item.q.project == self):
@@ -262,22 +278,51 @@ class _Project(sqlobject.SQLObject):
         self.destroySelf()
 
     def rename(self, new_description):
+        """
+        Change the description of this project.
+
+        Argument:
+            * the new_description as a string
+        """
         self.description = new_description
 
     def tickle(self, tickler):
         """
-        Change the project tickler
+        Change the project tickler. If the tickler of this project is superior
+        to now, this project and it's todo/items won't be show.
+
+        Argument:
+            * the tickle in *datetime*
         """
         self.tickler = tickler
 
     def set_default_context(self, context_id):
+        """
+        Set the default context for this project. A todo or a item add to this
+        project without a specified context will take the default context of
+        the project.
+
+        Argument:
+            * the new default context *id*
+        """
         self.default_context = context_id
 
     def toggle(self):
+        """
+        Toggle the completed state of this project.
+
+        Todos or items from a completed project won't appear anymore but won't be
+        set to completed.
+        """
         self.completed = not self.completed
         self.completed_at = date.today() if self.completed else None
 
     def toggle_hide(self):
+        """
+        Toggle the hidden state of a project.
+
+        Todos or items from an hidden project won't appears anymore.
+        """
         self.hide = not self.hide
 
 
