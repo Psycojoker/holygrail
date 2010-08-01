@@ -35,6 +35,19 @@ DATABASE_ACCESS = config.DATABASE_ACCESS if hasattr(config, "DATABASE_ACCESS") e
 __version__ = "Ignus 0.1"
 
 class _Context(sqlobject.SQLObject):
+    """
+    A Context.
+
+    Context containt todos and items. It can be, for example, "at home", "at
+    work" etc...
+
+    WARNING avoid as much as possible to modify directly the todo
+    attribute, prefere the api, and if you do that be really SURE to know
+    what you are doing. You don't want to break anything, right ?
+
+    Your are not supposed to create a context directly from this class, use
+    add_context() instead.
+    """
     description = sqlobject.StringCol()
     default_context = sqlobject.BoolCol(default=False)
     created_at = sqlobject.DateCol(default=datetime.now())
@@ -42,6 +55,13 @@ class _Context(sqlobject.SQLObject):
     position = sqlobject.IntCol(unique=True)
 
     def change_position(self, new_position):
+        """
+        Change the position of the context in the main_view.
+
+        Arguments:
+            * new_position: the new position of the context, if the position is
+              > at the max position, it will simply be put at the end
+        """
         if new_position == self.position:
             return
 
@@ -59,6 +79,12 @@ class _Context(sqlobject.SQLObject):
             i.position = contexts.index(i)
 
     def remove(self):
+        """
+        Remove the context.
+
+        You can't remove the default context, CanRemoveTheDefaultContext will
+        be raised if your tryed to.
+        """
         if self.default_context:
             raise CanRemoveTheDefaultContext
         elif _Todo.select(_Todo.q.context == self).count() != 0\
@@ -68,13 +94,25 @@ class _Context(sqlobject.SQLObject):
             self.destroySelf()
 
     def rename(self, new_description):
+        """
+        Change the description of the context.
+
+        Argument:
+            * new_description: the context's new description.
+        """
         self.description = new_description
 
     def set_default(self):
+        """
+        Set this context as the new default context.
+        """
         self.select(self.q.default_context == True)[0].default_context = False
         self.default_context = True
 
     def toggle_hide(self):
+        """
+        Toggle if this context is diplay in the main view.
+        """
         self.hide = not self.hide
 
 
