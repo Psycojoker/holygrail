@@ -444,7 +444,7 @@ class TodoDB(object):
                 context = self.get_project(project).default_context.id
         return _Item(description=description, tickler=tickler, context=context, project=project, previous_todo=wait_for)
 
-    def add_project(self, description, default_context=None, tickler=None, hide=False):
+    def add_project(self, description, default_context=None, tickler=None, due=None, hide=False):
         """
         Add a new project then return it
 
@@ -453,7 +453,7 @@ class TodoDB(object):
             * default_context, the default context of this project
             * tickler, the tickler of this project in *datetime*
         """
-        return _Project(description=description, default_context=default_context, tickler=tickler, hide=hide)
+        return _Project(description=description, default_context=default_context, due=due, tickler=tickler, hide=hide)
 
     def add_context(self, description, hide=False, default=False):
         """
