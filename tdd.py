@@ -270,6 +270,9 @@ class _Project(sqlobject.SQLObject):
         """
         self.tickler = tickler
 
+    def set_default_context(self, context_id):
+        self.default_context = context_id
+
     def toggle(self):
         self.completed = not self.completed
         self.completed_at = date.today() if self.completed else None
