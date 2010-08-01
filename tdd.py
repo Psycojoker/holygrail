@@ -332,6 +332,9 @@ class TodoDB(object):
         """
         The main object, it's the interface with the todo database.
 
+        If the database doesn't exist but an URI is given or a config file
+        exist, the database will be automatically created.
+
         Arguments:
             * a different uri to connect to another database than the one into
               the configuration file (ie for tests)
@@ -342,6 +345,9 @@ class TodoDB(object):
         self._table_exist()
 
     def _table_exist(self):
+        """
+        Intern method to check if the database exist and if the database is in a normal state.
+        """
         # check that everything if normal (all table created or not created)
         assert (not _Item.tableExists() and not _Todo.tableExists() and not _Project.tableExists() and not _Context.tableExists()) or (_Todo.tableExists() and _Project.tableExists() and _Context.tableExists() and _Item.tableExists())
         if not _Todo.tableExists() and not _Project.tableExists() and not _Context.tableExists() and not _Item.tableExists():
@@ -353,23 +359,22 @@ class TodoDB(object):
         """
         Connect to the database
 
-        Arguments:
+        Argument:
             * a different uri to connect to another database than the one in the config.py file (ie: for unittest)
         """
         sqlobject.sqlhub.processConnection = sqlobject.connectionForURI(database_uri) if database_uri else sqlobject.connectionForURI(DATABASE_ACCESS)
 
     def create_db(self):
         """
-        Create the database if it isn't already create
+        Create the database. Raise TableAlreadyExist if a table is already created.
         """
         try:
             _Context.createTable()
             _Project.createTable(ifNotExists=True)
-            #Item.createTable(ifNotExists=True)
             _Todo.createTable()
             _Item.createTable()
         except Exception, e:
-            # ultimely dirty, I really don't know why I push this
+            # supreme dirty, I really don't know why I push this
             # I haven't found another way to do this :(
             if str(e).endswith("exists"):
                 raise TableAlreadyExist(str(e))
@@ -383,7 +388,7 @@ class TodoDB(object):
         """
         Drop the database if it isn't already drop
 
-        WARNING: this will destroy *everything* in the database
+        WARNING: this will destroy *EVERYTHING* in the database
         """
         _Context.dropTable(ifExists=True)
         _Project.dropTable(ifExists=True)
@@ -392,11 +397,16 @@ class TodoDB(object):
 
     def add_todo(self, new_description, tickler=None, due=None, project=None, context=None, wait_for=None, unique=False):
         """
-        Add a new todo, return it
+        Add a new todo then return it
 
         Arguments:
-            * the description of the todo
-            * unique, don't add the todo if it's already exist AND INS'T COMPLETED
+            * new_description, the description of the todo
+            * unique, don't add the todo if it's already exist AND ISN'T COMPLETED, return -1 if the todo already exist
+            * tickler, a datetime object the tickle the todo, default to None
+            * due, a datetime for when the todo is due, default to None
+            * project, the ID of the project link to this new todo, default to None
+            * context, the ID of the context link to this new todo, default is the default context
+            * wait_for, the ID of todo that this new todo wait to be completed to appears, default to None
         """
         if not context:
             if not project or not self.get_project(project).default_context:
@@ -408,6 +418,16 @@ class TodoDB(object):
         return _Todo(description=new_description, tickler=tickler, due=due, project=project, context=context, previous_todo=wait_for)
 
     def add_item(self, description, context=None, tickler=None, project=None, wait_for=None):
+        """
+        Add a new item then return it
+
+        Arguments:
+            * new_description, the description of the item
+            * tickler, a datetime object the tickle the item, default to None
+            * project, the ID of the project link to this new item, default to None
+            * context, the ID of the context link to this new item, default is the default context
+            * wait_for, the ID of todo that this new item wait to be completed to appears, default to None
+        """
         if not context:
             if not project or not self.get_project(project).default_context:
                 context = self.get_default_context().id
@@ -416,10 +436,25 @@ class TodoDB(object):
         return _Item(description=description, tickler=tickler, context=context, project=project, previous_todo=wait_for)
 
     def add_project(self, description, default_context=None, tickler=None):
+        """
+        Add a new project then return it
+
+        Arguments:
+            * description, the project description
+            * default_context, the default context of this project
+            * tickler, the tickler of this project in *datetime*
+        """
         return _Project(description=description, default_context=default_context, tickler=tickler)
 
     def add_context(self, description, hide=False, default=False):
-        # TODO docstring
+        """
+        Add a new context then return it
+
+        Arguments:
+            * description, the project description
+            * hide, if the project is hide
+            * default, if the project is now the default context
+        """
         new_context = _Context(position=_Context.select().count(), description=description, hide=hide)
         if default:
             new_context.set_default()
@@ -430,8 +465,8 @@ class TodoDB(object):
         Receive the id of a todo, return the todo
         Raise an exception if the todo doesn't exist
 
-        Arguments:
-            * todo description
+        Argument:
+            * the todo description
         """
         try:
             return _Todo.get(todo_id)
@@ -440,10 +475,10 @@ class TodoDB(object):
 
     def get_todo_by_desc(self, description):
         """
-        Receive a the description of a todo, return it
+        Receive the description of a todo, return it
         Raise an exception if the todo doesn't exist
 
-        Arguments:
+        Argument:
             * todo description
         """
         query = _Todo.select(_Todo.q.description == description)
@@ -456,7 +491,7 @@ class TodoDB(object):
         Receive the id of a item, return the item
         Raise an exception if the item doesn't exist
 
-        Arguments:
+        Argument:
             * item description
         """
         try:
@@ -466,7 +501,7 @@ class TodoDB(object):
 
     def get_item_by_desc(self, description):
         """
-        Receive a the description of an item, return it
+        Receive the description of an item, return it
         Raise an exception if the item doesn't exist
 
         Arguments:
@@ -478,37 +513,67 @@ class TodoDB(object):
         return [i for i in query]
 
     def get_project(self, project_id):
+        """
+        Receive the id of a project, return the item
+        Raise an exception if the project doesn't exist
+
+        Argument:
+            * project description
+        """
         try:
             return _Project.get(project_id)
         except sqlobject.SQLObjectNotFound:
             raise ProjectDoesntExist(project_id)
 
     def get_project_by_desc(self, description):
+        """
+        Receive the description of an project, return it
+        Raise an exception if the project doesn't exist
+
+        Arguments:
+            * project description
+        """
         return [i for i in _Project.select(_Project.q.description == description)]
 
     def get_context(self, context_id):
+        """
+        Receive the id of a context, return the context
+        Raise an exception if the context doesn't exist
+
+        Argument:
+            * context description
+        """
         try:
             return _Context.get(context_id)
         except sqlobject.SQLObjectNotFound:
             raise ContextDoesntExist(context_id)
 
     def get_context_by_desc(self, description):
-        # TODO docstring
+        """
+        Receive the description of an context, return it
+        Raise an exception if the context doesn't exist
+
+        Arguments:
+            * context description
+        """
         query = _Context.select(_Context.q.description == description)
         if query.count() == 0:
             raise ContextDoesntExist(description)
         return [i for i in query]
 
     def get_default_context(self):
+        """
+        Return the default context.
+        """
         assert _Context.select(_Context.q.default_context == True).count() == 1
         return _Context.select(_Context.q.default_context == True)[0]
 
     def list_todos(self, all_todos=False):
         """
-        Return a list of todos, by default only uncompleted todos.
+        Return a list of visible todos.
 
         Arguments:
-            * all =False by default, if True return all the todos.
+            * all_todos=False by default, if True return all the todos.
         """
         return [i for i in _Todo.select(sqlobject.AND(_Todo.q.completed == False,
                sqlobject.OR(_Todo.q.tickler == None, _Todo.q.tickler < datetime.now()))).orderBy('id')\
@@ -516,22 +581,53 @@ class TodoDB(object):
                 not all_todos else [i for i in _Todo.select()]
 
     def list_items(self, all_items=False):
+        """
+        Return a list of visible items.
+
+        Arguments:
+            * all_items=False by default, if True return all the items.
+        """
         return [i for i in _Item.select(sqlobject.OR(_Item.q.tickler == None, _Item.q.tickler < datetime.now())) if i.visible()]\
                 if not all_items else [i for i in _Item.select()]
 
     def list_projects(self, all_projects=False):
+        """
+        Return a list of visible projects.
+
+        Arguments:
+            * all_projects=False by default, if True return all the projects.
+        """
         return [i for i in _Project.select(sqlobject.AND(_Project.q.hide == False, sqlobject.OR(_Project.q.tickler == None, _Project.q.tickler < datetime.now())))]\
                 if not all_projects else [i for i in _Project.select()]
 
     def list_contexts(self):
+        """
+        Return a list of visible contexts.
+
+        Arguments:
+            * all_contexts=False by default, if True return all the contexts.
+        """
         return [i for i in _Context.select(_Context.q.hide == False).orderBy("position")]
 
     def last_completed_todos(self):
+        """
+        Return a list of the last completed todos order in a none chronological order.
+        """
         to_return = [i for i in _Todo.select(_Todo.q.completed == True).orderBy("completed_at")]
         to_return.reverse()
         return to_return
 
     def main_view(self):
+        """
+        Return the main view.
+
+        The main view is a list of lists of:
+            - visible context
+            - list of visible items of this context
+            - list of visible todos of this context
+
+        Order by the context position.
+        """
         items = self.list_items()
         todos = self.list_todos()
         contexts = self.list_contexts()
@@ -550,7 +646,7 @@ class TodoDB(object):
         """
         Receive a string, return all the todo that match that string
 
-        Arguments:
+        Argument:
             * a string
         """
         return [i for i in _Todo.select() if description in i.description]
