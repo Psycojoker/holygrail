@@ -48,7 +48,7 @@ class _Context(sqlobject.SQLObject):
     Your are not supposed to create a context directly from this class, use
     add_context() instead.
     """
-    description = sqlobject.StringCol()
+    description = sqlobject.UnicodeCol()
     default_context = sqlobject.BoolCol(default=False)
     created_at = sqlobject.DateCol(default=datetime.now())
     hide = sqlobject.BoolCol(default=False)
@@ -141,7 +141,7 @@ class _Item(sqlobject.SQLObject):
     Your are not supposed to create a item directly from this class, use
     add_item() instead.
     """
-    description = sqlobject.StringCol()
+    description = sqlobject.UnicodeCol()
     created_at = sqlobject.DateCol(default=date.today())
     tickler = sqlobject.DateTimeCol(default=None)
     context = sqlobject.ForeignKey('_Context')
@@ -280,7 +280,7 @@ class _Project(sqlobject.SQLObject):
     Your are not supposed to create a project directly from this class, use
     add_project() instead.
     """
-    description = sqlobject.StringCol()
+    description = sqlobject.UnicodeCol()
     created_at = sqlobject.DateCol(default=datetime.now())
     completed = sqlobject.BoolCol(default=False)
     completed_at = sqlobject.DateTimeCol(default=None)
