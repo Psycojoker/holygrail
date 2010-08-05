@@ -1114,6 +1114,31 @@ class Test_TDD(unittest.TestCase):
         todo = tododb.add_todo("la gamine qui est dans le siège devant moi arrête pas de faire plein de conneries", project=project.id, due=(due + timedelta(1)))
         self.assertTrue(comp_datetime(todo.due, due))
 
+    def test_get_todos_and_items_on_project_empty(self):
+        tododb = self.reinitialise()
+        project = tododb.add_project("regardcitoyens ça déchire")
+        self.assertEqual([[], []], project.get_todos_and_items())
+
+    def test_get_todos_and_items_on_project_todo(self):
+        tododb = self.reinitialise()
+        project = tododb.add_project("regardcitoyens ça déchire")
+        todo = tododb.add_todo("youplaboum", project=project.id)
+        self.assertTrue(todo in project.get_todos_and_items()[0])
+
+    def test_get_todos_and_items_on_project_item(self):
+        tododb = self.reinitialise()
+        project = tododb.add_project("regardcitoyens ça déchire")
+        item = tododb.add_item("huhu haha", project=project.id)
+        self.assertTrue(item in project.get_todos_and_items()[1])
+
+    def test_get_todos_and_items_on_project_item_n_todo(self):
+        tododb = self.reinitialise()
+        project = tododb.add_project("regardcitoyens ça déchire")
+        todo = tododb.add_todo("youplaboum", project=project.id)
+        item = tododb.add_item("huhu haha", project=project.id)
+        self.assertTrue(todo in project.get_todos_and_items()[0])
+        self.assertTrue(item in project.get_todos_and_items()[1])
+
     # TODO: refactorer les exceptions, favoriser un message plutôt que plein d'exceptions différentes
     # TODO: faire un utils.py et rajouter plein de petits outils dedans comme un parseur de date etc ...
     # TODO: faire marcher sd <- migrer vers lucid

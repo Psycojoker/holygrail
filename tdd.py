@@ -279,6 +279,16 @@ class _Project(sqlobject.SQLObject):
     default_context = sqlobject.ForeignKey('_Context', default=None)
     hide = sqlobject.BoolCol(default=False)
 
+    def get_todos_and_items(self):
+        """
+        Get the todos and the items associated to this project.
+
+        Return a list of a list of todos and a list of items.
+        [[todos], [items]]
+        """
+        return [[i for i in _Todo.select(_Todo.q.project == self)],
+                [j for j in _Item.select(_Item.q.project == self)]]
+
     def due_for(self, due):
         """
         Change the due date.
