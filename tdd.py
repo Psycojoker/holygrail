@@ -54,6 +54,16 @@ class _Context(sqlobject.SQLObject):
     hide = sqlobject.BoolCol(default=False)
     position = sqlobject.IntCol(unique=True)
 
+    def get_todos_and_items(self):
+        """
+        Get the todos and the items associated to this project.
+
+        Return a list of a list of todos and a list of items.
+        [[todos], [items]]
+        """
+        return [[i for i in _Todo.select(_Todo.q.context == self)],
+                [j for j in _Item.select(_Item.q.context == self)]]
+
     def change_position(self, new_position):
         """
         Change the position of the context in the main_view.

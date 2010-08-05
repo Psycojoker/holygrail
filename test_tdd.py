@@ -1114,6 +1114,31 @@ class Test_TDD(unittest.TestCase):
         todo = tododb.add_todo("la gamine qui est dans le siège devant moi arrête pas de faire plein de conneries", project=project.id, due=(due + timedelta(1)))
         self.assertTrue(comp_datetime(todo.due, due))
 
+    def test_get_todos_and_items_on_context_empty(self):
+        tododb = self.reinitialise()
+        context = tododb.add_context("regardcitoyens ça déchire")
+        self.assertEqual([[], []], context.get_todos_and_items())
+
+    def test_get_todos_and_items_on_context_todo(self):
+        tododb = self.reinitialise()
+        context = tododb.add_context("regardcitoyens ça déchire")
+        todo = tododb.add_todo("youplaboum", context=context.id)
+        self.assertTrue(todo in context.get_todos_and_items()[0])
+
+    def test_get_todos_and_items_on_context_item(self):
+        tododb = self.reinitialise()
+        context = tododb.add_context("regardcitoyens ça déchire")
+        item = tododb.add_item("huhu haha", context=context.id)
+        self.assertTrue(item in context.get_todos_and_items()[1])
+
+    def test_get_todos_and_items_on_context_item_n_todo(self):
+        tododb = self.reinitialise()
+        context = tododb.add_context("regardcitoyens ça déchire")
+        todo = tododb.add_todo("youplaboum", context=context.id)
+        item = tododb.add_item("huhu haha", context=context.id)
+        self.assertTrue(todo in context.get_todos_and_items()[0])
+        self.assertTrue(item in context.get_todos_and_items()[1])
+
     def test_get_todos_and_items_on_project_empty(self):
         tododb = self.reinitialise()
         project = tododb.add_project("regardcitoyens ça déchire")
