@@ -1164,6 +1164,12 @@ class Test_TDD(unittest.TestCase):
         self.assertTrue(todo in project.get_todos_and_items()[0])
         self.assertTrue(item in project.get_todos_and_items()[1])
 
+    def test_cant_wait_for_a_todo_that_wait_for_you(self):
+        tododb = self.reinitialise()
+        todo1 = tododb.add_todo("youplaboum")
+        todo2 = tododb.add_todo("tien, zimmermann se fait draguer sur twitter", wait_for=todo1)
+        self.assertRaises(WaitForError, todo1.wait_for, todo2)
+
     def test_todo_cant_wait_for_self(self):
         tododb = self.reinitialise()
         todo = tododb.add_todo("ima new todo")
