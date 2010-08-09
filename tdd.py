@@ -697,7 +697,7 @@ class TodoDB(object):
         Argument:
             * a string
         """
-        return [i for i in _Todo.select() if description in i.description]
+        return [i for i in _Todo.select(_Todo.q.description.contains(description))]
 
 
 if __name__ == "__main__":
