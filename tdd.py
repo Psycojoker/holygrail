@@ -24,7 +24,8 @@ import sqlobject
 
 from tdd_exceptions import TableAlreadyExist, ContextDoesntExist,\
     TodoDoesntExist, ContextStillHasElems, CanRemoveTheDefaultContext,\
-    ProjectDoesntExist, NoDatabaseConfiguration, ItemDoesntExist
+    ProjectDoesntExist, NoDatabaseConfiguration, ItemDoesntExist,\
+    CanWaitForSelf
 
 from datetime import date, datetime
 
@@ -208,6 +209,8 @@ class _Item(sqlobject.SQLObject):
         Argument:
             * the todo *id*
         """
+        if todo_id == self:
+            raise CanWaitForSelf()
         self.previous_todo = todo_id
 
 

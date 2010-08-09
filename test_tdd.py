@@ -24,7 +24,7 @@ import unittest, time
 
 from datetime import date, datetime, timedelta
 
-from tdd import TodoDB, TodoDoesntExist, TableAlreadyExist, CanRemoveTheDefaultContext, ContextDoesntExist, ContextStillHasElems, _Context, ProjectDoesntExist, _Todo, _Project, _Item, ItemDoesntExist
+from tdd import TodoDB, TodoDoesntExist, TableAlreadyExist, CanRemoveTheDefaultContext, ContextDoesntExist, ContextStillHasElems, _Context, ProjectDoesntExist, _Todo, _Project, _Item, ItemDoesntExist, CanWaitForSelf
 
 def comp_datetime(a, b):
     if a.year != b.year:
@@ -1163,6 +1163,11 @@ class Test_TDD(unittest.TestCase):
         item = tododb.add_item("huhu haha", project=project.id)
         self.assertTrue(todo in project.get_todos_and_items()[0])
         self.assertTrue(item in project.get_todos_and_items()[1])
+
+    def test_todo_cant_wait_for_self(self):
+        tododb = self.reinitialise()
+        todo = tododb.add_todo("ima new todo")
+        self.assertRaises(CanWaitForSelf, todo.wait_for, todo)
 
     # TODO: refactorer les exceptions, favoriser un message plutôt que plein d'exceptions différentes
     # TODO: faire un utils.py et rajouter plein de petits outils dedans comme un parseur de date etc ...
