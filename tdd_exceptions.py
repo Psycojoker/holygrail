@@ -65,9 +65,10 @@ class NoDatabaseConfiguration(exceptions.Exception):
     def __str__(self):
         return "Their isn't any uri for the database, etheir give TodoDB an uri at creation or create a config file with a DATABASE_ACCESS variable that containt the string of the uri"
 
-class CanWaitForSelf(exceptions.Exception):
-    def __init__(self):
-        super(CanWaitForSelf, self).__init__()
+class WaitForError(exceptions.Exception):
+    def __init__(self, error):
+        self.error = error
+        super(WaitForError, self).__init__()
 
     def __str__(self):
-        return "Todo can't wait for itself"
+        return self.error
