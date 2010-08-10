@@ -213,7 +213,6 @@ class _Item(sqlobject.SQLObject):
             raise WaitForError("Can't wait for self")
         elif (todo_id.previous_todo and todo_id.previous_todo is self):
             raise WaitForError("Can't wait for a todo that is waiting for me")
-        print todo_id, self.previous_todo
         self.previous_todo = todo_id
 
 
