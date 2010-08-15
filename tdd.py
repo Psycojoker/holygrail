@@ -215,6 +215,9 @@ class _Item(sqlobject.SQLObject):
             raise WaitForError("Can't wait for a todo that is waiting for me")
         self.previous_todo = todo_id
 
+class _TagTodo(sqlobject.SQLObject):
+    todo_id = sqlobject.ForeignKey("_Todo")
+    description = sqlobject.UnicodeCol()
 
 class _Todo(_Item):
     """
@@ -230,7 +233,23 @@ class _Todo(_Item):
     completed_at = sqlobject.DateTimeCol(default=None)
     _due = sqlobject.DateTimeCol(default=None)
     completed = sqlobject.BoolCol(default=False)
-    tags = False
+
+    @property
+    def tags(self):
+        return [i.description for i in _TagTodo.select(_TagTodo.q.todo_id == self.id)]
+
+    def add_tag(self, tag):
+        if not _TagTodo.select(sqlobject.AND(_TagTodo.q.description == tag, _TagTodo.q.todo_id == self)).count():
+            _TagTodo(todo_id = self.id, description = tag)
+        else:
+            assert _TagTodo.select(sqlobject.AND(_TagTodo.q.description == tag, _TagTodo.q.todo_id == self)).count() == 1
+
+    def remove_tag(self, req_tag):
+        tag = _TagTodo.select(sqlobject.AND(_TagTodo.q.description == req_tag, _TagTodo.q.todo_id == self))
+        if tag.count() == 0:
+            raise ValueError('tag "%s" doesn\'t exist' % tag)
+        assert tag.count() == 1
+        tag[0].destroySelf()
 
     @property
     def due(self):
@@ -613,6 +632,9 @@ class TodoDB(object):
         """
         assert _Context.select(_Context.q.default_context == True).count() == 1
         return _Context.select(_Context.q.default_context == True)[0]
+
+    def get_todos_from_tag(self, tag):
+        return [i.todo_id for i in _TagTodo.select(_TagTodo.q.description == tag)]
 
     def list_todos(self, all_todos=False):
         """

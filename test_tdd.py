@@ -1030,6 +1030,83 @@ class Test_TDD(unittest.TestCase):
         todo = self.tododb.add_todo("ima new todo")
         self.assertRaises(WaitForError, todo.wait_for, todo)
 
+class TestTags(unittest.TestCase):
+
+    def setUp(self):
+        self.tododb = self.reinitialise()
+
+    def reinitialise(self):
+        """
+        Reinitialise the db to make test with a clean one
+        Use a sqlite db in memory to avoid losing user/dev data
+        """
+        tododb = TodoDB('sqlite:/:memory:')
+        tododb.reset_db("yes")
+        return tododb
+
+    def test_tags_on_todo_empty(self):
+        todo = self.tododb.add_todo("plop")
+        self.assertFalse(todo.tags)
+
+    def test_tags_todo_one(self):
+        todo = self.tododb.add_todo("tatatags")
+        todo.add_tag("plop")
+        self.assertEqual(todo.tags, ["plop",])
+
+    def test_tags_todo_avoid_duplication(self):
+        todo = self.tododb.add_todo("tatatags")
+        todo.add_tag("plop")
+        self.assertEqual(todo.tags, ["plop",])
+        todo.add_tag("plop")
+        self.assertEqual(todo.tags, ["plop",])
+
+    def test_tags_todo_multiple(self):
+        todo = self.tododb.add_todo("tsointsoin")
+        todo.add_tag("plop")
+        todo.add_tag("plup")
+        self.assertTrue("plop" in todo.tags)
+        self.assertTrue("plup" in todo.tags)
+        self.assertEqual(len(todo.tags), 2)
+
+    def test_tags_todo_remove_tag(self):
+        todo = self.tododb.add_todo("tsointsoin")
+        todo.add_tag("plop")
+        todo.remove_tag("plop")
+        self.assertEqual([], todo.tags)
+
+    def test_tags_todo_remove_tags(self):
+        todo = self.tododb.add_todo("tsointsoin")
+        todo.add_tag("plop")
+        todo.add_tag("yop")
+        todo.remove_tag("plop")
+        self.assertEqual(["yop"], todo.tags)
+        todo.remove_tag("yop")
+        self.assertEqual([], todo.tags)
+
+    def test_tags_todo_remove_tag_raise(self):
+        todo = self.tododb.add_todo("tsointsoin")
+        todo.add_tag("plop")
+        self.assertRaises(ValueError, todo.remove_tag, "ploup")
+
+    def test_tags_todo_get_todo_empty(self):
+        self.assertEqual([], self.tododb.get_todos_from_tag("pouet"))
+
+    def test_tags_todo_get_one_todo(self):
+        todo1 = self.tododb.add_todo("tsointsoin")
+        todo1.add_tag("plop")
+        self.assertEqual([todo1], self.tododb.get_todos_from_tag("plop"))
+
+    def test_tags_todo_get_two_todos(self):
+        todo1 = self.tododb.add_todo("tsointsoin")
+        todo1.add_tag("plop")
+        todo2 = self.tododb.add_todo("tsointsoin")
+        todo2.add_tag("plop")
+        todos = self.tododb.get_todos_from_tag("plop")
+        self.assertTrue(todo1 in todos)
+        self.assertTrue(todo2 in todos)
+        self.assertEqual(2, len(todos))
+
+
     # TODO: refactorer les exceptions, favoriser un message plutôt que plein d'exceptions différentes
     # TODO: faire un utils.py et rajouter plein de petits outils dedans comme un parseur de date etc ...
     # TODO: faire marcher sd <- migrer vers lucid
