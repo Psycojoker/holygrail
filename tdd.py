@@ -442,18 +442,10 @@ class TodoDB(object):
             _Item.dropTable(ifExists=True)
             _Todo.dropTable(ifExists=True)
 
-            try:
-                _Context.createTable()
-                _Project.createTable(ifNotExists=True)
-                _Todo.createTable()
-                _Item.createTable()
-            except Exception, e:
-                # supreme dirty, I really don't know why I push this
-                # I haven't found another way to do this :(
-                if str(e).endswith("exists"):
-                    raise TableAlreadyExist(str(e))
-                else:
-                    raise e
+            _Context.createTable()
+            _Project.createTable()
+            _Todo.createTable()
+            _Item.createTable()
 
             # always have a context
             _Context(description="default context", default_context = True, position=0)
