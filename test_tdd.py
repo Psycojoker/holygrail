@@ -52,9 +52,9 @@ class Test_TDD(unittest.TestCase):
         Reinitialise the db to make test with a clean one
         Use a sqlite db in memory to avoid losing user/dev data
         """
-        self.tododb = TodoDB('sqlite:/:memory:')
-        self.tododb.reset_db("yes")
-        return self.tododb
+        tododb = TodoDB('sqlite:/:memory:')
+        tododb.reset_db("yes")
+        return tododb
 
     def test_add_a_todo(self):
         """
@@ -1037,7 +1037,6 @@ class Test_TDD(unittest.TestCase):
     # TODO: faire une méthode de converstion d'un item en todo
     # TODO: envisager de changer le fichier de config pour qu'écrire l'accès à la bdd soit plus simple
     # TODO: add other search methods
-    # TODO: reset db à la place de drop db et un confirmation demandé
     # TODO: spliter mes tests unitaires en plusieurs classes
 
 if __name__ == "__main__":

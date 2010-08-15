@@ -230,6 +230,7 @@ class _Todo(_Item):
     completed_at = sqlobject.DateTimeCol(default=None)
     _due = sqlobject.DateTimeCol(default=None)
     completed = sqlobject.BoolCol(default=False)
+    tags = False
 
     @property
     def due(self):
