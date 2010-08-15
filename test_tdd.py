@@ -53,8 +53,7 @@ class Test_TDD(unittest.TestCase):
         Use a sqlite db in memory to avoid losing user/dev data
         """
         self.tododb = TodoDB('sqlite:/:memory:')
-        self.tododb.drop_db()
-        self.tododb.create_db()
+        self.tododb.reset_db("yes")
         return self.tododb
 
     #def test_connect_to_another_database(self):
@@ -236,9 +235,6 @@ class Test_TDD(unittest.TestCase):
     def test_tdd_should_have_a_context_at_creation(self):
         self.assertEqual("default context", _Context.get(1).description)
         self.assertEqual(1, _Context.select().count())
-
-    def test_create_raise_if_table_already_exist(self):
-        self.assertRaises(TableAlreadyExist, self.tododb.create_db)
 
     def test_add_context(self):
         context = self.tododb.add_context("new context")
@@ -483,11 +479,16 @@ class Test_TDD(unittest.TestCase):
         self.assertEqual(None, todo2.project)
 
     def test_auto_create_tables(self):
-        TodoDB('sqlite:/:memory:').drop_db()
+        TodoDB('sqlite:/:memory:')
+        _Context.dropTable(ifExists=True)
+        _Project.dropTable(ifExists=True)
+        _Item.dropTable(ifExists=True)
+        _Todo.dropTable(ifExists=True)
         TodoDB('sqlite:/:memory:')
         self.assertTrue(_Todo.tableExists())
         self.assertTrue(_Context.tableExists())
         self.assertTrue(_Project.tableExists())
+        self.assertTrue(_Item.tableExists())
 
     def test_context_position(self):
         context = self.tododb.get_default_context()
@@ -1040,6 +1041,7 @@ class Test_TDD(unittest.TestCase):
     # TODO: envisager de changer le fichier de config pour qu'écrire l'accès à la bdd soit plus simple
     # TODO: add other search methods
     # TODO: reset db à la place de drop db et un confirmation demandé
+    # TODO: spliter mes tests unitaires en plusieurs classes
 
 if __name__ == "__main__":
    unittest.main()

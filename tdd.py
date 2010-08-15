@@ -399,7 +399,7 @@ class TodoDB(object):
             print "TodoDB: WARNING: database in a non conform state, will probably bug. Do you need to launch a migration script ?"
         elif not _Todo.tableExists() and not _Project.tableExists() and not _Context.tableExists() and not _Item.tableExists():
             print "TodoDB: DB doesn't exist, I'll create it"
-            self.create_db()
+            self.reset_db("yes")
 
     def _connect(self, database_uri):
         """
@@ -410,36 +410,35 @@ class TodoDB(object):
         """
         sqlobject.sqlhub.processConnection = sqlobject.connectionForURI(database_uri) if database_uri else sqlobject.connectionForURI(DATABASE_ACCESS)
 
-    def create_db(self):
+    def reset_db(self, are_you_sure=False):
         """
-        Create the database. Raise TableAlreadyExist if a table is already created.
-        """
-        try:
-            _Context.createTable()
-            _Project.createTable(ifNotExists=True)
-            _Todo.createTable()
-            _Item.createTable()
-        except Exception, e:
-            # supreme dirty, I really don't know why I push this
-            # I haven't found another way to do this :(
-            if str(e).endswith("exists"):
-                raise TableAlreadyExist(str(e))
-            else:
-                raise e
-
-        # always have a context
-        _Context(description="default context", default_context = True, position=0)
-
-    def drop_db(self):
-        """
-        Drop the database if it isn't already drop
+        Reset the database. Use with caution.
 
         WARNING: this will destroy *EVERYTHING* in the database
         """
-        _Context.dropTable(ifExists=True)
-        _Project.dropTable(ifExists=True)
-        _Item.dropTable(ifExists=True)
-        _Todo.dropTable(ifExists=True)
+        if are_you_sure:
+            _Context.dropTable(ifExists=True)
+            _Project.dropTable(ifExists=True)
+            _Item.dropTable(ifExists=True)
+            _Todo.dropTable(ifExists=True)
+
+            try:
+                _Context.createTable()
+                _Project.createTable(ifNotExists=True)
+                _Todo.createTable()
+                _Item.createTable()
+            except Exception, e:
+                # supreme dirty, I really don't know why I push this
+                # I haven't found another way to do this :(
+                if str(e).endswith("exists"):
+                    raise TableAlreadyExist(str(e))
+                else:
+                    raise e
+
+            # always have a context
+            _Context(description="default context", default_context = True, position=0)
+        else:
+            print "You aren't sure, so I won't reset it"
 
     def add_todo(self, new_description, tickler=None, due=None, project=None, context=None, wait_for=None, unique=False):
         """
