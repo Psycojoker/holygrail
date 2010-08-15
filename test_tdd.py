@@ -56,9 +56,6 @@ class Test_TDD(unittest.TestCase):
         self.tododb.reset_db("yes")
         return self.tododb
 
-    #def test_connect_to_another_database(self):
-        #TodoDB("sqlite:/:memory:")
-
     def test_add_a_todo(self):
         """
         You should be able to add a new todo.
