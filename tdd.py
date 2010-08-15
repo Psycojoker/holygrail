@@ -441,11 +441,14 @@ class TodoDB(object):
             _Project.dropTable(ifExists=True)
             _Item.dropTable(ifExists=True)
             _Todo.dropTable(ifExists=True)
+            _TagTodo.dropTable(ifExists=True)
+
 
             _Context.createTable()
             _Project.createTable()
             _Todo.createTable()
             _Item.createTable()
+            _TagTodo.createTable()
 
             # always have a context
             _Context(description="default context", default_context = True, position=0)
