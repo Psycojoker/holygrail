@@ -126,6 +126,9 @@ class _Context(sqlobject.SQLObject):
         """
         self.hide = not self.hide
 
+class _TagItem(sqlobject.SQLObject):
+    item_id = sqlobject.ForeignKey("_Item")
+    description = sqlobject.UnicodeCol()
 
 class _Item(sqlobject.SQLObject):
     """
@@ -148,6 +151,23 @@ class _Item(sqlobject.SQLObject):
     context = sqlobject.ForeignKey('_Context')
     project = sqlobject.ForeignKey('_Project', default=None)
     previous_todo = sqlobject.ForeignKey('_Todo', default=None)
+
+    @property
+    def tags(self):
+        return [i.description for i in _TagItem.select(_TagItem.q.item_id == self.id)]
+
+    def add_tag(self, tag):
+        if not _TagItem.select(sqlobject.AND(_TagItem.q.description == tag, _TagItem.q.item_id == self)).count():
+            _TagItem(item_id = self.id, description = tag)
+        else:
+            assert _TagItem.select(sqlobject.AND(_TagItem.q.description == tag, _TagItem.q.item_id == self)).count() == 1
+
+    def remove_tag(self, req_tag):
+        tag = _TagItem.select(sqlobject.AND(_TagItem.q.description == req_tag, _TagItem.q.item_id == self))
+        if tag.count() == 0:
+            raise ValueError('tag "%s" doesn\'t exist' % tag)
+        assert tag.count() == 1
+        tag[0].destroySelf()
 
     def visible(self):
         """
@@ -442,6 +462,7 @@ class TodoDB(object):
             _Item.dropTable(ifExists=True)
             _Todo.dropTable(ifExists=True)
             _TagTodo.dropTable(ifExists=True)
+            _TagItem.dropTable(ifExists=True)
 
 
             _Context.createTable()
@@ -449,6 +470,7 @@ class TodoDB(object):
             _Todo.createTable()
             _Item.createTable()
             _TagTodo.createTable()
+            _TagItem.createTable()
 
             # always have a context
             _Context(description="default context", default_context = True, position=0)
@@ -630,6 +652,9 @@ class TodoDB(object):
 
     def get_todos_from_tag(self, tag):
         return [i.todo_id for i in _TagTodo.select(_TagTodo.q.description == tag)]
+
+    def get_items_from_tag(self, tag):
+        return [i.item_id for i in _TagItem.select(_TagItem.q.description == tag)]
 
     def list_todos(self, all_todos=False):
         """
