@@ -126,9 +126,11 @@ class _Context(sqlobject.SQLObject):
         """
         self.hide = not self.hide
 
+
 class _TagItem(sqlobject.SQLObject):
     item_id = sqlobject.ForeignKey("_Item")
     description = sqlobject.UnicodeCol()
+
 
 class _Item(sqlobject.SQLObject):
     """
@@ -235,9 +237,11 @@ class _Item(sqlobject.SQLObject):
             raise WaitForError("Can't wait for a todo that is waiting for me")
         self.previous_todo = todo_id
 
+
 class _TagTodo(sqlobject.SQLObject):
     todo_id = sqlobject.ForeignKey("_Todo")
     description = sqlobject.UnicodeCol()
+
 
 class _Todo(_Item):
     """
