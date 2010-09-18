@@ -22,12 +22,12 @@ Toudoudone  Copyright (C) 2010  Laurent Peuch  <cortex@worlddomination.be>
 
 import sqlobject
 
-from tdd_exceptions import TableAlreadyExist, ContextDoesntExist,\
+from tdd_exceptions import ContextDoesntExist,\
     TodoDoesntExist, ContextStillHasElems, CanRemoveTheDefaultContext,\
     ProjectDoesntExist, NoDatabaseConfiguration, ItemDoesntExist,\
     WaitForError
 
-from datetime import date, datetime
+from datetime import date, datetime, timedelta
 
 import config
 

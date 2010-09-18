@@ -24,7 +24,7 @@ import unittest, time
 
 from datetime import date, datetime, timedelta
 
-from tdd import TodoDB, TodoDoesntExist, TableAlreadyExist, CanRemoveTheDefaultContext, ContextDoesntExist, ContextStillHasElems, _Context, ProjectDoesntExist, _Todo, _Project, _Item, ItemDoesntExist, WaitForError
+from tdd import TodoDB, TodoDoesntExist, CanRemoveTheDefaultContext, ContextDoesntExist, ContextStillHasElems, _Context, ProjectDoesntExist, _Todo, _Project, _Item, ItemDoesntExist, WaitForError
 
 def comp_datetime(a, b):
     if a.year != b.year:
