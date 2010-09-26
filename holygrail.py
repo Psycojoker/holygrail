@@ -416,7 +416,7 @@ class _Project(sqlobject.SQLObject):
         self.hide = not self.hide
 
 
-class TodoDB(object):
+class Grail(object):
 
     def __init__(self, database_uri=None):
         """
@@ -440,9 +440,9 @@ class TodoDB(object):
         """
         # check that everything if normal (all table created or not created)
         if not ((not _Item.tableExists() and not _Todo.tableExists() and not _Project.tableExists() and not _Context.tableExists()) or (_Todo.tableExists() and _Project.tableExists() and _Context.tableExists() and _Item.tableExists())):
-            print "TodoDB: WARNING: database in a non conform state, will probably bug. Do you need to launch a migration script ?"
+            print "Grail: WARNING: database in a non conform state, will probably bug. Do you need to launch a migration script ?"
         elif not _Todo.tableExists() and not _Project.tableExists() and not _Context.tableExists() and not _Item.tableExists():
-            print "TodoDB: DB doesn't exist, I'll create it"
+            print "Grail: DB doesn't exist, I'll create it"
             self.reset_db("yes")
 
     def _connect(self, database_uri):
