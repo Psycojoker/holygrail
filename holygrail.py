@@ -27,7 +27,7 @@ from holygrail_exceptions import ContextDoesntExist,\
     ProjectDoesntExist, NoDatabaseConfiguration, ItemDoesntExist,\
     WaitForError
 
-from datetime import date, datetime, timedelta
+from datetime import date, datetime
 
 import config
 
