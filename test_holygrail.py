@@ -24,7 +24,7 @@ import unittest, time
 
 from datetime import date, datetime, timedelta
 
-from holygrail import Grail, TodoDoesntExist, CanRemoveTheDefaultContext, ContextDoesntExist, ContextStillHasElems, _Context, ProjectDoesntExist, _Todo, _Project, WaitForError
+from holygrail import Grail, TodoDoesntExist, CanRemoveTheDefaultContext, ContextDoesntExist, ContextStillHasElems, _Context, QuestDoesntExist, _Todo, _Quest, WaitForError
 
 def comp_datetime(a, b):
     if a.year != b.year:
@@ -326,50 +326,50 @@ class Test_TDD(unittest.TestCase):
         context = self.grail.add_context("les fils de teuphu c'est super")
         self.assertEqual(date.today(), context.created_at)
 
-    def test_add_project(self):
-        project = self.grail.add_project("project apocalypse")
-        self.assertEqual("project apocalypse", project.description)
+    def test_add_quest(self):
+        quest = self.grail.add_quest("quest apocalypse")
+        self.assertEqual("quest apocalypse", quest.description)
 
-    def test_get_project(self):
-        project = self.grail.add_project("project manatan")
-        self.assertEqual(project, self.grail.get_project(project.id))
+    def test_get_quest(self):
+        quest = self.grail.add_quest("quest manatan")
+        self.assertEqual(quest, self.grail.get_quest(quest.id))
 
-    def test_get_project_raise_if_dont_exist(self):
-        self.assertRaises(ProjectDoesntExist, self.grail.get_project, 42)
+    def test_get_quest_raise_if_dont_exist(self):
+        self.assertRaises(QuestDoesntExist, self.grail.get_quest, 42)
 
-    def test_get_project_by_desc(self):
-        project = self.grail.add_project("acheter du saucisson")
-        self.assertEqual(self.grail.get_project_by_desc("acheter du saucisson")[0], project)
-        self.assertEqual(len(self.grail.get_project_by_desc("acheter du saucisson")), 1)
-        self.grail.add_project("acheter du saucisson")
-        self.assertEqual(len(self.grail.get_project_by_desc("acheter du saucisson")), 2)
-        self.assertEqual(len(self.grail.get_project_by_desc("acheter des cornichons")), 0)
+    def test_get_quest_by_desc(self):
+        quest = self.grail.add_quest("acheter du saucisson")
+        self.assertEqual(self.grail.get_quest_by_desc("acheter du saucisson")[0], quest)
+        self.assertEqual(len(self.grail.get_quest_by_desc("acheter du saucisson")), 1)
+        self.grail.add_quest("acheter du saucisson")
+        self.assertEqual(len(self.grail.get_quest_by_desc("acheter du saucisson")), 2)
+        self.assertEqual(len(self.grail.get_quest_by_desc("acheter des cornichons")), 0)
 
-    def test_rename_project(self):
-        project = self.grail.add_project("j'ai envie de chocolat")
-        project.rename("the cake is a lie")
-        self.assertEqual(project.description, "the cake is a lie")
+    def test_rename_quest(self):
+        quest = self.grail.add_quest("j'ai envie de chocolat")
+        quest.rename("the cake is a lie")
+        self.assertEqual(quest.description, "the cake is a lie")
 
-    def test_list_projects(self):
-        self.assertEqual(0, len(self.grail.list_projects()))
-        project = self.grail.add_project("ce truc a l'air super http://smarterware.org/6172/hilary-mason-how-to-replace-yourself-with-a-small-shell-script")
-        self.assertTrue(project in self.grail.list_projects())
-        self.assertEqual(1, len(self.grail.list_projects()))
+    def test_list_quests(self):
+        self.assertEqual(0, len(self.grail.list_quests()))
+        quest = self.grail.add_quest("ce truc a l'air super http://smarterware.org/6172/hilary-mason-how-to-replace-yourself-with-a-small-shell-script")
+        self.assertTrue(quest in self.grail.list_quests())
+        self.assertEqual(1, len(self.grail.list_quests()))
 
-    def test_remove_project(self):
-        self.assertEqual(0, len(self.grail.list_projects()))
-        project = self.grail.add_project("lovely code vortex")
-        self.assertEqual(1, len(self.grail.list_projects()))
-        old_id = project.id
-        project.remove()
-        self.assertRaises(ProjectDoesntExist, self.grail.get_project, old_id)
-        self.assertEqual(0, len(self.grail.list_projects()))
+    def test_remove_quest(self):
+        self.assertEqual(0, len(self.grail.list_quests()))
+        quest = self.grail.add_quest("lovely code vortex")
+        self.assertEqual(1, len(self.grail.list_quests()))
+        old_id = quest.id
+        quest.remove()
+        self.assertRaises(QuestDoesntExist, self.grail.get_quest, old_id)
+        self.assertEqual(0, len(self.grail.list_quests()))
 
-    def test_change_todo_project(self):
-        project = self.grail.add_project("manger une pomme")
+    def test_change_todo_quest(self):
+        quest = self.grail.add_quest("manger une pomme")
         todo = self.grail.add_todo("le nouveau leak d'ACTA est dégeulasse")
-        todo.change_project(project.id)
-        self.assertEqual(todo.project, project)
+        todo.change_quest(quest.id)
+        self.assertEqual(todo.quest, quest)
 
     def test_next_todo(self):
         todo1 = self.grail.add_todo("first todo")
@@ -395,37 +395,37 @@ class Test_TDD(unittest.TestCase):
         todo2 = self.grail.add_todo("second todo", wait_for=todo1.id)
         self.assertEqual(todo1, todo2.previous_todo)
 
-    def test_add_todo_with_a_project(self):
-        project = self.grail.add_project("gare a Gallo")
-        todo = self.grail.add_todo("first todo", project=project.id)
-        self.assertEqual(project, todo.project)
+    def test_add_todo_with_a_quest(self):
+        quest = self.grail.add_quest("gare a Gallo")
+        todo = self.grail.add_todo("first todo", quest=quest.id)
+        self.assertEqual(quest, todo.quest)
 
-    def test_project_should_have_a_creation_date(self):
-        project = self.grail.add_project("youplaboum")
-        self.assertEqual(project.created_at, date.today())
+    def test_quest_should_have_a_creation_date(self):
+        quest = self.grail.add_quest("youplaboum")
+        self.assertEqual(quest.created_at, date.today())
 
-    def test_set_default_context_to_project(self):
-        project = self.grail.add_project("youmi, I love chocolate")
+    def test_set_default_context_to_quest(self):
+        quest = self.grail.add_quest("youmi, I love chocolate")
         context = self.grail.add_context("pc")
-        project.set_default_context(context.id)
-        self.assertEqual(context, project.default_context)
+        quest.set_default_context(context.id)
+        self.assertEqual(context, quest.default_context)
 
-    def test_set_default_context_to_project_at_creation(self):
+    def test_set_default_context_to_quest_at_creation(self):
         context = self.grail.add_context("pc")
-        project = self.grail.add_project("youmi, I love chocolate", default_context=context.id)
-        self.assertEqual(context, project.default_context)
+        quest = self.grail.add_quest("youmi, I love chocolate", default_context=context.id)
+        self.assertEqual(context, quest.default_context)
 
-    def test_new_todo_with_project_with_default_context(self):
+    def test_new_todo_with_quest_with_default_context(self):
         context = self.grail.add_context("pc")
-        project = self.grail.add_project("youmi, I love chocolate", default_context=context.id)
-        todo = self.grail.add_todo("pataplouf", project=project.id)
+        quest = self.grail.add_quest("youmi, I love chocolate", default_context=context.id)
+        todo = self.grail.add_todo("pataplouf", quest=quest.id)
         self.assertEqual(todo.context, context)
 
-    def test_new_todo_with_project_with_default_context_and_context(self):
+    def test_new_todo_with_quest_with_default_context_and_context(self):
         context = self.grail.add_context("pc")
         other_context = self.grail.add_context("mouhaha")
-        project = self.grail.add_project("youmi, I love chocolate", default_context=context.id)
-        todo = self.grail.add_todo("pataplouf", context=other_context, project=project.id)
+        quest = self.grail.add_quest("youmi, I love chocolate", default_context=context.id)
+        todo = self.grail.add_todo("pataplouf", context=other_context, quest=quest.id)
         self.assertEqual(todo.context, other_context)
 
     def test_set_hide_context(self):
@@ -467,23 +467,23 @@ class Test_TDD(unittest.TestCase):
         self.assertTrue(todo2 in self.grail.list_todos())
         self.assertEqual(None, todo2.previous_todo)
 
-    def test_remove_project_with_todos(self):
-        project = self.grail.add_project("tchikaboum")
-        todo = self.grail.add_todo("arakiri", project=project.id)
-        todo2 = self.grail.add_todo("arakirikiki", project=project.id)
-        project.remove()
-        self.assertEqual(None, todo.project)
-        self.assertEqual(None, todo2.project)
+    def test_remove_quest_with_todos(self):
+        quest = self.grail.add_quest("tchikaboum")
+        todo = self.grail.add_todo("arakiri", quest=quest.id)
+        todo2 = self.grail.add_todo("arakirikiki", quest=quest.id)
+        quest.remove()
+        self.assertEqual(None, todo.quest)
+        self.assertEqual(None, todo2.quest)
 
     def test_auto_create_tables(self):
         Grail('sqlite:/:memory:')
         _Context.dropTable(ifExists=True)
-        _Project.dropTable(ifExists=True)
+        _Quest.dropTable(ifExists=True)
         _Todo.dropTable(ifExists=True)
         Grail('sqlite:/:memory:')
         self.assertTrue(_Todo.tableExists())
         self.assertTrue(_Context.tableExists())
-        self.assertTrue(_Project.tableExists())
+        self.assertTrue(_Quest.tableExists())
 
     def test_context_position(self):
         context = self.grail.get_default_context()
@@ -592,7 +592,7 @@ class Test_TDD(unittest.TestCase):
         self.assertEqual(3, context5.position)
         self.assertEqual(5, context6.position)
 
-    def test_list_project_by_position(self):
+    def test_list_quest_by_position(self):
         context1 = self.grail.get_default_context()
         context1.rename("context1")
         context2 = self.grail.add_context("context2")
@@ -609,37 +609,37 @@ class Test_TDD(unittest.TestCase):
         self.assertEqual(contexts[3], context5)
         self.assertEqual(contexts[5], context6)
 
-    def test_project_hide(self):
-        project = self.grail.add_project("lalala")
-        self.assertFalse(project.hide)
-        project.toggle_hide()
-        self.assertTrue(project.hide)
-        project.toggle_hide()
-        self.assertFalse(project.hide)
+    def test_quest_hide(self):
+        quest = self.grail.add_quest("lalala")
+        self.assertFalse(quest.hide)
+        quest.toggle_hide()
+        self.assertTrue(quest.hide)
+        quest.toggle_hide()
+        self.assertFalse(quest.hide)
 
-    def test_project_hide_at_creation(self):
-        project = self.grail.add_project("lalala", hide=True)
-        self.assertTrue(project.hide)
+    def test_quest_hide_at_creation(self):
+        quest = self.grail.add_quest("lalala", hide=True)
+        self.assertTrue(quest.hide)
 
-    def test_list_todo_with_project_hide(self):
-        project = self.grail.add_project("qsd")
-        project.toggle_hide()
-        todo = self.grail.add_todo("toto", project=project.id)
+    def test_list_todo_with_quest_hide(self):
+        quest = self.grail.add_quest("qsd")
+        quest.toggle_hide()
+        todo = self.grail.add_todo("toto", quest=quest.id)
         self.assertFalse(todo in self.grail.list_todos())
         self.assertTrue(todo in self.grail.list_todos(all_todos=True))
 
-    def test_list_project_and_project_hide(self):
-        project = self.grail.add_project("huhu")
-        project.toggle_hide()
-        self.assertFalse(project in self.grail.list_projects())
+    def test_list_quest_and_quest_hide(self):
+        quest = self.grail.add_quest("huhu")
+        quest.toggle_hide()
+        self.assertFalse(quest in self.grail.list_quests())
 
-    def test_list_all_projects(self):
-        project = self.grail.add_project("huhu")
-        self.assertTrue(project in self.grail.list_projects())
-        self.assertTrue(project in self.grail.list_projects(all_projects=True))
-        project.toggle_hide()
-        self.assertFalse(project in self.grail.list_projects())
-        self.assertTrue(project in self.grail.list_projects(all_projects=True))
+    def test_list_all_quests(self):
+        quest = self.grail.add_quest("huhu")
+        self.assertTrue(quest in self.grail.list_quests())
+        self.assertTrue(quest in self.grail.list_quests(all_quests=True))
+        quest.toggle_hide()
+        self.assertFalse(quest in self.grail.list_quests())
+        self.assertTrue(quest in self.grail.list_quests(all_quests=True))
 
     #def test_next_todo_for_item(self):
         #todo = self.grail.add_todo("todo")
@@ -665,49 +665,49 @@ class Test_TDD(unittest.TestCase):
         #item = self.grail.add_item("second item", wait_for=todo.id)
         #self.assertEqual(todo, item.previous_todo)
 
-    def test_project_completion(self):
-        project = self.grail.add_project("bah")
-        self.assertFalse(project.completed)
-        project.toggle()
-        self.assertTrue(project.completed)
-        project.toggle()
-        self.assertFalse(project.completed)
+    def test_quest_completion(self):
+        quest = self.grail.add_quest("bah")
+        self.assertFalse(quest.completed)
+        quest.toggle()
+        self.assertTrue(quest.completed)
+        quest.toggle()
+        self.assertFalse(quest.completed)
 
-    def test_project_completion_date(self):
-        project = self.grail.add_project("yamakasi")
-        project.toggle()
-        self.assertTrue(comp_datetime(datetime.now(), project.completed_at))
-        project.toggle()
-        self.assertEqual(None, project.completed_at)
+    def test_quest_completion_date(self):
+        quest = self.grail.add_quest("yamakasi")
+        quest.toggle()
+        self.assertTrue(comp_datetime(datetime.now(), quest.completed_at))
+        quest.toggle()
+        self.assertEqual(None, quest.completed_at)
 
-    def test_todo_with_project_completion(self):
-        project = self.grail.add_project("the wild rover")
-        todo = self.grail.add_todo("s", project=project.id)
-        project.toggle()
+    def test_todo_with_quest_completion(self):
+        quest = self.grail.add_quest("the wild rover")
+        todo = self.grail.add_todo("s", quest=quest.id)
+        quest.toggle()
         self.assertFalse(todo in self.grail.list_todos())
 
-    def test_project_tickler(self):
-        project = self.grail.add_project("j'ai faim")
+    def test_quest_tickler(self):
+        quest = self.grail.add_quest("j'ai faim")
         tickler = datetime(2010, 06, 25)
-        project.tickle(tickler)
-        self.assertEqual(tickler, project.tickler)
+        quest.tickle(tickler)
+        self.assertEqual(tickler, quest.tickler)
 
-    def test_project_tickler_at_creation(self):
+    def test_quest_tickler_at_creation(self):
         tickler = datetime(2010, 06, 25)
-        project = self.grail.add_project("j'ai faim", tickler=tickler)
-        self.assertEqual(tickler, project.tickler)
+        quest = self.grail.add_quest("j'ai faim", tickler=tickler)
+        self.assertEqual(tickler, quest.tickler)
 
-    def test_list_project_tickler(self):
+    def test_list_quest_tickler(self):
         # for tomorrow
         tickler = datetime.now() + timedelta(1)
-        project = self.grail.add_project("haha, j'ai visité LA brasserie de Guiness", tickler=tickler)
-        self.assertFalse(project in self.grail.list_projects())
-        self.assertTrue(project in self.grail.list_projects(all_projects=True))
+        quest = self.grail.add_quest("haha, j'ai visité LA brasserie de Guiness", tickler=tickler)
+        self.assertFalse(quest in self.grail.list_quests())
+        self.assertTrue(quest in self.grail.list_quests(all_quests=True))
 
-    def test_todo_with_project_tickler(self):
+    def test_todo_with_quest_tickler(self):
         tickler = datetime.now() + timedelta(1)
-        project = self.grail.add_project("j'avais pas réalisé que c'était eux qui avaient inventé le guiness world record book", tickler=tickler)
-        todo = self.grail.add_todo("chier, il pleut", project=project.id)
+        quest = self.grail.add_quest("j'avais pas réalisé que c'était eux qui avaient inventé le guiness world record book", tickler=tickler)
+        todo = self.grail.add_todo("chier, il pleut", quest=quest.id)
         self.assertFalse(todo in self.grail.list_todos())
         self.assertTrue(todo in self.grail.list_todos(all_todos=True))
 
@@ -755,33 +755,33 @@ class Test_TDD(unittest.TestCase):
         last_completed_todos = self.grail.last_completed_todos()
         self.assertEqual([todo2, todo3, todo1], last_completed_todos)
 
-    def test_project_due(self):
-        project = self.grail.add_project("je code dans un avion qui revient d'irlande")
+    def test_quest_due(self):
+        quest = self.grail.add_quest("je code dans un avion qui revient d'irlande")
         due = date.today()
-        project.due_for(due)
-        self.assertEqual(project.due, due)
+        quest.due_for(due)
+        self.assertEqual(quest.due, due)
 
-    def test_project_due_at_creation(self):
+    def test_quest_due_at_creation(self):
         due = datetime.now()
-        project = self.grail.add_project("je code dans un avion qui revient d'irlande", due=due)
-        self.assertTrue(comp_datetime(project.due, due))
+        quest = self.grail.add_quest("je code dans un avion qui revient d'irlande", due=due)
+        self.assertTrue(comp_datetime(quest.due, due))
 
-    def test_project_due_date_on_a_todo(self):
+    def test_quest_due_date_on_a_todo(self):
         due = datetime.now()
-        project = self.grail.add_project("je code dans un avion qui revient d'irlande", due=due)
-        todo = self.grail.add_todo("la gamine qui est dans le siège devant moi arrête pas de faire plein de conneries", project=project.id)
+        quest = self.grail.add_quest("je code dans un avion qui revient d'irlande", due=due)
+        todo = self.grail.add_todo("la gamine qui est dans le siège devant moi arrête pas de faire plein de conneries", quest=quest.id)
         self.assertTrue(comp_datetime(todo.due, due))
 
-    def test_project_due_date_on_a_todo_with_earlier_todo(self):
+    def test_quest_due_date_on_a_todo_with_earlier_todo(self):
         due = datetime.now()
-        project = self.grail.add_project("je code dans un avion qui revient d'irlande", due=(due + timedelta(1)))
-        todo = self.grail.add_todo("la gamine qui est dans le siège devant moi arrête pas de faire plein de conneries", project=project.id, due=due)
+        quest = self.grail.add_quest("je code dans un avion qui revient d'irlande", due=(due + timedelta(1)))
+        todo = self.grail.add_todo("la gamine qui est dans le siège devant moi arrête pas de faire plein de conneries", quest=quest.id, due=due)
         self.assertTrue(comp_datetime(todo.due, due))
 
-    def test_project_due_date_on_a_todo_with_later_todo(self):
+    def test_quest_due_date_on_a_todo_with_later_todo(self):
         due = datetime.now()
-        project = self.grail.add_project("je code dans un avion qui revient d'irlande", due=due)
-        todo = self.grail.add_todo("la gamine qui est dans le siège devant moi arrête pas de faire plein de conneries", project=project.id, due=(due + timedelta(1)))
+        quest = self.grail.add_quest("je code dans un avion qui revient d'irlande", due=due)
+        todo = self.grail.add_todo("la gamine qui est dans le siège devant moi arrête pas de faire plein de conneries", quest=quest.id, due=(due + timedelta(1)))
         self.assertTrue(comp_datetime(todo.due, due))
 
     def test_get_todos_on_context_empty(self):
@@ -793,14 +793,14 @@ class Test_TDD(unittest.TestCase):
         todo = self.grail.add_todo("youplaboum", context=context.id)
         self.assertTrue(todo in context.get_todos())
 
-    def test_get_todos_on_project_empty(self):
-        project = self.grail.add_project("regardcitoyens ça déchire")
-        self.assertEqual([], project.get_todos())
+    def test_get_todos_on_quest_empty(self):
+        quest = self.grail.add_quest("regardcitoyens ça déchire")
+        self.assertEqual([], quest.get_todos())
 
-    def test_get_todos_on_project_todo(self):
-        project = self.grail.add_project("regardcitoyens ça déchire")
-        todo = self.grail.add_todo("youplaboum", project=project.id)
-        self.assertTrue(todo in project.get_todos())
+    def test_get_todos_on_quest_todo(self):
+        quest = self.grail.add_quest("regardcitoyens ça déchire")
+        todo = self.grail.add_todo("youplaboum", quest=quest.id)
+        self.assertTrue(todo in quest.get_todos())
 
     def test_cant_wait_for_a_todo_that_wait_for_you(self):
         todo1 = self.grail.add_todo("youplaboum")
@@ -887,9 +887,9 @@ class TestTags(unittest.TestCase):
         self.assertTrue(todo2 in todos)
         self.assertEqual(2, len(todos))
 
-    def test_todo_with_project_without_datetime(self):
-        project = self.grail.add_project("project")
-        todo = self.grail.add_todo("prout", project=project.id)
+    def test_todo_with_quest_without_datetime(self):
+        quest = self.grail.add_quest("quest")
+        todo = self.grail.add_todo("prout", quest=quest.id)
         self.grail.list_todos()
 
     # TODO: refactorer les exceptions, favoriser un message plutôt que plein d'exceptions différentes

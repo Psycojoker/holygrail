@@ -42,13 +42,13 @@ class CanRemoveTheDefaultContext(exceptions.Exception):
     def __str__(self):
         return "can't remove the default context, change it before remove it"
 
-class ProjectDoesntExist(exceptions.Exception):
-    def __init__(self, project):
-        self.project = project
-        super(ProjectDoesntExist, self).__init__()
+class QuestDoesntExist(exceptions.Exception):
+    def __init__(self, quest):
+        self.quest = quest
+        super(QuestDoesntExist, self).__init__()
 
     def __str__(self):
-        return 'this project doesn\'t exist: %s' % self.project
+        return 'this quest doesn\'t exist: %s' % self.quest
 
 class NoDatabaseConfiguration(exceptions.Exception):
     def __init__(self):

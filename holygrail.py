@@ -24,7 +24,7 @@ import sqlobject
 
 from holygrail_exceptions import ContextDoesntExist,\
     TodoDoesntExist, ContextStillHasElems, CanRemoveTheDefaultContext,\
-    ProjectDoesntExist, NoDatabaseConfiguration, WaitForError
+    QuestDoesntExist, NoDatabaseConfiguration, WaitForError
 
 from datetime import date, datetime
 
@@ -55,7 +55,7 @@ class _Context(sqlobject.SQLObject):
 
     def get_todos(self):
         """
-        Get the todos associated to this project.
+        Get the todos associated to this quest.
 
         Return a list of a list of todos.
         """
@@ -137,7 +137,7 @@ class _Todo(sqlobject.SQLObject):
     created_at = sqlobject.DateCol(default=date.today())
     tickler = sqlobject.DateTimeCol(default=None)
     context = sqlobject.ForeignKey('_Context')
-    project = sqlobject.ForeignKey('_Project', default=None)
+    quest = sqlobject.ForeignKey('_Quest', default=None)
     previous_todo = sqlobject.ForeignKey('_Todo', default=None)
     completed_at = sqlobject.DateTimeCol(default=None)
     _due = sqlobject.DateTimeCol(default=None)
@@ -150,7 +150,7 @@ class _Todo(sqlobject.SQLObject):
         """
         return (not self.previous_todo or self.previous_todo.completed)\
             and not self.context.hide\
-            and (not self.project or (not self.project.hide and not self.project.completed and ((self.project.tickler == None) or (self.project.tickler < datetime.now()))))
+            and (not self.quest or (not self.quest.hide and not self.quest.completed and ((self.quest.tickler == None) or (self.quest.tickler < datetime.now()))))
 
     def change_context(self, context_id):
         """
@@ -158,15 +158,15 @@ class _Todo(sqlobject.SQLObject):
         """
         self.context = context_id
 
-    def change_project(self, new_project_id):
+    def change_quest(self, new_quest_id):
         """
-        Change the project in witch the todo is. Set it to None if you don't
-        want this todo in a project.
+        Change the quest in witch the todo is. Set it to None if you don't
+        want this todo in a quest.
 
         Argument:
-            * the new project *id*
+            * the new quest *id*
         """
-        self.project = new_project_id
+        self.quest = new_quest_id
 
     def remove(self):
         """
@@ -232,14 +232,14 @@ class _Todo(sqlobject.SQLObject):
     @property
     def due(self):
         # return my due date if
-        # I don't have a project
-        # my project don't have a due date
-        # my due date is earlier than the project one
-        # else, return project due date
-        return self._due if None == self.project or\
-                            (not self.project.due or
-                                (self._due != None and self.project.due > self._due))\
-                            else self.project.due
+        # I don't have a quest
+        # my quest don't have a due date
+        # my due date is earlier than the quest one
+        # else, return quest due date
+        return self._due if None == self.quest or\
+                            (not self.quest.due or
+                                (self._due != None and self.quest.due > self._due))\
+                            else self.quest.due
 
     def due_for(self, due):
         """
@@ -263,19 +263,19 @@ class _TagTodo(sqlobject.SQLObject):
     description = sqlobject.UnicodeCol()
 
 
-class _Project(sqlobject.SQLObject):
+class _Quest(sqlobject.SQLObject):
     """
-    A project object.
+    A quest object.
 
-    A project is made of todos. It's basically everything you want to do that
+    A quest is made of todos. It's basically everything you want to do that
     need more than one next action.
 
     WARNING avoid as much as possible to modify directly the todo
     attribute, prefer the api, and if you do that be really SURE to know
     what you are doing. You don't want to break anything, right ?
 
-    Your are not supposed to create a project directly from this class, use
-    add_project() instead.
+    Your are not supposed to create a quest directly from this class, use
+    add_quest() instead.
     """
     description = sqlobject.UnicodeCol()
     created_at = sqlobject.DateCol(default=datetime.now())
@@ -288,12 +288,12 @@ class _Project(sqlobject.SQLObject):
 
     def get_todos(self):
         """
-        Get the todos and the todos associated to this project.
+        Get the todos and the todos associated to this quest.
 
         Return a list of a list of todos and a list of todos
         [[todos], [todos
         """
-        return [i for i in _Todo.select(_Todo.q.project == self)]
+        return [i for i in _Todo.select(_Todo.q.quest == self)]
 
     def due_for(self, due):
         """
@@ -306,15 +306,15 @@ class _Project(sqlobject.SQLObject):
 
     def remove(self):
         """
-        Remove this project.
+        Remove this quest.
         """
-        for i in _Todo.select(_Todo.q.project == self):
-            i.project = None
+        for i in _Todo.select(_Todo.q.quest == self):
+            i.quest = None
         self.destroySelf()
 
     def rename(self, new_description):
         """
-        Change the description of this project.
+        Change the description of this quest.
 
         Argument:
             * the new_description as a string
@@ -323,8 +323,8 @@ class _Project(sqlobject.SQLObject):
 
     def tickle(self, tickler):
         """
-        Change the project tickler. If the tickler of this project is superior
-        to now, this project and it's todo won't be show.
+        Change the quest tickler. If the tickler of this quest is superior
+        to now, this quest and it's todo won't be show.
 
         Argument:
             * the tickle in *datetime*
@@ -333,9 +333,9 @@ class _Project(sqlobject.SQLObject):
 
     def set_default_context(self, context_id):
         """
-        Set the default context for this project. A todo or a todo add to this
-        project without a specified context will take the default context of
-        the project.
+        Set the default context for this quest. A todo or a todo add to this
+        quest without a specified context will take the default context of
+        the quest.
 
         Argument:
             * the new default context *id*
@@ -344,9 +344,9 @@ class _Project(sqlobject.SQLObject):
 
     def toggle(self):
         """
-        Toggle the completed state of this project.
+        Toggle the completed state of this quest.
 
-        Todos or todo from a completed project won't appear anymore but won't be
+        Todos or todo from a completed quest won't appear anymore but won't be
         set to completed.
         """
         self.completed = not self.completed
@@ -354,9 +354,9 @@ class _Project(sqlobject.SQLObject):
 
     def toggle_hide(self):
         """
-        Toggle the hidden state of a project.
+        Toggle the hidden state of a quest.
 
-        Todos or todo from an hidden project won't appears anymore.
+        Todos or todo from an hidden quest won't appears anymore.
         """
         self.hide = not self.hide
 
@@ -384,9 +384,9 @@ class Grail(object):
         Intern method to check if the database exist and if the database is in a normal state.
         """
         # check that everything if normal (all table created or not created)
-        if not ((not _Todo.tableExists() and not _Project.tableExists() and not _Context.tableExists()) or (_Todo.tableExists() and _Project.tableExists() and _Context.tableExists())):
+        if not ((not _Todo.tableExists() and not _Quest.tableExists() and not _Context.tableExists()) or (_Todo.tableExists() and _Quest.tableExists() and _Context.tableExists())):
             print "Grail: WARNING: database in a non conform state, will probably bug. Do you need to launch a migration script ?"
-        elif not _Todo.tableExists() and not _Project.tableExists() and not _Context.tableExists():
+        elif not _Todo.tableExists() and not _Quest.tableExists() and not _Context.tableExists():
             print "Grail: DB doesn't exist, I'll create it"
             self.reset_db("yes")
 
@@ -407,13 +407,13 @@ class Grail(object):
         """
         if are_you_sure:
             _Context.dropTable(ifExists=True)
-            _Project.dropTable(ifExists=True)
+            _Quest.dropTable(ifExists=True)
             _Todo.dropTable(ifExists=True)
             _TagTodo.dropTable(ifExists=True)
 
 
             _Context.createTable()
-            _Project.createTable()
+            _Quest.createTable()
             _Todo.createTable()
             _TagTodo.createTable()
 
@@ -422,7 +422,7 @@ class Grail(object):
         else:
             print "You aren't sure, so I won't reset it"
 
-    def add_todo(self, new_description, tickler=None, due=None, project=None, context=None, wait_for=None, unique=False):
+    def add_todo(self, new_description, tickler=None, due=None, quest=None, context=None, wait_for=None, unique=False):
         """
         Add a new todo then return it
 
@@ -431,38 +431,38 @@ class Grail(object):
             * unique, don't add the todo if it's already exist AND ISN'T COMPLETED, return -1 if the todo already exist
             * tickler, a datetime object the tickle the todo, default to None
             * due, a datetime for when the todo is due, default to None
-            * project, the ID of the project link to this new todo, default to None
+            * quest, the ID of the quest link to this new todo, default to None
             * context, the ID of the context link to this new todo, default is the default context
             * wait_for, the ID of todo that this new todo wait to be completed to appears, default to None
         """
         if not context:
-            if not project or not self.get_project(project).default_context:
+            if not quest or not self.get_quest(quest).default_context:
                 context = self.get_default_context().id
             else:
-                context = self.get_project(project).default_context.id
+                context = self.get_quest(quest).default_context.id
         if unique and _Todo.select(sqlobject.AND(_Todo.q.description == new_description, _Todo.q.completed == False)).count() != 0:
             return -1
-        return _Todo(description=new_description, tickler=tickler, _due=due, project=project, context=context, previous_todo=wait_for)
+        return _Todo(description=new_description, tickler=tickler, _due=due, quest=quest, context=context, previous_todo=wait_for)
 
-    def add_project(self, description, default_context=None, tickler=None, due=None, hide=False):
+    def add_quest(self, description, default_context=None, tickler=None, due=None, hide=False):
         """
-        Add a new project then return it
+        Add a new quest then return it
 
         Arguments:
-            * description, the project description
-            * default_context, the default context of this project
-            * tickler, the tickler of this project in *datetime*
+            * description, the quest description
+            * default_context, the default context of this quest
+            * tickler, the tickler of this quest in *datetime*
         """
-        return _Project(description=description, default_context=default_context, due=due, tickler=tickler, hide=hide)
+        return _Quest(description=description, default_context=default_context, due=due, tickler=tickler, hide=hide)
 
     def add_context(self, description, hide=False, default=False):
         """
         Add a new context then return it
 
         Arguments:
-            * description, the project description
-            * hide, if the project is hide
-            * default, if the project is now the default context
+            * description, the quest description
+            * hide, if the quest is hide
+            * default, if the quest is now the default context
         """
         new_context = _Context(position=_Context.select().count(), description=description, hide=hide)
         if default:
@@ -495,28 +495,28 @@ class Grail(object):
             raise TodoDoesntExist(description)
         return [i for i in query]
 
-    def get_project(self, project_id):
+    def get_quest(self, quest_id):
         """
-        Receive the id of a project, return the project
-        Raise an exception if the project doesn't exist
+        Receive the id of a quest, return the quest
+        Raise an exception if the quest doesn't exist
 
         Argument:
-            * project description
+            * quest description
         """
         try:
-            return _Project.get(project_id)
+            return _Quest.get(quest_id)
         except sqlobject.SQLObjectNotFound:
-            raise ProjectDoesntExist(project_id)
+            raise QuestDoesntExist(quest_id)
 
-    def get_project_by_desc(self, description):
+    def get_quest_by_desc(self, description):
         """
-        Receive the description of an project, return it
-        Raise an exception if the project doesn't exist
+        Receive the description of an quest, return it
+        Raise an exception if the quest doesn't exist
 
         Arguments:
-            * project description
+            * quest description
         """
-        return [i for i in _Project.select(_Project.q.description == description)]
+        return [i for i in _Quest.select(_Quest.q.description == description)]
 
     def get_context(self, context_id):
         """
@@ -566,15 +566,15 @@ class Grail(object):
                 if i.visible()] if\
                 not all_todos else [i for i in _Todo.select()]
 
-    def list_projects(self, all_projects=False):
+    def list_quests(self, all_quests=False):
         """
-        Return a list of visible projects.
+        Return a list of visible quests.
 
         Arguments:
-            * all_projects=False by default, if True return all the projects.
+            * all_quests=False by default, if True return all the quests.
         """
-        return [i for i in _Project.select(sqlobject.AND(_Project.q.hide == False, sqlobject.OR(_Project.q.tickler == None, _Project.q.tickler < datetime.now())))]\
-                if not all_projects else [i for i in _Project.select()]
+        return [i for i in _Quest.select(sqlobject.AND(_Quest.q.hide == False, sqlobject.OR(_Quest.q.tickler == None, _Quest.q.tickler < datetime.now())))]\
+                if not all_quests else [i for i in _Quest.select()]
 
     def list_contexts(self, all_contexts=False):
         """
