@@ -11,13 +11,13 @@ class RealmStillHasElems(exceptions.Exception):
     def __str__(self):
         return 'This realm still containt elems, can\'t remove it'
 
-class TodoDoesntExist(exceptions.Exception):
-    def __init__(self, todo):
-        self.todo = todo
-        super(TodoDoesntExist, self).__init__()
+class MissionDoesntExist(exceptions.Exception):
+    def __init__(self, mission):
+        self.mission = mission
+        super(MissionDoesntExist, self).__init__()
 
     def __str__(self):
-        return 'this todo doesn\'t exist: %s' % self.todo
+        return 'this mission doesn\'t exist: %s' % self.mission
 
 class RealmDoesntExist(exceptions.Exception):
     def __init__(self, realm):
@@ -55,7 +55,7 @@ class NoDatabaseConfiguration(exceptions.Exception):
         super(NoDatabaseConfiguration, self).__init__()
 
     def __str__(self):
-        return "Their isn't any uri for the database, etheir give TodoDB an uri at creation or create a config file with a DATABASE_ACCESS variable that containt the string of the uri"
+        return "Their isn't any uri for the database, etheir give MissionDB an uri at creation or create a config file with a DATABASE_ACCESS variable that containt the string of the uri"
 
 class WaitForError(exceptions.Exception):
     def __init__(self, error):

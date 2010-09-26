@@ -24,7 +24,7 @@ import unittest, time
 
 from datetime import date, datetime, timedelta
 
-from holygrail import Grail, TodoDoesntExist, CanRemoveTheDefaultRealm, RealmDoesntExist, RealmStillHasElems, _Realm, QuestDoesntExist, _Todo, _Quest, WaitForError
+from holygrail import Grail, MissionDoesntExist, CanRemoveTheDefaultRealm, RealmDoesntExist, RealmStillHasElems, _Realm, QuestDoesntExist, _Mission, _Quest, WaitForError
 
 def comp_datetime(a, b):
     if a.year != b.year:
@@ -56,96 +56,96 @@ class Test_TDD(unittest.TestCase):
         grail.reset_db("yes")
         return grail
 
-    def test_add_a_todo(self):
+    def test_add_a_mission(self):
         """
-        You should be able to add a new todo.
-        This should inscrease the number of todos by one
+        You should be able to add a new mission.
+        This should inscrease the number of missions by one
         """
-        was = len(self.grail.list_todos())
-        todo = self.grail.add_todo("This is a new todo")
-        self.assertEqual(was + 1, len(self.grail.list_todos()))
-        self.assertTrue(todo in self.grail.list_todos())
+        was = len(self.grail.list_missions())
+        mission = self.grail.add_mission("This is a new mission")
+        self.assertEqual(was + 1, len(self.grail.list_missions()))
+        self.assertTrue(mission in self.grail.list_missions())
 
-        # check if we can add two time a todo with the same description
-        todo2 = self.grail.add_todo("This is a new todo")
-        self.assertEqual(was + 2, len(self.grail.list_todos()))
-        self.assertTrue(todo in self.grail.list_todos())
-        self.assertTrue(todo2 in self.grail.list_todos())
+        # check if we can add two time a mission with the same description
+        mission2 = self.grail.add_mission("This is a new mission")
+        self.assertEqual(was + 2, len(self.grail.list_missions()))
+        self.assertTrue(mission in self.grail.list_missions())
+        self.assertTrue(mission2 in self.grail.list_missions())
 
-    def test_add_todo_unique(self):
-        todo = self.grail.add_todo("This is a new todo")
-        self.assertEqual(-1, self.grail.add_todo("This is a new todo", unique=True))
+    def test_add_mission_unique(self):
+        mission = self.grail.add_mission("This is a new mission")
+        self.assertEqual(-1, self.grail.add_mission("This is a new mission", unique=True))
 
-    def test_add_todo_unique_toggle(self):
-        todo = self.grail.add_todo("This is a new todo")
-        todo.toggle()
-        self.assertNotEqual(-1, self.grail.add_todo("This is a new todo", unique=True))
+    def test_add_mission_unique_toggle(self):
+        mission = self.grail.add_mission("This is a new mission")
+        mission.toggle()
+        self.assertNotEqual(-1, self.grail.add_mission("This is a new mission", unique=True))
 
-    def test_get_todo_by_desc(self):
+    def test_get_mission_by_desc(self):
 
-        t1 = self.grail.add_todo("This is a new todo")
-        t2 = self.grail.add_todo("This is a new todo 2")
+        t1 = self.grail.add_mission("This is a new mission")
+        t2 = self.grail.add_mission("This is a new mission 2")
 
-        self.assertEqual(t1.id, self.grail.get_todo_by_desc("This is a new todo")[0].id)
-        self.assertEqual(t2.id, self.grail.get_todo_by_desc("This is a new todo 2")[0].id)
+        self.assertEqual(t1.id, self.grail.get_mission_by_desc("This is a new mission")[0].id)
+        self.assertEqual(t2.id, self.grail.get_mission_by_desc("This is a new mission 2")[0].id)
 
-    def test_get_todo_by_desc_mutiple(self):
+    def test_get_mission_by_desc_mutiple(self):
 
-        t1 = self.grail.add_todo("This is a new todo")
-        t2 = self.grail.add_todo("This is a new todo")
+        t1 = self.grail.add_mission("This is a new mission")
+        t2 = self.grail.add_mission("This is a new mission")
 
-        self.assertTrue(t1 in self.grail.get_todo_by_desc("This is a new todo"))
-        self.assertTrue(t2 in self.grail.get_todo_by_desc("This is a new todo"))
+        self.assertTrue(t1 in self.grail.get_mission_by_desc("This is a new mission"))
+        self.assertTrue(t2 in self.grail.get_mission_by_desc("This is a new mission"))
 
-    def test_get_todo_by_desc_should_raise_an_exection_if_todo_doesnt_exist(self):
-        self.assertRaises(TodoDoesntExist, self.grail.get_todo_by_desc, "todo")
+    def test_get_mission_by_desc_should_raise_an_exection_if_mission_doesnt_exist(self):
+        self.assertRaises(MissionDoesntExist, self.grail.get_mission_by_desc, "mission")
 
-    def test_remove_todo(self):
+    def test_remove_mission(self):
 
-        was = len(self.grail.list_todos())
-        todo = self.grail.add_todo("This is a new todo")
+        was = len(self.grail.list_missions())
+        mission = self.grail.add_mission("This is a new mission")
 
-        self.assertEqual(was + 1, len(self.grail.list_todos()))
+        self.assertEqual(was + 1, len(self.grail.list_missions()))
 
-        id = todo.id
-        todo.remove()
+        id = mission.id
+        mission.remove()
 
-        self.assertEqual(was, len(self.grail.list_todos()))
-        self.assertRaises(TodoDoesntExist, self.grail.get_todo, id)
+        self.assertEqual(was, len(self.grail.list_missions()))
+        self.assertRaises(MissionDoesntExist, self.grail.get_mission, id)
 
-    def test_seach_for_todo(self):
+    def test_seach_for_mission(self):
 
-        todo_to_add = ("new todo", "another todo", "yet a todo", "tododo", "todotodo")
-        todo_to_add_that_doesnt_match = ("blabla", "foo", "bar")
+        mission_to_add = ("new mission", "another mission", "yet a mission", "missiondo", "missionmission")
+        mission_to_add_that_doesnt_match = ("blabla", "foo", "bar")
 
-        true = [self.grail.add_todo(i) for i in todo_to_add]
-        false = [self.grail.add_todo(i) for i in todo_to_add_that_doesnt_match]
-        result = self.grail.search_for_todo("todo")
+        true = [self.grail.add_mission(i) for i in mission_to_add]
+        false = [self.grail.add_mission(i) for i in mission_to_add_that_doesnt_match]
+        result = self.grail.search_for_mission("mission")
 
-        self.assertEqual(len(todo_to_add), len(result))
+        self.assertEqual(len(mission_to_add), len(result))
 
         for i in result:
-            self.assertTrue(i.description in todo_to_add)
+            self.assertTrue(i.description in mission_to_add)
             self.assertTrue(i in true)
-            self.assertFalse(i.description in todo_to_add_that_doesnt_match)
+            self.assertFalse(i.description in mission_to_add_that_doesnt_match)
             self.assertFalse(i in false)
 
-    def test_get_todo(self):
-        todo = self.grail.add_todo("todo")
-        self.assertTrue(todo is self.grail.get_todo(todo.id))
-        self.assertEqual(todo.description, "todo")
+    def test_get_mission(self):
+        mission = self.grail.add_mission("mission")
+        self.assertTrue(mission is self.grail.get_mission(mission.id))
+        self.assertEqual(mission.description, "mission")
 
-    def test_get_todo_throw_except_if_doesnt_exist(self):
-        self.assertRaises(TodoDoesntExist, self.grail.get_todo, 1337)
+    def test_get_mission_throw_except_if_doesnt_exist(self):
+        self.assertRaises(MissionDoesntExist, self.grail.get_mission, 1337)
 
-    def test_rename_todo(self):
-        todo = self.grail.add_todo("first name")
-        todo.rename("second name")
-        self.assertEqual(todo.description, "second name")
+    def test_rename_mission(self):
+        mission = self.grail.add_mission("first name")
+        mission.rename("second name")
+        self.assertEqual(mission.description, "second name")
 
-    def test_toggle_todo(self):
+    def test_toggle_mission(self):
 
-        t = self.grail.add_todo("prout")
+        t = self.grail.add_mission("prout")
 
         self.assertFalse(t.completed)
         t.toggle()
@@ -153,81 +153,81 @@ class Test_TDD(unittest.TestCase):
         t.toggle()
         self.assertFalse(t.completed)
 
-    def test_list_todos(self):
+    def test_list_missions(self):
         # empty
-        self.assertEqual(0, len(self.grail.list_todos()))
-        t = self.grail.add_todo("todo")
-        # one todo
-        self.assertEqual(1, len(self.grail.list_todos()))
-        self.assertTrue(t in self.grail.list_todos())
-        # two todo
-        t2 = self.grail.add_todo("todo 2")
-        self.assertEqual(2, len(self.grail.list_todos()))
-        self.assertTrue(t in self.grail.list_todos())
-        self.assertTrue(t2 in self.grail.list_todos())
+        self.assertEqual(0, len(self.grail.list_missions()))
+        t = self.grail.add_mission("mission")
+        # one mission
+        self.assertEqual(1, len(self.grail.list_missions()))
+        self.assertTrue(t in self.grail.list_missions())
+        # two mission
+        t2 = self.grail.add_mission("mission 2")
+        self.assertEqual(2, len(self.grail.list_missions()))
+        self.assertTrue(t in self.grail.list_missions())
+        self.assertTrue(t2 in self.grail.list_missions())
         # only uncompleted
         t2.toggle()
-        self.assertEqual(1, len(self.grail.list_todos()))
-        self.assertTrue(t in self.grail.list_todos())
-        self.assertTrue(t2 not in self.grail.list_todos())
+        self.assertEqual(1, len(self.grail.list_missions()))
+        self.assertTrue(t in self.grail.list_missions())
+        self.assertTrue(t2 not in self.grail.list_missions())
         # everything
-        self.assertEqual(2, len(self.grail.list_todos(all_todos=True)))
-        self.assertTrue(t in self.grail.list_todos(all_todos=True))
-        self.assertTrue(t2 in self.grail.list_todos(all_todos=True))
+        self.assertEqual(2, len(self.grail.list_missions(all_missions=True)))
+        self.assertTrue(t in self.grail.list_missions(all_missions=True))
+        self.assertTrue(t2 in self.grail.list_missions(all_missions=True))
 
-    def test_todo_should_be_created_today(self):
-        todo = self.grail.add_todo("this is a todo")
-        self.assertEqual(todo.created_at, date.today())
+    def test_mission_should_be_created_today(self):
+        mission = self.grail.add_mission("this is a mission")
+        self.assertEqual(mission.created_at, date.today())
 
-    def test_todo_completion_date(self):
-        todo = self.grail.add_todo("this is a todo")
-        self.assertEqual(todo.completed_at, None)
-        todo.toggle()
-        self.assertTrue(comp_datetime(todo.completed_at, datetime.now()))
-        todo.toggle()
-        self.assertEqual(todo.completed_at, None)
-        todo.toggle()
-        self.assertTrue(comp_datetime(todo.completed_at, datetime.now()))
-        todo.toggle()
-        self.assertEqual(todo.completed_at, None)
+    def test_mission_completion_date(self):
+        mission = self.grail.add_mission("this is a mission")
+        self.assertEqual(mission.completed_at, None)
+        mission.toggle()
+        self.assertTrue(comp_datetime(mission.completed_at, datetime.now()))
+        mission.toggle()
+        self.assertEqual(mission.completed_at, None)
+        mission.toggle()
+        self.assertTrue(comp_datetime(mission.completed_at, datetime.now()))
+        mission.toggle()
+        self.assertEqual(mission.completed_at, None)
 
-    def test_new_todo_shouldnt_have_tickler_by_default(self):
-        todo = self.grail.add_todo("new todo")
-        self.assertEquals(None, todo.tickler)
+    def test_new_mission_shouldnt_have_tickler_by_default(self):
+        mission = self.grail.add_mission("new mission")
+        self.assertEquals(None, mission.tickler)
 
     def test_tickler_at_creation(self):
         tickler = datetime(2010, 06, 25)
-        todo = self.grail.add_todo("new todo", tickler=tickler)
-        self.assertEqual(tickler, todo.tickler)
+        mission = self.grail.add_mission("new mission", tickler=tickler)
+        self.assertEqual(tickler, mission.tickler)
 
     def test_add_tickle(self):
         tickler = datetime(2010, 06, 25)
-        todo = self.grail.add_todo("new todo")
-        todo.tickle(tickler)
-        self.assertEqual(tickler, todo.tickler)
+        mission = self.grail.add_mission("new mission")
+        mission.tickle(tickler)
+        self.assertEqual(tickler, mission.tickler)
 
     def test_list_dont_show_tickle_task(self):
         # for tomorrow
         tickler = datetime.now() + timedelta(1)
-        todo = self.grail.add_todo("new todo", tickler)
-        self.assertTrue(todo not in self.grail.list_todos())
+        mission = self.grail.add_mission("new mission", tickler)
+        self.assertTrue(mission not in self.grail.list_missions())
 
     def test_list_all_show_tickle_task(self):
         # for tomorrow
         tickler = datetime.now() + timedelta(1)
-        todo = self.grail.add_todo("new todo", tickler)
-        self.assertTrue(todo in self.grail.list_todos(all_todos=True))
+        mission = self.grail.add_mission("new mission", tickler)
+        self.assertTrue(mission in self.grail.list_missions(all_missions=True))
 
     def test_due_date_at_creation(self):
         due = datetime(2010, 06, 25)
-        todo = self.grail.add_todo("new todo", due=due)
-        self.assertEqual(due, todo.due)
+        mission = self.grail.add_mission("new mission", due=due)
+        self.assertEqual(due, mission.due)
 
     def test_add_due(self):
         due = datetime(2010, 06, 25)
-        todo = self.grail.add_todo("new todo")
-        todo.due_for(due)
-        self.assertEqual(due, todo.due)
+        mission = self.grail.add_mission("new mission")
+        mission.due_for(due)
+        self.assertEqual(due, mission.due)
 
     def test_tdd_should_have_a_realm_at_creation(self):
         self.assertEqual("default realm", _Realm.get(1).description)
@@ -273,11 +273,11 @@ class Test_TDD(unittest.TestCase):
         self.grail.add_realm("prout")
         self.assertRaises(CanRemoveTheDefaultRealm, self.grail.get_default_realm().remove)
 
-    def test_a_todo_should_have_the_default_realm(self):
-        todo = self.grail.add_todo("a todo")
-        self.assertEqual(todo.realm, self.grail.get_default_realm())
-        todo = self.grail.add_todo("another todo")
-        self.assertEqual(todo.realm, self.grail.get_default_realm())
+    def test_a_mission_should_have_the_default_realm(self):
+        mission = self.grail.add_mission("a mission")
+        self.assertEqual(mission.realm, self.grail.get_default_realm())
+        mission = self.grail.add_mission("another mission")
+        self.assertEqual(mission.realm, self.grail.get_default_realm())
 
     def test_get_realm_by_desc(self):
         realm = self.grail.add_realm("youpla")
@@ -293,20 +293,20 @@ class Test_TDD(unittest.TestCase):
     def test_get_realm_raise_if_dont_exist(self):
         self.assertRaises(RealmDoesntExist, self.grail.get_realm, 1337)
 
-    def test_add_todo_with_special_realm(self):
+    def test_add_mission_with_special_realm(self):
         realm = self.grail.add_realm("je devrais aller dormir")
-        todo = self.grail.add_todo("mouhaha", realm=realm.id)
-        self.assertEqual(realm, todo.realm)
+        mission = self.grail.add_mission("mouhaha", realm=realm.id)
+        self.assertEqual(realm, mission.realm)
 
-    def test_change_todo_realm(self):
+    def test_change_mission_realm(self):
         realm = self.grail.add_realm("je vais encore me coucher à pas d'heure ...")
-        todo = self.grail.add_todo("aller dormir")
-        todo.change_realm(realm.id)
-        self.assertEqual(realm, todo.realm)
+        mission = self.grail.add_mission("aller dormir")
+        mission.change_realm(realm.id)
+        self.assertEqual(realm, mission.realm)
 
-    def test_cant_delete_realm_with_todos(self):
+    def test_cant_delete_realm_with_missions(self):
         realm = self.grail.add_realm("TDD rosk")
-        todo = self.grail.add_todo("HAHAHA I'M USING TEH INTERNETZ", realm=realm)
+        mission = self.grail.add_mission("HAHAHA I'M USING TEH INTERNETZ", realm=realm)
         self.assertRaises(RealmStillHasElems, realm.remove)
 
     def test_list_realms(self):
@@ -365,40 +365,40 @@ class Test_TDD(unittest.TestCase):
         self.assertRaises(QuestDoesntExist, self.grail.get_quest, old_id)
         self.assertEqual(0, len(self.grail.list_quests()))
 
-    def test_change_todo_quest(self):
+    def test_change_mission_quest(self):
         quest = self.grail.add_quest("manger une pomme")
-        todo = self.grail.add_todo("le nouveau leak d'ACTA est dégeulasse")
-        todo.change_quest(quest.id)
-        self.assertEqual(todo.quest, quest)
+        mission = self.grail.add_mission("le nouveau leak d'ACTA est dégeulasse")
+        mission.change_quest(quest.id)
+        self.assertEqual(mission.quest, quest)
 
-    def test_next_todo(self):
-        todo1 = self.grail.add_todo("first todo")
-        todo2 = self.grail.add_todo("second todo")
-        todo2.wait_for(todo1)
-        self.assertEqual(todo1, todo2.previous_todo)
+    def test_next_mission(self):
+        mission1 = self.grail.add_mission("first mission")
+        mission2 = self.grail.add_mission("second mission")
+        mission2.wait_for(mission1)
+        self.assertEqual(mission1, mission2.previous_mission)
 
-    def test_list_todo_with_previous_todo(self):
-        todo1 = self.grail.add_todo("first todo")
-        todo2 = self.grail.add_todo("second todo")
-        todo2.wait_for(todo1)
-        self.assertTrue(todo2 not in self.grail.list_todos())
+    def test_list_mission_with_previous_mission(self):
+        mission1 = self.grail.add_mission("first mission")
+        mission2 = self.grail.add_mission("second mission")
+        mission2.wait_for(mission1)
+        self.assertTrue(mission2 not in self.grail.list_missions())
 
-    def test_list_todo_with_previous_todo_with_completed(self):
-        todo1 = self.grail.add_todo("first todo")
-        todo2 = self.grail.add_todo("second todo")
-        todo2.wait_for(todo1)
-        todo1.toggle()
-        self.assertTrue(todo2 in self.grail.list_todos())
+    def test_list_mission_with_previous_mission_with_completed(self):
+        mission1 = self.grail.add_mission("first mission")
+        mission2 = self.grail.add_mission("second mission")
+        mission2.wait_for(mission1)
+        mission1.toggle()
+        self.assertTrue(mission2 in self.grail.list_missions())
 
-    def test_add_todo_wait_for(self):
-        todo1 = self.grail.add_todo("first todo")
-        todo2 = self.grail.add_todo("second todo", wait_for=todo1.id)
-        self.assertEqual(todo1, todo2.previous_todo)
+    def test_add_mission_wait_for(self):
+        mission1 = self.grail.add_mission("first mission")
+        mission2 = self.grail.add_mission("second mission", wait_for=mission1.id)
+        self.assertEqual(mission1, mission2.previous_mission)
 
-    def test_add_todo_with_a_quest(self):
+    def test_add_mission_with_a_quest(self):
         quest = self.grail.add_quest("gare a Gallo")
-        todo = self.grail.add_todo("first todo", quest=quest.id)
-        self.assertEqual(quest, todo.quest)
+        mission = self.grail.add_mission("first mission", quest=quest.id)
+        self.assertEqual(quest, mission.quest)
 
     def test_quest_should_have_a_creation_date(self):
         quest = self.grail.add_quest("youplaboum")
@@ -415,18 +415,18 @@ class Test_TDD(unittest.TestCase):
         quest = self.grail.add_quest("youmi, I love chocolate", default_realm=realm.id)
         self.assertEqual(realm, quest.default_realm)
 
-    def test_new_todo_with_quest_with_default_realm(self):
+    def test_new_mission_with_quest_with_default_realm(self):
         realm = self.grail.add_realm("pc")
         quest = self.grail.add_quest("youmi, I love chocolate", default_realm=realm.id)
-        todo = self.grail.add_todo("pataplouf", quest=quest.id)
-        self.assertEqual(todo.realm, realm)
+        mission = self.grail.add_mission("pataplouf", quest=quest.id)
+        self.assertEqual(mission.realm, realm)
 
-    def test_new_todo_with_quest_with_default_realm_and_realm(self):
+    def test_new_mission_with_quest_with_default_realm_and_realm(self):
         realm = self.grail.add_realm("pc")
         other_realm = self.grail.add_realm("mouhaha")
         quest = self.grail.add_quest("youmi, I love chocolate", default_realm=realm.id)
-        todo = self.grail.add_todo("pataplouf", realm=other_realm, quest=quest.id)
-        self.assertEqual(todo.realm, other_realm)
+        mission = self.grail.add_mission("pataplouf", realm=other_realm, quest=quest.id)
+        self.assertEqual(mission.realm, other_realm)
 
     def test_set_hide_realm(self):
         realm = self.grail.add_realm("pc")
@@ -453,35 +453,35 @@ class Test_TDD(unittest.TestCase):
         realm = self.grail.add_realm("pc", hide=True)
         self.assertTrue(realm.hide)
 
-    def test_hide_realm_in_list_todo(self):
+    def test_hide_realm_in_list_mission(self):
         realm = self.grail.add_realm("pc", hide=True)
-        todo = self.grail.add_todo("atchoum", realm=realm)
-        self.assertFalse(todo in self.grail.list_todos())
-        self.assertTrue(todo in self.grail.list_todos(all_todos=True))
+        mission = self.grail.add_mission("atchoum", realm=realm)
+        self.assertFalse(mission in self.grail.list_missions())
+        self.assertTrue(mission in self.grail.list_missions(all_missions=True))
 
-    def test_list_todo_with_previous_todo_with_deleted(self):
-        todo1 = self.grail.add_todo("first todo")
-        todo2 = self.grail.add_todo("second todo")
-        todo2.wait_for(todo1)
-        todo1.remove()
-        self.assertTrue(todo2 in self.grail.list_todos())
-        self.assertEqual(None, todo2.previous_todo)
+    def test_list_mission_with_previous_mission_with_deleted(self):
+        mission1 = self.grail.add_mission("first mission")
+        mission2 = self.grail.add_mission("second mission")
+        mission2.wait_for(mission1)
+        mission1.remove()
+        self.assertTrue(mission2 in self.grail.list_missions())
+        self.assertEqual(None, mission2.previous_mission)
 
-    def test_remove_quest_with_todos(self):
+    def test_remove_quest_with_missions(self):
         quest = self.grail.add_quest("tchikaboum")
-        todo = self.grail.add_todo("arakiri", quest=quest.id)
-        todo2 = self.grail.add_todo("arakirikiki", quest=quest.id)
+        mission = self.grail.add_mission("arakiri", quest=quest.id)
+        mission2 = self.grail.add_mission("arakirikiki", quest=quest.id)
         quest.remove()
-        self.assertEqual(None, todo.quest)
-        self.assertEqual(None, todo2.quest)
+        self.assertEqual(None, mission.quest)
+        self.assertEqual(None, mission2.quest)
 
     def test_auto_create_tables(self):
         Grail('sqlite:/:memory:')
         _Realm.dropTable(ifExists=True)
         _Quest.dropTable(ifExists=True)
-        _Todo.dropTable(ifExists=True)
+        _Mission.dropTable(ifExists=True)
         Grail('sqlite:/:memory:')
-        self.assertTrue(_Todo.tableExists())
+        self.assertTrue(_Mission.tableExists())
         self.assertTrue(_Realm.tableExists())
         self.assertTrue(_Quest.tableExists())
 
@@ -621,12 +621,12 @@ class Test_TDD(unittest.TestCase):
         quest = self.grail.add_quest("lalala", hide=True)
         self.assertTrue(quest.hide)
 
-    def test_list_todo_with_quest_hide(self):
+    def test_list_mission_with_quest_hide(self):
         quest = self.grail.add_quest("qsd")
         quest.toggle_hide()
-        todo = self.grail.add_todo("toto", quest=quest.id)
-        self.assertFalse(todo in self.grail.list_todos())
-        self.assertTrue(todo in self.grail.list_todos(all_todos=True))
+        mission = self.grail.add_mission("toto", quest=quest.id)
+        self.assertFalse(mission in self.grail.list_missions())
+        self.assertTrue(mission in self.grail.list_missions(all_missions=True))
 
     def test_list_quest_and_quest_hide(self):
         quest = self.grail.add_quest("huhu")
@@ -641,29 +641,29 @@ class Test_TDD(unittest.TestCase):
         self.assertFalse(quest in self.grail.list_quests())
         self.assertTrue(quest in self.grail.list_quests(all_quests=True))
 
-    #def test_next_todo_for_item(self):
-        #todo = self.grail.add_todo("todo")
+    #def test_next_mission_for_item(self):
+        #mission = self.grail.add_mission("mission")
         #item = self.grail.add_item("item")
-        #item.wait_for(todo)
-        #self.assertEqual(todo, item.previous_todo)
+        #item.wait_for(mission)
+        #self.assertEqual(mission, item.previous_mission)
 
-    #def test_list_item_with_previous_todo(self):
-        #todo = self.grail.add_todo("todo")
+    #def test_list_item_with_previous_mission(self):
+        #mission = self.grail.add_mission("mission")
         #item = self.grail.add_item("item")
-        #item.wait_for(todo)
+        #item.wait_for(mission)
         #self.assertTrue(item not in self.grail.list_items())
 
-    #def test_list_item_with_previous_todo_with_completed(self):
-        #todo = self.grail.add_todo("first todo")
-        #item = self.grail.add_item("second todo")
-        #item.wait_for(todo)
-        #todo.toggle()
+    #def test_list_item_with_previous_mission_with_completed(self):
+        #mission = self.grail.add_mission("first mission")
+        #item = self.grail.add_item("second mission")
+        #item.wait_for(mission)
+        #mission.toggle()
         #self.assertTrue(item in self.grail.list_items())
 
     #def test_add_item_wait_for(self):
-        #todo = self.grail.add_todo("first todo")
-        #item = self.grail.add_item("second item", wait_for=todo.id)
-        #self.assertEqual(todo, item.previous_todo)
+        #mission = self.grail.add_mission("first mission")
+        #item = self.grail.add_item("second item", wait_for=mission.id)
+        #self.assertEqual(mission, item.previous_mission)
 
     def test_quest_completion(self):
         quest = self.grail.add_quest("bah")
@@ -680,11 +680,11 @@ class Test_TDD(unittest.TestCase):
         quest.toggle()
         self.assertEqual(None, quest.completed_at)
 
-    def test_todo_with_quest_completion(self):
+    def test_mission_with_quest_completion(self):
         quest = self.grail.add_quest("the wild rover")
-        todo = self.grail.add_todo("s", quest=quest.id)
+        mission = self.grail.add_mission("s", quest=quest.id)
         quest.toggle()
-        self.assertFalse(todo in self.grail.list_todos())
+        self.assertFalse(mission in self.grail.list_missions())
 
     def test_quest_tickler(self):
         quest = self.grail.add_quest("j'ai faim")
@@ -704,56 +704,56 @@ class Test_TDD(unittest.TestCase):
         self.assertFalse(quest in self.grail.list_quests())
         self.assertTrue(quest in self.grail.list_quests(all_quests=True))
 
-    def test_todo_with_quest_tickler(self):
+    def test_mission_with_quest_tickler(self):
         tickler = datetime.now() + timedelta(1)
         quest = self.grail.add_quest("j'avais pas réalisé que c'était eux qui avaient inventé le guiness world record book", tickler=tickler)
-        todo = self.grail.add_todo("chier, il pleut", quest=quest.id)
-        self.assertFalse(todo in self.grail.list_todos())
-        self.assertTrue(todo in self.grail.list_todos(all_todos=True))
+        mission = self.grail.add_mission("chier, il pleut", quest=quest.id)
+        self.assertFalse(mission in self.grail.list_missions())
+        self.assertTrue(mission in self.grail.list_missions(all_missions=True))
 
     def test_main_view(self):
         # empty since the only realm is empty
         self.assertEqual([], self.grail.main_view())
 
-    def test_main_view_one_todo(self):
-        todo = self.grail.add_todo("kropotkine")
-        self.assertEqual([[self.grail.get_default_realm(), [todo]]], self.grail.main_view())
+    def test_main_view_one_mission(self):
+        mission = self.grail.add_mission("kropotkine")
+        self.assertEqual([[self.grail.get_default_realm(), [mission]]], self.grail.main_view())
 
-    def test_main_view_one_todo_one_empty_realm(self):
-        todo = self.grail.add_todo("kropotkikine")
+    def test_main_view_one_mission_one_empty_realm(self):
+        mission = self.grail.add_mission("kropotkikine")
         self.grail.add_realm("empty realm")
-        self.assertEqual([[self.grail.get_default_realm(), [todo]]], self.grail.main_view())
+        self.assertEqual([[self.grail.get_default_realm(), [mission]]], self.grail.main_view())
 
-    def test_main_view_one_todo_one_non_empty_realm(self):
-        todo = self.grail.add_todo("kropotkikine")
+    def test_main_view_one_mission_one_non_empty_realm(self):
+        mission = self.grail.add_mission("kropotkikine")
         realm = self.grail.add_realm("realm")
-        other_todo = self.grail.add_todo("James Joyce a l'air terrible", realm=realm)
-        self.assertEqual([[self.grail.get_default_realm(), [todo]],
-                          [realm, [other_todo]]], self.grail.main_view())
-        self.assertEqual([[self.grail.get_default_realm(), [todo]],
-                          [realm, [other_todo]]], self.grail.main_view())
+        other_mission = self.grail.add_mission("James Joyce a l'air terrible", realm=realm)
+        self.assertEqual([[self.grail.get_default_realm(), [mission]],
+                          [realm, [other_mission]]], self.grail.main_view())
+        self.assertEqual([[self.grail.get_default_realm(), [mission]],
+                          [realm, [other_mission]]], self.grail.main_view())
 
-    def test_last_completed_todos_empty(self):
-        last_completed_todos = self.grail.last_completed_todos()
-        self.assertEqual([], last_completed_todos)
+    def test_last_completed_missions_empty(self):
+        last_completed_missions = self.grail.last_completed_missions()
+        self.assertEqual([], last_completed_missions)
 
-    def test_last_completed_todos_one_todo(self):
-        todo = self.grail.add_todo("pouet")
-        todo.toggle()
-        last_completed_todos = self.grail.last_completed_todos()
-        self.assertEqual([todo], last_completed_todos)
+    def test_last_completed_missions_one_mission(self):
+        mission = self.grail.add_mission("pouet")
+        mission.toggle()
+        last_completed_missions = self.grail.last_completed_missions()
+        self.assertEqual([mission], last_completed_missions)
 
-    def test_last_completed_todos_multiple_todos(self):
-        todo1 = self.grail.add_todo("pouet")
-        todo2 = self.grail.add_todo("pouet pouet")
-        todo3 = self.grail.add_todo("taratata pouet pouet")
-        todo1.toggle()
+    def test_last_completed_missions_multiple_missions(self):
+        mission1 = self.grail.add_mission("pouet")
+        mission2 = self.grail.add_mission("pouet pouet")
+        mission3 = self.grail.add_mission("taratata pouet pouet")
+        mission1.toggle()
         time.sleep(1)
-        todo3.toggle()
+        mission3.toggle()
         time.sleep(1)
-        todo2.toggle()
-        last_completed_todos = self.grail.last_completed_todos()
-        self.assertEqual([todo2, todo3, todo1], last_completed_todos)
+        mission2.toggle()
+        last_completed_missions = self.grail.last_completed_missions()
+        self.assertEqual([mission2, mission3, mission1], last_completed_missions)
 
     def test_quest_due(self):
         quest = self.grail.add_quest("je code dans un avion qui revient d'irlande")
@@ -766,50 +766,50 @@ class Test_TDD(unittest.TestCase):
         quest = self.grail.add_quest("je code dans un avion qui revient d'irlande", due=due)
         self.assertTrue(comp_datetime(quest.due, due))
 
-    def test_quest_due_date_on_a_todo(self):
+    def test_quest_due_date_on_a_mission(self):
         due = datetime.now()
         quest = self.grail.add_quest("je code dans un avion qui revient d'irlande", due=due)
-        todo = self.grail.add_todo("la gamine qui est dans le siège devant moi arrête pas de faire plein de conneries", quest=quest.id)
-        self.assertTrue(comp_datetime(todo.due, due))
+        mission = self.grail.add_mission("la gamine qui est dans le siège devant moi arrête pas de faire plein de conneries", quest=quest.id)
+        self.assertTrue(comp_datetime(mission.due, due))
 
-    def test_quest_due_date_on_a_todo_with_earlier_todo(self):
+    def test_quest_due_date_on_a_mission_with_earlier_mission(self):
         due = datetime.now()
         quest = self.grail.add_quest("je code dans un avion qui revient d'irlande", due=(due + timedelta(1)))
-        todo = self.grail.add_todo("la gamine qui est dans le siège devant moi arrête pas de faire plein de conneries", quest=quest.id, due=due)
-        self.assertTrue(comp_datetime(todo.due, due))
+        mission = self.grail.add_mission("la gamine qui est dans le siège devant moi arrête pas de faire plein de conneries", quest=quest.id, due=due)
+        self.assertTrue(comp_datetime(mission.due, due))
 
-    def test_quest_due_date_on_a_todo_with_later_todo(self):
+    def test_quest_due_date_on_a_mission_with_later_mission(self):
         due = datetime.now()
         quest = self.grail.add_quest("je code dans un avion qui revient d'irlande", due=due)
-        todo = self.grail.add_todo("la gamine qui est dans le siège devant moi arrête pas de faire plein de conneries", quest=quest.id, due=(due + timedelta(1)))
-        self.assertTrue(comp_datetime(todo.due, due))
+        mission = self.grail.add_mission("la gamine qui est dans le siège devant moi arrête pas de faire plein de conneries", quest=quest.id, due=(due + timedelta(1)))
+        self.assertTrue(comp_datetime(mission.due, due))
 
-    def test_get_todos_on_realm_empty(self):
+    def test_get_missions_on_realm_empty(self):
         realm = self.grail.add_realm("regardcitoyens ça déchire")
-        self.assertEqual([], realm.get_todos())
+        self.assertEqual([], realm.get_missions())
 
-    def test_get_todos_on_realm_todo(self):
+    def test_get_missions_on_realm_mission(self):
         realm = self.grail.add_realm("regardcitoyens ça déchire")
-        todo = self.grail.add_todo("youplaboum", realm=realm.id)
-        self.assertTrue(todo in realm.get_todos())
+        mission = self.grail.add_mission("youplaboum", realm=realm.id)
+        self.assertTrue(mission in realm.get_missions())
 
-    def test_get_todos_on_quest_empty(self):
+    def test_get_missions_on_quest_empty(self):
         quest = self.grail.add_quest("regardcitoyens ça déchire")
-        self.assertEqual([], quest.get_todos())
+        self.assertEqual([], quest.get_missions())
 
-    def test_get_todos_on_quest_todo(self):
+    def test_get_missions_on_quest_mission(self):
         quest = self.grail.add_quest("regardcitoyens ça déchire")
-        todo = self.grail.add_todo("youplaboum", quest=quest.id)
-        self.assertTrue(todo in quest.get_todos())
+        mission = self.grail.add_mission("youplaboum", quest=quest.id)
+        self.assertTrue(mission in quest.get_missions())
 
-    def test_cant_wait_for_a_todo_that_wait_for_you(self):
-        todo1 = self.grail.add_todo("youplaboum")
-        todo2 = self.grail.add_todo("tien, zimmermann se fait draguer sur twitter", wait_for=todo1)
-        self.assertRaises(WaitForError, todo1.wait_for, todo2)
+    def test_cant_wait_for_a_mission_that_wait_for_you(self):
+        mission1 = self.grail.add_mission("youplaboum")
+        mission2 = self.grail.add_mission("tien, zimmermann se fait draguer sur twitter", wait_for=mission1)
+        self.assertRaises(WaitForError, mission1.wait_for, mission2)
 
-    def test_todo_cant_wait_for_self(self):
-        todo = self.grail.add_todo("ima new todo")
-        self.assertRaises(WaitForError, todo.wait_for, todo)
+    def test_mission_cant_wait_for_self(self):
+        mission = self.grail.add_mission("ima new mission")
+        self.assertRaises(WaitForError, mission.wait_for, mission)
 
 class TestTags(unittest.TestCase):
 
@@ -825,72 +825,72 @@ class TestTags(unittest.TestCase):
         grail.reset_db("yes")
         return grail
 
-    def test_tags_on_todo_empty(self):
-        todo = self.grail.add_todo("plop")
-        self.assertFalse(todo.tags)
+    def test_tags_on_mission_empty(self):
+        mission = self.grail.add_mission("plop")
+        self.assertFalse(mission.tags)
 
-    def test_tags_todo_one(self):
-        todo = self.grail.add_todo("tatatags")
-        todo.add_tag("plop")
-        self.assertEqual(todo.tags, ["plop",])
+    def test_tags_mission_one(self):
+        mission = self.grail.add_mission("tatatags")
+        mission.add_tag("plop")
+        self.assertEqual(mission.tags, ["plop",])
 
-    def test_tags_todo_avoid_duplication(self):
-        todo = self.grail.add_todo("tatatags")
-        todo.add_tag("plop")
-        self.assertEqual(todo.tags, ["plop",])
-        todo.add_tag("plop")
-        self.assertEqual(todo.tags, ["plop",])
+    def test_tags_mission_avoid_duplication(self):
+        mission = self.grail.add_mission("tatatags")
+        mission.add_tag("plop")
+        self.assertEqual(mission.tags, ["plop",])
+        mission.add_tag("plop")
+        self.assertEqual(mission.tags, ["plop",])
 
-    def test_tags_todo_multiple(self):
-        todo = self.grail.add_todo("tsointsoin")
-        todo.add_tag("plop")
-        todo.add_tag("plup")
-        self.assertTrue("plop" in todo.tags)
-        self.assertTrue("plup" in todo.tags)
-        self.assertEqual(len(todo.tags), 2)
+    def test_tags_mission_multiple(self):
+        mission = self.grail.add_mission("tsointsoin")
+        mission.add_tag("plop")
+        mission.add_tag("plup")
+        self.assertTrue("plop" in mission.tags)
+        self.assertTrue("plup" in mission.tags)
+        self.assertEqual(len(mission.tags), 2)
 
-    def test_tags_todo_remove_tag(self):
-        todo = self.grail.add_todo("tsointsoin")
-        todo.add_tag("plop")
-        todo.remove_tag("plop")
-        self.assertEqual([], todo.tags)
+    def test_tags_mission_remove_tag(self):
+        mission = self.grail.add_mission("tsointsoin")
+        mission.add_tag("plop")
+        mission.remove_tag("plop")
+        self.assertEqual([], mission.tags)
 
-    def test_tags_todo_remove_tags(self):
-        todo = self.grail.add_todo("tsointsoin")
-        todo.add_tag("plop")
-        todo.add_tag("yop")
-        todo.remove_tag("plop")
-        self.assertEqual(["yop"], todo.tags)
-        todo.remove_tag("yop")
-        self.assertEqual([], todo.tags)
+    def test_tags_mission_remove_tags(self):
+        mission = self.grail.add_mission("tsointsoin")
+        mission.add_tag("plop")
+        mission.add_tag("yop")
+        mission.remove_tag("plop")
+        self.assertEqual(["yop"], mission.tags)
+        mission.remove_tag("yop")
+        self.assertEqual([], mission.tags)
 
-    def test_tags_todo_remove_tag_raise(self):
-        todo = self.grail.add_todo("tsointsoin")
-        todo.add_tag("plop")
-        self.assertRaises(ValueError, todo.remove_tag, "ploup")
+    def test_tags_mission_remove_tag_raise(self):
+        mission = self.grail.add_mission("tsointsoin")
+        mission.add_tag("plop")
+        self.assertRaises(ValueError, mission.remove_tag, "ploup")
 
-    def test_tags_todo_get_todo_empty(self):
-        self.assertEqual([], self.grail.get_todos_from_tag("pouet"))
+    def test_tags_mission_get_mission_empty(self):
+        self.assertEqual([], self.grail.get_missions_from_tag("pouet"))
 
-    def test_tags_todo_get_one_todo(self):
-        todo1 = self.grail.add_todo("tsointsoin")
-        todo1.add_tag("plop")
-        self.assertEqual([todo1], self.grail.get_todos_from_tag("plop"))
+    def test_tags_mission_get_one_mission(self):
+        mission1 = self.grail.add_mission("tsointsoin")
+        mission1.add_tag("plop")
+        self.assertEqual([mission1], self.grail.get_missions_from_tag("plop"))
 
-    def test_tags_todo_get_two_todos(self):
-        todo1 = self.grail.add_todo("tsointsoin")
-        todo1.add_tag("plop")
-        todo2 = self.grail.add_todo("tsointsoin")
-        todo2.add_tag("plop")
-        todos = self.grail.get_todos_from_tag("plop")
-        self.assertTrue(todo1 in todos)
-        self.assertTrue(todo2 in todos)
-        self.assertEqual(2, len(todos))
+    def test_tags_mission_get_two_missions(self):
+        mission1 = self.grail.add_mission("tsointsoin")
+        mission1.add_tag("plop")
+        mission2 = self.grail.add_mission("tsointsoin")
+        mission2.add_tag("plop")
+        missions = self.grail.get_missions_from_tag("plop")
+        self.assertTrue(mission1 in missions)
+        self.assertTrue(mission2 in missions)
+        self.assertEqual(2, len(missions))
 
-    def test_todo_with_quest_without_datetime(self):
+    def test_mission_with_quest_without_datetime(self):
         quest = self.grail.add_quest("quest")
-        todo = self.grail.add_todo("prout", quest=quest.id)
-        self.grail.list_todos()
+        mission = self.grail.add_mission("prout", quest=quest.id)
+        self.grail.list_missions()
 
     # TODO: refactorer les exceptions, favoriser un message plutôt que plein d'exceptions différentes
     # TODO: faire un utils.py et rajouter plein de petits outils dedans comme un parseur de date etc ...

@@ -23,7 +23,7 @@ HolyGrail  Copyright (C) 2010  Laurent Peuch  <cortex@worlddomination.be>
 import sqlobject
 
 from holygrail_exceptions import RealmDoesntExist,\
-    TodoDoesntExist, RealmStillHasElems, CanRemoveTheDefaultRealm,\
+    MissionDoesntExist, RealmStillHasElems, CanRemoveTheDefaultRealm,\
     QuestDoesntExist, NoDatabaseConfiguration, WaitForError
 
 from datetime import date, datetime
@@ -38,9 +38,9 @@ class _Realm(sqlobject.SQLObject):
     """
     A realm.
 
-    Realm contains todos. It can be, for example, "at home", "at work" etc...
+    Realm contains missions. It can be, for example, "at home", "at work" etc...
 
-    WARNING avoid as much as possible to modify directly the todo
+    WARNING avoid as much as possible to modify directly the mission
     attribute, prefer the api, and if you do that be really SURE to know
     what you are doing. You don't want to break anything, right ?
 
@@ -53,13 +53,13 @@ class _Realm(sqlobject.SQLObject):
     hide = sqlobject.BoolCol(default=False)
     position = sqlobject.IntCol(unique=True)
 
-    def get_todos(self):
+    def get_missions(self):
         """
-        Get the todos associated to this quest.
+        Get the missions associated to this quest.
 
-        Return a list of a list of todos.
+        Return a list of a list of missions.
         """
-        return [i for i in _Todo.select(_Todo.q.realm == self)]
+        return [i for i in _Mission.select(_Mission.q.realm == self)]
 
     def change_position(self, new_position):
         """
@@ -94,7 +94,7 @@ class _Realm(sqlobject.SQLObject):
         """
         if self.default_realm:
             raise CanRemoveTheDefaultRealm
-        elif _Todo.select(_Todo.q.realm == self).count() != 0:
+        elif _Mission.select(_Mission.q.realm == self).count() != 0:
             raise RealmStillHasElems
         else:
             self.destroySelf()
@@ -122,46 +122,46 @@ class _Realm(sqlobject.SQLObject):
         self.hide = not self.hide
 
 
-class _Todo(sqlobject.SQLObject):
+class _Mission(sqlobject.SQLObject):
     """
-    A Todo object.
+    A Mission object.
 
-    WARNING avoid as much as possible to modify directly the todo
+    WARNING avoid as much as possible to modify directly the mission
     attribute, prefer the api, and if you do that be really SURE to know
     what you are doing. You don't want to break anything, right ?
 
-    Your are not supposed to create a todo directly from this class, use
-    add_todo() instead.
+    Your are not supposed to create a mission directly from this class, use
+    add_mission() instead.
     """
     description = sqlobject.UnicodeCol()
     created_at = sqlobject.DateCol(default=date.today())
     tickler = sqlobject.DateTimeCol(default=None)
     realm = sqlobject.ForeignKey('_Realm')
     quest = sqlobject.ForeignKey('_Quest', default=None)
-    previous_todo = sqlobject.ForeignKey('_Todo', default=None)
+    previous_mission = sqlobject.ForeignKey('_Mission', default=None)
     completed_at = sqlobject.DateTimeCol(default=None)
     _due = sqlobject.DateTimeCol(default=None)
     completed = sqlobject.BoolCol(default=False)
 
     def visible(self):
         """
-        A method that return True if the todo will be display in the main_view
-        or in list_todos. You normaly needn't use it.
+        A method that return True if the mission will be display in the main_view
+        or in list_missions. You normaly needn't use it.
         """
-        return (not self.previous_todo or self.previous_todo.completed)\
+        return (not self.previous_mission or self.previous_mission.completed)\
             and not self.realm.hide\
             and (not self.quest or (not self.quest.hide and not self.quest.completed and ((self.quest.tickler == None) or (self.quest.tickler < datetime.now()))))
 
     def change_realm(self, realm_id):
         """
-        Change the realm in witch the todo belongs.
+        Change the realm in witch the mission belongs.
         """
         self.realm = realm_id
 
     def change_quest(self, new_quest_id):
         """
-        Change the quest in witch the todo is. Set it to None if you don't
-        want this todo in a quest.
+        Change the quest in witch the mission is. Set it to None if you don't
+        want this mission in a quest.
 
         Argument:
             * the new quest *id*
@@ -170,16 +170,16 @@ class _Todo(sqlobject.SQLObject):
 
     def remove(self):
         """
-        Remove the todo from the database.
+        Remove the mission from the database.
         """
-        # remove from todo that wait for this todo to be completed
-        for i in self.select(_Todo.q.previous_todo == self):
-            i.previous_todo = None
+        # remove from mission that wait for this mission to be completed
+        for i in self.select(_Mission.q.previous_mission == self):
+            i.previous_mission = None
         self.destroySelf()
 
     def rename(self, description):
         """
-        Rename the todo with a new description
+        Rename the mission with a new description
 
         Arguments:
             * new description
@@ -188,9 +188,9 @@ class _Todo(sqlobject.SQLObject):
 
     def tickle(self, tickler):
         """
-        Change the todo tickler
+        Change the mission tickler
 
-        An todo with a tickle superior to now won't be display in list_todos
+        An mission with a tickle superior to now won't be display in list_missions
         or the main_view.
 
         Argument:
@@ -198,32 +198,32 @@ class _Todo(sqlobject.SQLObject):
         """
         self.tickler = tickler
 
-    def wait_for(self, todo_id):
+    def wait_for(self, mission_id):
         """
-        Define the todo that this todo will wait to be completed to appears in
-        list_todos or the main_view.
+        Define the mission that this mission will wait to be completed to appears in
+        list_missions or the main_view.
 
         Argument:
-            * the todo *id*
+            * the mission *id*
         """
-        if todo_id is self:
+        if mission_id is self:
             raise WaitForError("Can't wait for self")
-        elif (todo_id.previous_todo and todo_id.previous_todo is self):
-            raise WaitForError("Can't wait for a todo that is waiting for me")
-        self.previous_todo = todo_id
+        elif (mission_id.previous_mission and mission_id.previous_mission is self):
+            raise WaitForError("Can't wait for a mission that is waiting for me")
+        self.previous_mission = mission_id
 
     @property
     def tags(self):
-        return [i.description for i in _TagTodo.select(_TagTodo.q.todo_id == self.id)]
+        return [i.description for i in _TagMission.select(_TagMission.q.mission_id == self.id)]
 
     def add_tag(self, tag):
-        if not _TagTodo.select(sqlobject.AND(_TagTodo.q.description == tag, _TagTodo.q.todo_id == self)).count():
-            _TagTodo(todo_id = self.id, description = tag)
+        if not _TagMission.select(sqlobject.AND(_TagMission.q.description == tag, _TagMission.q.mission_id == self)).count():
+            _TagMission(mission_id = self.id, description = tag)
         else:
-            assert _TagTodo.select(sqlobject.AND(_TagTodo.q.description == tag, _TagTodo.q.todo_id == self)).count() == 1
+            assert _TagMission.select(sqlobject.AND(_TagMission.q.description == tag, _TagMission.q.mission_id == self)).count() == 1
 
     def remove_tag(self, req_tag):
-        tag = _TagTodo.select(sqlobject.AND(_TagTodo.q.description == req_tag, _TagTodo.q.todo_id == self))
+        tag = _TagMission.select(sqlobject.AND(_TagMission.q.description == req_tag, _TagMission.q.mission_id == self))
         if tag.count() == 0:
             raise ValueError('tag "%s" doesn\'t exist' % tag)
         assert tag.count() == 1
@@ -246,20 +246,20 @@ class _Todo(sqlobject.SQLObject):
         Change the due date.
 
         Argument:
-            * the *datetime* for witch the todo is due.
+            * the *datetime* for witch the mission is due.
         """
         self._due = due
 
     def toggle(self):
         """
-        Toggle to todo completion state.
+        Toggle to mission completion state.
         """
         self.completed = not self.completed
         self.completed_at = datetime.now() if self.completed else None
 
 
-class _TagTodo(sqlobject.SQLObject):
-    todo_id = sqlobject.ForeignKey("_Todo")
+class _TagMission(sqlobject.SQLObject):
+    mission_id = sqlobject.ForeignKey("_Mission")
     description = sqlobject.UnicodeCol()
 
 
@@ -267,10 +267,10 @@ class _Quest(sqlobject.SQLObject):
     """
     A quest object.
 
-    A quest is made of todos. It's basically everything you want to do that
+    A quest is made of missions. It's basically everything you want to do that
     need more than one next action.
 
-    WARNING avoid as much as possible to modify directly the todo
+    WARNING avoid as much as possible to modify directly the mission
     attribute, prefer the api, and if you do that be really SURE to know
     what you are doing. You don't want to break anything, right ?
 
@@ -286,21 +286,21 @@ class _Quest(sqlobject.SQLObject):
     default_realm = sqlobject.ForeignKey('_Realm', default=None)
     hide = sqlobject.BoolCol(default=False)
 
-    def get_todos(self):
+    def get_missions(self):
         """
-        Get the todos and the todos associated to this quest.
+        Get the missions and the missions associated to this quest.
 
-        Return a list of a list of todos and a list of todos
-        [[todos], [todos
+        Return a list of a list of missions and a list of missions
+        [[missions], [missions
         """
-        return [i for i in _Todo.select(_Todo.q.quest == self)]
+        return [i for i in _Mission.select(_Mission.q.quest == self)]
 
     def due_for(self, due):
         """
         Change the due date.
 
         Argument:
-            * the *datetime* for witch the todo is due.
+            * the *datetime* for witch the mission is due.
         """
         self.due = due
 
@@ -308,7 +308,7 @@ class _Quest(sqlobject.SQLObject):
         """
         Remove this quest.
         """
-        for i in _Todo.select(_Todo.q.quest == self):
+        for i in _Mission.select(_Mission.q.quest == self):
             i.quest = None
         self.destroySelf()
 
@@ -324,7 +324,7 @@ class _Quest(sqlobject.SQLObject):
     def tickle(self, tickler):
         """
         Change the quest tickler. If the tickler of this quest is superior
-        to now, this quest and it's todo won't be show.
+        to now, this quest and it's mission won't be show.
 
         Argument:
             * the tickle in *datetime*
@@ -333,7 +333,7 @@ class _Quest(sqlobject.SQLObject):
 
     def set_default_realm(self, realm_id):
         """
-        Set the default realm for this quest. A todo or a todo add to this
+        Set the default realm for this quest. A mission or a mission add to this
         quest without a specified realm will take the default realm of
         the quest.
 
@@ -346,7 +346,7 @@ class _Quest(sqlobject.SQLObject):
         """
         Toggle the completed state of this quest.
 
-        Todos or todo from a completed quest won't appear anymore but won't be
+        Missions or mission from a completed quest won't appear anymore but won't be
         set to completed.
         """
         self.completed = not self.completed
@@ -356,7 +356,7 @@ class _Quest(sqlobject.SQLObject):
         """
         Toggle the hidden state of a quest.
 
-        Todos or todo from an hidden quest won't appears anymore.
+        Missions or mission from an hidden quest won't appears anymore.
         """
         self.hide = not self.hide
 
@@ -365,7 +365,7 @@ class Grail(object):
 
     def __init__(self, database_uri=None):
         """
-        The main object, it's the interface with the todo database.
+        The main object, it's the interface with the mission database.
 
         If the database doesn't exist but an URI is given or a config file
         exist, the database will be automatically created.
@@ -384,9 +384,9 @@ class Grail(object):
         Intern method to check if the database exist and if the database is in a normal state.
         """
         # check that everything if normal (all table created or not created)
-        if not ((not _Todo.tableExists() and not _Quest.tableExists() and not _Realm.tableExists()) or (_Todo.tableExists() and _Quest.tableExists() and _Realm.tableExists())):
+        if not ((not _Mission.tableExists() and not _Quest.tableExists() and not _Realm.tableExists()) or (_Mission.tableExists() and _Quest.tableExists() and _Realm.tableExists())):
             print "Grail: WARNING: database in a non conform state, will probably bug. Do you need to launch a migration script ?"
-        elif not _Todo.tableExists() and not _Quest.tableExists() and not _Realm.tableExists():
+        elif not _Mission.tableExists() and not _Quest.tableExists() and not _Realm.tableExists():
             print "Grail: DB doesn't exist, I'll create it"
             self.reset_db("yes")
 
@@ -408,41 +408,41 @@ class Grail(object):
         if are_you_sure:
             _Realm.dropTable(ifExists=True)
             _Quest.dropTable(ifExists=True)
-            _Todo.dropTable(ifExists=True)
-            _TagTodo.dropTable(ifExists=True)
+            _Mission.dropTable(ifExists=True)
+            _TagMission.dropTable(ifExists=True)
 
 
             _Realm.createTable()
             _Quest.createTable()
-            _Todo.createTable()
-            _TagTodo.createTable()
+            _Mission.createTable()
+            _TagMission.createTable()
 
             # always have a realm
             _Realm(description="default realm", default_realm = True, position=0)
         else:
             print "You aren't sure, so I won't reset it"
 
-    def add_todo(self, new_description, tickler=None, due=None, quest=None, realm=None, wait_for=None, unique=False):
+    def add_mission(self, new_description, tickler=None, due=None, quest=None, realm=None, wait_for=None, unique=False):
         """
-        Add a new todo then return it
+        Add a new mission then return it
 
         Arguments:
-            * new_description, the description of the todo
-            * unique, don't add the todo if it's already exist AND ISN'T COMPLETED, return -1 if the todo already exist
-            * tickler, a datetime object the tickle the todo, default to None
-            * due, a datetime for when the todo is due, default to None
-            * quest, the ID of the quest link to this new todo, default to None
-            * realm, the ID of the realm link to this new todo, default is the default realm
-            * wait_for, the ID of todo that this new todo wait to be completed to appears, default to None
+            * new_description, the description of the mission
+            * unique, don't add the mission if it's already exist AND ISN'T COMPLETED, return -1 if the mission already exist
+            * tickler, a datetime object the tickle the mission, default to None
+            * due, a datetime for when the mission is due, default to None
+            * quest, the ID of the quest link to this new mission, default to None
+            * realm, the ID of the realm link to this new mission, default is the default realm
+            * wait_for, the ID of mission that this new mission wait to be completed to appears, default to None
         """
         if not realm:
             if not quest or not self.get_quest(quest).default_realm:
                 realm = self.get_default_realm().id
             else:
                 realm = self.get_quest(quest).default_realm.id
-        if unique and _Todo.select(sqlobject.AND(_Todo.q.description == new_description, _Todo.q.completed == False)).count() != 0:
+        if unique and _Mission.select(sqlobject.AND(_Mission.q.description == new_description, _Mission.q.completed == False)).count() != 0:
             return -1
-        return _Todo(description=new_description, tickler=tickler, _due=due, quest=quest, realm=realm, previous_todo=wait_for)
+        return _Mission(description=new_description, tickler=tickler, _due=due, quest=quest, realm=realm, previous_mission=wait_for)
 
     def add_quest(self, description, default_realm=None, tickler=None, due=None, hide=False):
         """
@@ -469,30 +469,30 @@ class Grail(object):
             new_realm.set_default()
         return new_realm
 
-    def get_todo(self, todo_id):
+    def get_mission(self, mission_id):
         """
-        Receive the id of a todo, return the todo
-        Raise an exception if the todo doesn't exist
+        Receive the id of a mission, return the mission
+        Raise an exception if the mission doesn't exist
 
         Argument:
-            * the todo description
+            * the mission description
         """
         try:
-            return _Todo.get(todo_id)
+            return _Mission.get(mission_id)
         except sqlobject.SQLObjectNotFound:
-            raise TodoDoesntExist(todo_id)
+            raise MissionDoesntExist(mission_id)
 
-    def get_todo_by_desc(self, description):
+    def get_mission_by_desc(self, description):
         """
-        Receive the description of a todo, return it
-        Raise an exception if the todo doesn't exist
+        Receive the description of a mission, return it
+        Raise an exception if the mission doesn't exist
 
         Argument:
-            * todo description
+            * mission description
         """
-        query = _Todo.select(_Todo.q.description == description)
+        query = _Mission.select(_Mission.q.description == description)
         if query.count() == 0:
-            raise TodoDoesntExist(description)
+            raise MissionDoesntExist(description)
         return [i for i in query]
 
     def get_quest(self, quest_id):
@@ -551,20 +551,20 @@ class Grail(object):
         assert _Realm.select(_Realm.q.default_realm == True).count() == 1
         return _Realm.select(_Realm.q.default_realm == True)[0]
 
-    def get_todos_from_tag(self, tag):
-        return [i.todo_id for i in _TagTodo.select(_TagTodo.q.description == tag)]
+    def get_missions_from_tag(self, tag):
+        return [i.mission_id for i in _TagMission.select(_TagMission.q.description == tag)]
 
-    def list_todos(self, all_todos=False):
+    def list_missions(self, all_missions=False):
         """
-        Return a list of visible todos.
+        Return a list of visible missions.
 
         Arguments:
-            * all_todos=False by default, if True return all the todos.
+            * all_missions=False by default, if True return all the missions.
         """
-        return [i for i in _Todo.select(sqlobject.AND(_Todo.q.completed == False,
-               sqlobject.OR(_Todo.q.tickler == None, _Todo.q.tickler < datetime.now()))).orderBy('id')\
+        return [i for i in _Mission.select(sqlobject.AND(_Mission.q.completed == False,
+               sqlobject.OR(_Mission.q.tickler == None, _Mission.q.tickler < datetime.now()))).orderBy('id')\
                 if i.visible()] if\
-                not all_todos else [i for i in _Todo.select()]
+                not all_missions else [i for i in _Mission.select()]
 
     def list_quests(self, all_quests=False):
         """
@@ -586,11 +586,11 @@ class Grail(object):
         return [i for i in _Realm.select(_Realm.q.hide == False).orderBy("position")] if not all_realms\
             else [i for i in _Realm.select()]
 
-    def last_completed_todos(self):
+    def last_completed_missions(self):
         """
-        Return a list of the last completed todos order in a none chronological order.
+        Return a list of the last completed missions order in a none chronological order.
         """
-        to_return = [i for i in _Todo.select(_Todo.q.completed == True).orderBy("completed_at")]
+        to_return = [i for i in _Mission.select(_Mission.q.completed == True).orderBy("completed_at")]
         to_return.reverse()
         return to_return
 
@@ -600,30 +600,30 @@ class Grail(object):
 
         The main view is a list of lists of:
             - visible realm
-            - list of visible todos of this realm
+            - list of visible missions of this realm
 
         Order by the realm position.
         """
-        todos = self.list_todos()
+        missions = self.list_missions()
         realms = self.list_realms()
         main_view = []
-        if not todos:
+        if not missions:
             return main_view
         for realm in realms:
-            realm_todos = [i for i in todos if i.realm == realm]
-            if realm_todos:
-                main_view.append([realm, realm_todos])
+            realm_missions = [i for i in missions if i.realm == realm]
+            if realm_missions:
+                main_view.append([realm, realm_missions])
 
         return main_view
 
-    def search_for_todo(self, description):
+    def search_for_mission(self, description):
         """
-        Receive a string, return all the todo that match that string
+        Receive a string, return all the mission that match that string
 
         Argument:
             * a string
         """
-        return [i for i in _Todo.select(_Todo.q.description.contains(description))]
+        return [i for i in _Mission.select(_Mission.q.description.contains(description))]
 
 
 if __name__ == "__main__":
