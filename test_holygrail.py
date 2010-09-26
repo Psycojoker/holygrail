@@ -2,29 +2,29 @@
 # -*- coding:Utf-8 -*-
 
 """
-This file is part of Toudoudone.
+This file is part of HolyGrail.
 
-Toudoudone is free software: you can redistribute it and/or modify
+HolyGrail is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation, either version 3 of the License, or
 (at your option) any later version.
 
-Toudoudone is distributed in the hope that it will be useful,
+HolyGrail is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with Toudoudone.  If not, see <http://www.gnu.org/licenses/>.
+along with HolyGrail.  If not, see <http://www.gnu.org/licenses/>.
 
-Toudoudone  Copyright (C) 2010  Laurent Peuch <cortex@worlddomination.be>
+HolyGrail  Copyright (C) 2010  Laurent Peuch <cortex@worlddomination.be>
 """
 
 import unittest, time
 
 from datetime import date, datetime, timedelta
 
-from tdd import TodoDB, TodoDoesntExist, CanRemoveTheDefaultContext, ContextDoesntExist, ContextStillHasElems, _Context, ProjectDoesntExist, _Todo, _Project, _Item, ItemDoesntExist, WaitForError
+from holygrail import TodoDB, TodoDoesntExist, CanRemoveTheDefaultContext, ContextDoesntExist, ContextStillHasElems, _Context, ProjectDoesntExist, _Todo, _Project, _Item, ItemDoesntExist, WaitForError
 
 def comp_datetime(a, b):
     if a.year != b.year:
