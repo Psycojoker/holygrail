@@ -24,8 +24,7 @@ import sqlobject
 
 from holygrail_exceptions import ContextDoesntExist,\
     TodoDoesntExist, ContextStillHasElems, CanRemoveTheDefaultContext,\
-    ProjectDoesntExist, NoDatabaseConfiguration, ItemDoesntExist,\
-    WaitForError
+    ProjectDoesntExist, NoDatabaseConfiguration, WaitForError
 
 from datetime import date, datetime
 
@@ -39,8 +38,7 @@ class _Context(sqlobject.SQLObject):
     """
     A context.
 
-    Context contains todos and items. It can be, for example, "at home", "at
-    work" etc...
+    Context contains todos. It can be, for example, "at home", "at work" etc...
 
     WARNING avoid as much as possible to modify directly the todo
     attribute, prefer the api, and if you do that be really SURE to know
@@ -55,15 +53,13 @@ class _Context(sqlobject.SQLObject):
     hide = sqlobject.BoolCol(default=False)
     position = sqlobject.IntCol(unique=True)
 
-    def get_todos_and_items(self):
+    def get_todos(self):
         """
-        Get the todos and the items associated to this project.
+        Get the todos associated to this project.
 
-        Return a list of a list of todos and a list of items.
-        [[todos], [items]]
+        Return a list of a list of todos.
         """
-        return [[i for i in _Todo.select(_Todo.q.context == self)],
-                [j for j in _Item.select(_Item.q.context == self)]]
+        return [i for i in _Todo.select(_Todo.q.context == self)]
 
     def change_position(self, new_position):
         """
@@ -98,8 +94,7 @@ class _Context(sqlobject.SQLObject):
         """
         if self.default_context:
             raise CanRemoveTheDefaultContext
-        elif _Todo.select(_Todo.q.context == self).count() != 0\
-            or _Item.select(_Item.q.context == self).count() != 0:
+        elif _Todo.select(_Todo.q.context == self).count() != 0:
             raise ContextStillHasElems
         else:
             self.destroySelf()
@@ -127,20 +122,16 @@ class _Context(sqlobject.SQLObject):
         self.hide = not self.hide
 
 
-class _Item(sqlobject.SQLObject):
+class _Todo(sqlobject.SQLObject):
     """
-    An item.
-
-    An item is a non checkable todo. It can be used to list stuff you don't
-    want to be checkable. It can (will, hit me with a stick) be easily
-    transform into a todo.
+    A Todo object.
 
     WARNING avoid as much as possible to modify directly the todo
     attribute, prefer the api, and if you do that be really SURE to know
     what you are doing. You don't want to break anything, right ?
 
-    Your are not supposed to create a item directly from this class, use
-    add_item() instead.
+    Your are not supposed to create a todo directly from this class, use
+    add_todo() instead.
     """
     description = sqlobject.UnicodeCol()
     created_at = sqlobject.DateCol(default=date.today())
@@ -148,11 +139,14 @@ class _Item(sqlobject.SQLObject):
     context = sqlobject.ForeignKey('_Context')
     project = sqlobject.ForeignKey('_Project', default=None)
     previous_todo = sqlobject.ForeignKey('_Todo', default=None)
+    completed_at = sqlobject.DateTimeCol(default=None)
+    _due = sqlobject.DateTimeCol(default=None)
+    completed = sqlobject.BoolCol(default=False)
 
     def visible(self):
         """
-        A method that return True if the item will be display in the main_view
-        or in list_items. You normaly needn't use it.
+        A method that return True if the todo will be display in the main_view
+        or in list_todos. You normaly needn't use it.
         """
         return (not self.previous_todo or self.previous_todo.completed)\
             and not self.context.hide\
@@ -160,14 +154,14 @@ class _Item(sqlobject.SQLObject):
 
     def change_context(self, context_id):
         """
-        Change the context in witch the item belongs.
+        Change the context in witch the todo belongs.
         """
         self.context = context_id
 
     def change_project(self, new_project_id):
         """
-        Change the project in witch the item is. Set it to None if you don't
-        want this item in a project.
+        Change the project in witch the todo is. Set it to None if you don't
+        want this todo in a project.
 
         Argument:
             * the new project *id*
@@ -176,8 +170,11 @@ class _Item(sqlobject.SQLObject):
 
     def remove(self):
         """
-        Remove the item from the database.
+        Remove the todo from the database.
         """
+        # remove from todo that wait for this todo to be completed
+        for i in self.select(_Todo.q.previous_todo == self):
+            i.previous_todo = None
         self.destroySelf()
 
     def rename(self, description):
@@ -191,9 +188,9 @@ class _Item(sqlobject.SQLObject):
 
     def tickle(self, tickler):
         """
-        Change the item tickler
+        Change the todo tickler
 
-        An item with a tickle superior to now won't be display in list_items
+        An todo with a tickle superior to now won't be display in list_todos
         or the main_view.
 
         Argument:
@@ -203,8 +200,8 @@ class _Item(sqlobject.SQLObject):
 
     def wait_for(self, todo_id):
         """
-        Define the todo that this item will wait to be completed to appears in
-        list_items or the main_view.
+        Define the todo that this todo will wait to be completed to appears in
+        list_todos or the main_view.
 
         Argument:
             * the todo *id*
@@ -214,27 +211,6 @@ class _Item(sqlobject.SQLObject):
         elif (todo_id.previous_todo and todo_id.previous_todo is self):
             raise WaitForError("Can't wait for a todo that is waiting for me")
         self.previous_todo = todo_id
-
-
-class _TagTodo(sqlobject.SQLObject):
-    todo_id = sqlobject.ForeignKey("_Todo")
-    description = sqlobject.UnicodeCol()
-
-
-class _Todo(_Item):
-    """
-    A Todo object.
-
-    WARNING avoid as much as possible to modify directly the todo
-    attribute, prefer the api, and if you do that be really SURE to know
-    what you are doing. You don't want to break anything, right ?
-
-    Your are not supposed to create a todo directly from this class, use
-    add_todo() instead.
-    """
-    completed_at = sqlobject.DateTimeCol(default=None)
-    _due = sqlobject.DateTimeCol(default=None)
-    completed = sqlobject.BoolCol(default=False)
 
     @property
     def tags(self):
@@ -274,17 +250,6 @@ class _Todo(_Item):
         """
         self._due = due
 
-    def remove(self):
-        """
-        Remove the todo from the database.
-        """
-        # remove from todo that wait for this todo to be completed
-        for i in self.select(_Todo.q.previous_todo == self):
-            i.previous_todo = None
-        for i in _Item.select(_Item.q.previous_todo == self):
-            i.previous_todo = None
-        super(_Todo, self).remove()
-
     def toggle(self):
         """
         Toggle to todo completion state.
@@ -293,12 +258,17 @@ class _Todo(_Item):
         self.completed_at = datetime.now() if self.completed else None
 
 
+class _TagTodo(sqlobject.SQLObject):
+    todo_id = sqlobject.ForeignKey("_Todo")
+    description = sqlobject.UnicodeCol()
+
+
 class _Project(sqlobject.SQLObject):
     """
     A project object.
 
-    A project is made of items and/or todos. It's basically everything you want
-    to do that need more than one next action.
+    A project is made of todos. It's basically everything you want to do that
+    need more than one next action.
 
     WARNING avoid as much as possible to modify directly the todo
     attribute, prefer the api, and if you do that be really SURE to know
@@ -316,15 +286,14 @@ class _Project(sqlobject.SQLObject):
     default_context = sqlobject.ForeignKey('_Context', default=None)
     hide = sqlobject.BoolCol(default=False)
 
-    def get_todos_and_items(self):
+    def get_todos(self):
         """
-        Get the todos and the items associated to this project.
+        Get the todos and the todos associated to this project.
 
-        Return a list of a list of todos and a list of items.
-        [[todos], [items]]
+        Return a list of a list of todos and a list of todos
+        [[todos], [todos
         """
-        return [[i for i in _Todo.select(_Todo.q.project == self)],
-                [j for j in _Item.select(_Item.q.project == self)]]
+        return [i for i in _Todo.select(_Todo.q.project == self)]
 
     def due_for(self, due):
         """
@@ -341,8 +310,6 @@ class _Project(sqlobject.SQLObject):
         """
         for i in _Todo.select(_Todo.q.project == self):
             i.project = None
-        for i in _Item.select(_Item.q.project == self):
-            i.project = None
         self.destroySelf()
 
     def rename(self, new_description):
@@ -357,7 +324,7 @@ class _Project(sqlobject.SQLObject):
     def tickle(self, tickler):
         """
         Change the project tickler. If the tickler of this project is superior
-        to now, this project and it's todo/items won't be show.
+        to now, this project and it's todo won't be show.
 
         Argument:
             * the tickle in *datetime*
@@ -366,7 +333,7 @@ class _Project(sqlobject.SQLObject):
 
     def set_default_context(self, context_id):
         """
-        Set the default context for this project. A todo or a item add to this
+        Set the default context for this project. A todo or a todo add to this
         project without a specified context will take the default context of
         the project.
 
@@ -379,7 +346,7 @@ class _Project(sqlobject.SQLObject):
         """
         Toggle the completed state of this project.
 
-        Todos or items from a completed project won't appear anymore but won't be
+        Todos or todo from a completed project won't appear anymore but won't be
         set to completed.
         """
         self.completed = not self.completed
@@ -389,7 +356,7 @@ class _Project(sqlobject.SQLObject):
         """
         Toggle the hidden state of a project.
 
-        Todos or items from an hidden project won't appears anymore.
+        Todos or todo from an hidden project won't appears anymore.
         """
         self.hide = not self.hide
 
@@ -417,9 +384,9 @@ class Grail(object):
         Intern method to check if the database exist and if the database is in a normal state.
         """
         # check that everything if normal (all table created or not created)
-        if not ((not _Item.tableExists() and not _Todo.tableExists() and not _Project.tableExists() and not _Context.tableExists()) or (_Todo.tableExists() and _Project.tableExists() and _Context.tableExists() and _Item.tableExists())):
+        if not ((not _Todo.tableExists() and not _Project.tableExists() and not _Context.tableExists()) or (_Todo.tableExists() and _Project.tableExists() and _Context.tableExists())):
             print "Grail: WARNING: database in a non conform state, will probably bug. Do you need to launch a migration script ?"
-        elif not _Todo.tableExists() and not _Project.tableExists() and not _Context.tableExists() and not _Item.tableExists():
+        elif not _Todo.tableExists() and not _Project.tableExists() and not _Context.tableExists():
             print "Grail: DB doesn't exist, I'll create it"
             self.reset_db("yes")
 
@@ -441,7 +408,6 @@ class Grail(object):
         if are_you_sure:
             _Context.dropTable(ifExists=True)
             _Project.dropTable(ifExists=True)
-            _Item.dropTable(ifExists=True)
             _Todo.dropTable(ifExists=True)
             _TagTodo.dropTable(ifExists=True)
 
@@ -449,7 +415,6 @@ class Grail(object):
             _Context.createTable()
             _Project.createTable()
             _Todo.createTable()
-            _Item.createTable()
             _TagTodo.createTable()
 
             # always have a context
@@ -478,24 +443,6 @@ class Grail(object):
         if unique and _Todo.select(sqlobject.AND(_Todo.q.description == new_description, _Todo.q.completed == False)).count() != 0:
             return -1
         return _Todo(description=new_description, tickler=tickler, _due=due, project=project, context=context, previous_todo=wait_for)
-
-    def add_item(self, description, context=None, tickler=None, project=None, wait_for=None):
-        """
-        Add a new item then return it
-
-        Arguments:
-            * new_description, the description of the item
-            * tickler, a datetime object the tickle the item, default to None
-            * project, the ID of the project link to this new item, default to None
-            * context, the ID of the context link to this new item, default is the default context
-            * wait_for, the ID of todo that this new item wait to be completed to appears, default to None
-        """
-        if not context:
-            if not project or not self.get_project(project).default_context:
-                context = self.get_default_context().id
-            else:
-                context = self.get_project(project).default_context.id
-        return _Item(description=description, tickler=tickler, context=context, project=project, previous_todo=wait_for)
 
     def add_project(self, description, default_context=None, tickler=None, due=None, hide=False):
         """
@@ -548,35 +495,9 @@ class Grail(object):
             raise TodoDoesntExist(description)
         return [i for i in query]
 
-    def get_item(self, item_id):
-        """
-        Receive the id of a item, return the item
-        Raise an exception if the item doesn't exist
-
-        Argument:
-            * item description
-        """
-        try:
-            return _Item.get(item_id)
-        except sqlobject.SQLObjectNotFound:
-            raise ItemDoesntExist(item_id)
-
-    def get_item_by_desc(self, description):
-        """
-        Receive the description of an item, return it
-        Raise an exception if the item doesn't exist
-
-        Arguments:
-            * item description
-        """
-        query = _Item.select(_Item.q.description == description)
-        if query.count() == 0:
-            raise ItemDoesntExist(description)
-        return [i for i in query]
-
     def get_project(self, project_id):
         """
-        Receive the id of a project, return the item
+        Receive the id of a project, return the project
         Raise an exception if the project doesn't exist
 
         Argument:
@@ -645,16 +566,6 @@ class Grail(object):
                 if i.visible()] if\
                 not all_todos else [i for i in _Todo.select()]
 
-    def list_items(self, all_items=False):
-        """
-        Return a list of visible items.
-
-        Arguments:
-            * all_items=False by default, if True return all the items.
-        """
-        return [i for i in _Item.select(sqlobject.OR(_Item.q.tickler == None, _Item.q.tickler < datetime.now())) if i.visible()]\
-                if not all_items else [i for i in _Item.select()]
-
     def list_projects(self, all_projects=False):
         """
         Return a list of visible projects.
@@ -689,22 +600,19 @@ class Grail(object):
 
         The main view is a list of lists of:
             - visible context
-            - list of visible items of this context
             - list of visible todos of this context
 
         Order by the context position.
         """
-        items = self.list_items()
         todos = self.list_todos()
         contexts = self.list_contexts()
         main_view = []
-        if not items and not todos:
+        if not todos:
             return main_view
         for context in contexts:
-            context_items = [i for i in items if i.context == context]
             context_todos = [i for i in todos if i.context == context]
-            if context_todos or context_items:
-                main_view.append([context, context_items, context_todos])
+            if context_todos:
+                main_view.append([context, context_todos])
 
         return main_view
 
