@@ -22,8 +22,8 @@ HolyGrail  Copyright (C) 2010  Laurent Peuch  <cortex@worlddomination.be>
 
 import sqlobject
 
-from holygrail_exceptions import ContextDoesntExist,\
-    TodoDoesntExist, ContextStillHasElems, CanRemoveTheDefaultContext,\
+from holygrail_exceptions import RealmDoesntExist,\
+    TodoDoesntExist, RealmStillHasElems, CanRemoveTheDefaultRealm,\
     QuestDoesntExist, NoDatabaseConfiguration, WaitForError
 
 from datetime import date, datetime
@@ -34,21 +34,21 @@ DATABASE_ACCESS = config.DATABASE_ACCESS if hasattr(config, "DATABASE_ACCESS") e
 
 __version__ = "Galahad 0.1"
 
-class _Context(sqlobject.SQLObject):
+class _Realm(sqlobject.SQLObject):
     """
-    A context.
+    A realm.
 
-    Context contains todos. It can be, for example, "at home", "at work" etc...
+    Realm contains todos. It can be, for example, "at home", "at work" etc...
 
     WARNING avoid as much as possible to modify directly the todo
     attribute, prefer the api, and if you do that be really SURE to know
     what you are doing. You don't want to break anything, right ?
 
-    Your are not supposed to create a context directly from this class, use
-    add_context() instead.
+    Your are not supposed to create a realm directly from this class, use
+    add_realm() instead.
     """
     description = sqlobject.UnicodeCol()
-    default_context = sqlobject.BoolCol(default=False)
+    default_realm = sqlobject.BoolCol(default=False)
     created_at = sqlobject.DateCol(default=datetime.now())
     hide = sqlobject.BoolCol(default=False)
     position = sqlobject.IntCol(unique=True)
@@ -59,65 +59,65 @@ class _Context(sqlobject.SQLObject):
 
         Return a list of a list of todos.
         """
-        return [i for i in _Todo.select(_Todo.q.context == self)]
+        return [i for i in _Todo.select(_Todo.q.realm == self)]
 
     def change_position(self, new_position):
         """
-        Change the position of the context in the main_view.
+        Change the position of the realm in the main_view.
 
         Arguments:
-            * new_position: the new position of the context, if the position is
+            * new_position: the new position of the realm, if the position is
               > at the max position, it will simply be put at the end
         """
         if new_position == self.position:
             return
 
-        contexts = [i for i in self.select().orderBy("position")]
+        realms = [i for i in self.select().orderBy("position")]
         if new_position > self.position:
             # since insert() insert before
-            contexts.insert(new_position + 1, self)
-            contexts.remove(self)
+            realms.insert(new_position + 1, self)
+            realms.remove(self)
         else:
-            contexts.remove(self)
-            contexts.insert(new_position, self)
-        for i in contexts:
+            realms.remove(self)
+            realms.insert(new_position, self)
+        for i in realms:
             i.position = None
-        for i in contexts:
-            i.position = contexts.index(i)
+        for i in realms:
+            i.position = realms.index(i)
 
     def remove(self):
         """
-        Remove the context.
+        Remove the realm.
 
-        You can't remove the default context, CanRemoveTheDefaultContext will
+        You can't remove the default realm, CanRemoveTheDefaultRealm will
         be raised if you tried to.
         """
-        if self.default_context:
-            raise CanRemoveTheDefaultContext
-        elif _Todo.select(_Todo.q.context == self).count() != 0:
-            raise ContextStillHasElems
+        if self.default_realm:
+            raise CanRemoveTheDefaultRealm
+        elif _Todo.select(_Todo.q.realm == self).count() != 0:
+            raise RealmStillHasElems
         else:
             self.destroySelf()
 
     def rename(self, new_description):
         """
-        Change the description of the context.
+        Change the description of the realm.
 
         Argument:
-            * new_description: the context's new description.
+            * new_description: the realm's new description.
         """
         self.description = new_description
 
     def set_default(self):
         """
-        Set this context as the new default context.
+        Set this realm as the new default realm.
         """
-        self.select(self.q.default_context == True)[0].default_context = False
-        self.default_context = True
+        self.select(self.q.default_realm == True)[0].default_realm = False
+        self.default_realm = True
 
     def toggle_hide(self):
         """
-        Toggle if this context is display in the main view.
+        Toggle if this realm is display in the main view.
         """
         self.hide = not self.hide
 
@@ -136,7 +136,7 @@ class _Todo(sqlobject.SQLObject):
     description = sqlobject.UnicodeCol()
     created_at = sqlobject.DateCol(default=date.today())
     tickler = sqlobject.DateTimeCol(default=None)
-    context = sqlobject.ForeignKey('_Context')
+    realm = sqlobject.ForeignKey('_Realm')
     quest = sqlobject.ForeignKey('_Quest', default=None)
     previous_todo = sqlobject.ForeignKey('_Todo', default=None)
     completed_at = sqlobject.DateTimeCol(default=None)
@@ -149,14 +149,14 @@ class _Todo(sqlobject.SQLObject):
         or in list_todos. You normaly needn't use it.
         """
         return (not self.previous_todo or self.previous_todo.completed)\
-            and not self.context.hide\
+            and not self.realm.hide\
             and (not self.quest or (not self.quest.hide and not self.quest.completed and ((self.quest.tickler == None) or (self.quest.tickler < datetime.now()))))
 
-    def change_context(self, context_id):
+    def change_realm(self, realm_id):
         """
-        Change the context in witch the todo belongs.
+        Change the realm in witch the todo belongs.
         """
-        self.context = context_id
+        self.realm = realm_id
 
     def change_quest(self, new_quest_id):
         """
@@ -283,7 +283,7 @@ class _Quest(sqlobject.SQLObject):
     completed_at = sqlobject.DateTimeCol(default=None)
     tickler = sqlobject.DateTimeCol(default=None)
     due = sqlobject.DateTimeCol(default=None)
-    default_context = sqlobject.ForeignKey('_Context', default=None)
+    default_realm = sqlobject.ForeignKey('_Realm', default=None)
     hide = sqlobject.BoolCol(default=False)
 
     def get_todos(self):
@@ -331,16 +331,16 @@ class _Quest(sqlobject.SQLObject):
         """
         self.tickler = tickler
 
-    def set_default_context(self, context_id):
+    def set_default_realm(self, realm_id):
         """
-        Set the default context for this quest. A todo or a todo add to this
-        quest without a specified context will take the default context of
+        Set the default realm for this quest. A todo or a todo add to this
+        quest without a specified realm will take the default realm of
         the quest.
 
         Argument:
-            * the new default context *id*
+            * the new default realm *id*
         """
-        self.default_context = context_id
+        self.default_realm = realm_id
 
     def toggle(self):
         """
@@ -384,9 +384,9 @@ class Grail(object):
         Intern method to check if the database exist and if the database is in a normal state.
         """
         # check that everything if normal (all table created or not created)
-        if not ((not _Todo.tableExists() and not _Quest.tableExists() and not _Context.tableExists()) or (_Todo.tableExists() and _Quest.tableExists() and _Context.tableExists())):
+        if not ((not _Todo.tableExists() and not _Quest.tableExists() and not _Realm.tableExists()) or (_Todo.tableExists() and _Quest.tableExists() and _Realm.tableExists())):
             print "Grail: WARNING: database in a non conform state, will probably bug. Do you need to launch a migration script ?"
-        elif not _Todo.tableExists() and not _Quest.tableExists() and not _Context.tableExists():
+        elif not _Todo.tableExists() and not _Quest.tableExists() and not _Realm.tableExists():
             print "Grail: DB doesn't exist, I'll create it"
             self.reset_db("yes")
 
@@ -406,23 +406,23 @@ class Grail(object):
         WARNING: this will destroy *EVERYTHING* in the database
         """
         if are_you_sure:
-            _Context.dropTable(ifExists=True)
+            _Realm.dropTable(ifExists=True)
             _Quest.dropTable(ifExists=True)
             _Todo.dropTable(ifExists=True)
             _TagTodo.dropTable(ifExists=True)
 
 
-            _Context.createTable()
+            _Realm.createTable()
             _Quest.createTable()
             _Todo.createTable()
             _TagTodo.createTable()
 
-            # always have a context
-            _Context(description="default context", default_context = True, position=0)
+            # always have a realm
+            _Realm(description="default realm", default_realm = True, position=0)
         else:
             print "You aren't sure, so I won't reset it"
 
-    def add_todo(self, new_description, tickler=None, due=None, quest=None, context=None, wait_for=None, unique=False):
+    def add_todo(self, new_description, tickler=None, due=None, quest=None, realm=None, wait_for=None, unique=False):
         """
         Add a new todo then return it
 
@@ -432,42 +432,42 @@ class Grail(object):
             * tickler, a datetime object the tickle the todo, default to None
             * due, a datetime for when the todo is due, default to None
             * quest, the ID of the quest link to this new todo, default to None
-            * context, the ID of the context link to this new todo, default is the default context
+            * realm, the ID of the realm link to this new todo, default is the default realm
             * wait_for, the ID of todo that this new todo wait to be completed to appears, default to None
         """
-        if not context:
-            if not quest or not self.get_quest(quest).default_context:
-                context = self.get_default_context().id
+        if not realm:
+            if not quest or not self.get_quest(quest).default_realm:
+                realm = self.get_default_realm().id
             else:
-                context = self.get_quest(quest).default_context.id
+                realm = self.get_quest(quest).default_realm.id
         if unique and _Todo.select(sqlobject.AND(_Todo.q.description == new_description, _Todo.q.completed == False)).count() != 0:
             return -1
-        return _Todo(description=new_description, tickler=tickler, _due=due, quest=quest, context=context, previous_todo=wait_for)
+        return _Todo(description=new_description, tickler=tickler, _due=due, quest=quest, realm=realm, previous_todo=wait_for)
 
-    def add_quest(self, description, default_context=None, tickler=None, due=None, hide=False):
+    def add_quest(self, description, default_realm=None, tickler=None, due=None, hide=False):
         """
         Add a new quest then return it
 
         Arguments:
             * description, the quest description
-            * default_context, the default context of this quest
+            * default_realm, the default realm of this quest
             * tickler, the tickler of this quest in *datetime*
         """
-        return _Quest(description=description, default_context=default_context, due=due, tickler=tickler, hide=hide)
+        return _Quest(description=description, default_realm=default_realm, due=due, tickler=tickler, hide=hide)
 
-    def add_context(self, description, hide=False, default=False):
+    def add_realm(self, description, hide=False, default=False):
         """
-        Add a new context then return it
+        Add a new realm then return it
 
         Arguments:
             * description, the quest description
             * hide, if the quest is hide
-            * default, if the quest is now the default context
+            * default, if the quest is now the default realm
         """
-        new_context = _Context(position=_Context.select().count(), description=description, hide=hide)
+        new_realm = _Realm(position=_Realm.select().count(), description=description, hide=hide)
         if default:
-            new_context.set_default()
-        return new_context
+            new_realm.set_default()
+        return new_realm
 
     def get_todo(self, todo_id):
         """
@@ -518,38 +518,38 @@ class Grail(object):
         """
         return [i for i in _Quest.select(_Quest.q.description == description)]
 
-    def get_context(self, context_id):
+    def get_realm(self, realm_id):
         """
-        Receive the id of a context, return the context
-        Raise an exception if the context doesn't exist
+        Receive the id of a realm, return the realm
+        Raise an exception if the realm doesn't exist
 
         Argument:
-            * context description
+            * realm description
         """
         try:
-            return _Context.get(context_id)
+            return _Realm.get(realm_id)
         except sqlobject.SQLObjectNotFound:
-            raise ContextDoesntExist(context_id)
+            raise RealmDoesntExist(realm_id)
 
-    def get_context_by_desc(self, description):
+    def get_realm_by_desc(self, description):
         """
-        Receive the description of an context, return it
-        Raise an exception if the context doesn't exist
+        Receive the description of an realm, return it
+        Raise an exception if the realm doesn't exist
 
         Arguments:
-            * context description
+            * realm description
         """
-        query = _Context.select(_Context.q.description == description)
+        query = _Realm.select(_Realm.q.description == description)
         if query.count() == 0:
-            raise ContextDoesntExist(description)
+            raise RealmDoesntExist(description)
         return [i for i in query]
 
-    def get_default_context(self):
+    def get_default_realm(self):
         """
-        Return the default context.
+        Return the default realm.
         """
-        assert _Context.select(_Context.q.default_context == True).count() == 1
-        return _Context.select(_Context.q.default_context == True)[0]
+        assert _Realm.select(_Realm.q.default_realm == True).count() == 1
+        return _Realm.select(_Realm.q.default_realm == True)[0]
 
     def get_todos_from_tag(self, tag):
         return [i.todo_id for i in _TagTodo.select(_TagTodo.q.description == tag)]
@@ -576,15 +576,15 @@ class Grail(object):
         return [i for i in _Quest.select(sqlobject.AND(_Quest.q.hide == False, sqlobject.OR(_Quest.q.tickler == None, _Quest.q.tickler < datetime.now())))]\
                 if not all_quests else [i for i in _Quest.select()]
 
-    def list_contexts(self, all_contexts=False):
+    def list_realms(self, all_realms=False):
         """
-        Return a list of visible contexts.
+        Return a list of visible realms.
 
         Arguments:
-            * all_contexts=False by default, if True return all the contexts.
+            * all_realms=False by default, if True return all the realms.
         """
-        return [i for i in _Context.select(_Context.q.hide == False).orderBy("position")] if not all_contexts\
-            else [i for i in _Context.select()]
+        return [i for i in _Realm.select(_Realm.q.hide == False).orderBy("position")] if not all_realms\
+            else [i for i in _Realm.select()]
 
     def last_completed_todos(self):
         """
@@ -599,20 +599,20 @@ class Grail(object):
         Return the main view.
 
         The main view is a list of lists of:
-            - visible context
-            - list of visible todos of this context
+            - visible realm
+            - list of visible todos of this realm
 
-        Order by the context position.
+        Order by the realm position.
         """
         todos = self.list_todos()
-        contexts = self.list_contexts()
+        realms = self.list_realms()
         main_view = []
         if not todos:
             return main_view
-        for context in contexts:
-            context_todos = [i for i in todos if i.context == context]
-            if context_todos:
-                main_view.append([context, context_todos])
+        for realm in realms:
+            realm_todos = [i for i in todos if i.realm == realm]
+            if realm_todos:
+                main_view.append([realm, realm_todos])
 
         return main_view
 

@@ -4,12 +4,12 @@ Custom exceptions for toudoudone
 
 import exceptions
 
-class ContextStillHasElems(exceptions.Exception):
+class RealmStillHasElems(exceptions.Exception):
     def __init__(self):
-        super(ContextStillHasElems, self).__init__()
+        super(RealmStillHasElems, self).__init__()
 
     def __str__(self):
-        return 'This context still containt elems, can\'t remove it'
+        return 'This realm still containt elems, can\'t remove it'
 
 class TodoDoesntExist(exceptions.Exception):
     def __init__(self, todo):
@@ -19,13 +19,13 @@ class TodoDoesntExist(exceptions.Exception):
     def __str__(self):
         return 'this todo doesn\'t exist: %s' % self.todo
 
-class ContextDoesntExist(exceptions.Exception):
-    def __init__(self, context):
-        self.context = context
-        super(ContextDoesntExist, self).__init__()
+class RealmDoesntExist(exceptions.Exception):
+    def __init__(self, realm):
+        self.realm = realm
+        super(RealmDoesntExist, self).__init__()
 
     def __str__(self):
-        return 'this context doesn\'t exist: %s' % self.context
+        return 'this realm doesn\'t exist: %s' % self.realm
 
 class TableAlreadyExist(exceptions.Exception):
     def __init__(self, table):
@@ -35,12 +35,12 @@ class TableAlreadyExist(exceptions.Exception):
     def __str__(self):
         return "%s" % self.table
 
-class CanRemoveTheDefaultContext(exceptions.Exception):
+class CanRemoveTheDefaultRealm(exceptions.Exception):
     def __init__(self):
-        super(CanRemoveTheDefaultContext, self).__init__()
+        super(CanRemoveTheDefaultRealm, self).__init__()
 
     def __str__(self):
-        return "can't remove the default context, change it before remove it"
+        return "can't remove the default realm, change it before remove it"
 
 class QuestDoesntExist(exceptions.Exception):
     def __init__(self, quest):

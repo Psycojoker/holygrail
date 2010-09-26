@@ -24,7 +24,7 @@ import unittest, time
 
 from datetime import date, datetime, timedelta
 
-from holygrail import Grail, TodoDoesntExist, CanRemoveTheDefaultContext, ContextDoesntExist, ContextStillHasElems, _Context, QuestDoesntExist, _Todo, _Quest, WaitForError
+from holygrail import Grail, TodoDoesntExist, CanRemoveTheDefaultRealm, RealmDoesntExist, RealmStillHasElems, _Realm, QuestDoesntExist, _Todo, _Quest, WaitForError
 
 def comp_datetime(a, b):
     if a.year != b.year:
@@ -229,102 +229,102 @@ class Test_TDD(unittest.TestCase):
         todo.due_for(due)
         self.assertEqual(due, todo.due)
 
-    def test_tdd_should_have_a_context_at_creation(self):
-        self.assertEqual("default context", _Context.get(1).description)
-        self.assertEqual(1, _Context.select().count())
+    def test_tdd_should_have_a_realm_at_creation(self):
+        self.assertEqual("default realm", _Realm.get(1).description)
+        self.assertEqual(1, _Realm.select().count())
 
-    def test_add_context(self):
-        context = self.grail.add_context("new context")
-        self.assertEqual(context.description, "new context")
-        self.assertEqual(2, _Context.select().count())
+    def test_add_realm(self):
+        realm = self.grail.add_realm("new realm")
+        self.assertEqual(realm.description, "new realm")
+        self.assertEqual(2, _Realm.select().count())
 
-    def test_rename_context(self):
-        _Context.get(1).rename("new description")
-        self.assertEqual("new description", _Context.get(1).description)
+    def test_rename_realm(self):
+        _Realm.get(1).rename("new description")
+        self.assertEqual("new description", _Realm.get(1).description)
 
-    def test_remove_context(self):
-        self.assertEqual(1, _Context.select().count())
-        context = self.grail.add_context("new context")
-        self.assertEqual(2, _Context.select().count())
-        context.remove()
-        self.assertEqual(1, _Context.select().count())
+    def test_remove_realm(self):
+        self.assertEqual(1, _Realm.select().count())
+        realm = self.grail.add_realm("new realm")
+        self.assertEqual(2, _Realm.select().count())
+        realm.remove()
+        self.assertEqual(1, _Realm.select().count())
 
-    def test_default_context_at_init(self):
-        context = self.grail.get_default_context()
-        self.assertEqual(1, context.id)
-        self.assertEqual(True, context.default_context)
+    def test_default_realm_at_init(self):
+        realm = self.grail.get_default_realm()
+        self.assertEqual(1, realm.id)
+        self.assertEqual(True, realm.default_realm)
 
-    def test_change_default_context(self):
-        context = self.grail.add_context("new context")
-        context.set_default()
-        self.assertEqual(context.default_context, True)
+    def test_change_default_realm(self):
+        realm = self.grail.add_realm("new realm")
+        realm.set_default()
+        self.assertEqual(realm.default_realm, True)
 
-    def test_their_should_only_be_one_default_context(self):
-        previous = self.grail.get_default_context()
-        context = self.grail.add_context("new context")
-        context.set_default()
-        self.assertEqual(False, previous.default_context)
-        self.assertEqual(context, self.grail.get_default_context())
-        self.assertEqual(1, _Context.select(_Context.q.default_context == True).count())
+    def test_their_should_only_be_one_default_realm(self):
+        previous = self.grail.get_default_realm()
+        realm = self.grail.add_realm("new realm")
+        realm.set_default()
+        self.assertEqual(False, previous.default_realm)
+        self.assertEqual(realm, self.grail.get_default_realm())
+        self.assertEqual(1, _Realm.select(_Realm.q.default_realm == True).count())
 
-    def test_cant_remove_default_context(self):
-        # to avoid having the exception NeedAtLeastOneContext if the exception we are waiting isn't raised
+    def test_cant_remove_default_realm(self):
+        # to avoid having the exception NeedAtLeastOneRealm if the exception we are waiting isn't raised
         # yes it will crash anyway
-        self.grail.add_context("prout")
-        self.assertRaises(CanRemoveTheDefaultContext, self.grail.get_default_context().remove)
+        self.grail.add_realm("prout")
+        self.assertRaises(CanRemoveTheDefaultRealm, self.grail.get_default_realm().remove)
 
-    def test_a_todo_should_have_the_default_context(self):
+    def test_a_todo_should_have_the_default_realm(self):
         todo = self.grail.add_todo("a todo")
-        self.assertEqual(todo.context, self.grail.get_default_context())
+        self.assertEqual(todo.realm, self.grail.get_default_realm())
         todo = self.grail.add_todo("another todo")
-        self.assertEqual(todo.context, self.grail.get_default_context())
+        self.assertEqual(todo.realm, self.grail.get_default_realm())
 
-    def test_get_context_by_desc(self):
-        context = self.grail.add_context("youpla")
-        self.assertEqual(context, self.grail.get_context_by_desc("youpla")[0])
+    def test_get_realm_by_desc(self):
+        realm = self.grail.add_realm("youpla")
+        self.assertEqual(realm, self.grail.get_realm_by_desc("youpla")[0])
 
-    def test_get_context_by_desc_raise_if_dont_exist(self):
-        self.assertRaises(ContextDoesntExist, self.grail.get_context_by_desc, "I don't exist")
+    def test_get_realm_by_desc_raise_if_dont_exist(self):
+        self.assertRaises(RealmDoesntExist, self.grail.get_realm_by_desc, "I don't exist")
 
-    def test_get_context(self):
-        context = self.grail.add_context("zoubiboulba suce mon zob")
-        self.assertEqual(context, self.grail.get_context(context.id))
+    def test_get_realm(self):
+        realm = self.grail.add_realm("zoubiboulba suce mon zob")
+        self.assertEqual(realm, self.grail.get_realm(realm.id))
 
-    def test_get_context_raise_if_dont_exist(self):
-        self.assertRaises(ContextDoesntExist, self.grail.get_context, 1337)
+    def test_get_realm_raise_if_dont_exist(self):
+        self.assertRaises(RealmDoesntExist, self.grail.get_realm, 1337)
 
-    def test_add_todo_with_special_context(self):
-        context = self.grail.add_context("je devrais aller dormir")
-        todo = self.grail.add_todo("mouhaha", context=context.id)
-        self.assertEqual(context, todo.context)
+    def test_add_todo_with_special_realm(self):
+        realm = self.grail.add_realm("je devrais aller dormir")
+        todo = self.grail.add_todo("mouhaha", realm=realm.id)
+        self.assertEqual(realm, todo.realm)
 
-    def test_change_todo_context(self):
-        context = self.grail.add_context("je vais encore me coucher à pas d'heure ...")
+    def test_change_todo_realm(self):
+        realm = self.grail.add_realm("je vais encore me coucher à pas d'heure ...")
         todo = self.grail.add_todo("aller dormir")
-        todo.change_context(context.id)
-        self.assertEqual(context, todo.context)
+        todo.change_realm(realm.id)
+        self.assertEqual(realm, todo.realm)
 
-    def test_cant_delete_context_with_todos(self):
-        context = self.grail.add_context("TDD rosk")
-        todo = self.grail.add_todo("HAHAHA I'M USING TEH INTERNETZ", context=context)
-        self.assertRaises(ContextStillHasElems, context.remove)
+    def test_cant_delete_realm_with_todos(self):
+        realm = self.grail.add_realm("TDD rosk")
+        todo = self.grail.add_todo("HAHAHA I'M USING TEH INTERNETZ", realm=realm)
+        self.assertRaises(RealmStillHasElems, realm.remove)
 
-    def test_list_contexts(self):
-        self.assertTrue(self.grail.get_default_context() in self.grail.list_contexts())
-        self.assertEqual(len(self.grail.list_contexts()), 1)
-        context = self.grail.add_context("foobar")
-        self.assertEqual(len(self.grail.list_contexts()), 2)
-        context.remove()
-        self.assertEqual(len(self.grail.list_contexts()), 1)
+    def test_list_realms(self):
+        self.assertTrue(self.grail.get_default_realm() in self.grail.list_realms())
+        self.assertEqual(len(self.grail.list_realms()), 1)
+        realm = self.grail.add_realm("foobar")
+        self.assertEqual(len(self.grail.list_realms()), 2)
+        realm.remove()
+        self.assertEqual(len(self.grail.list_realms()), 1)
 
-    def test_add_Context_default(self):
-        context = self.grail.add_context("zomg, ils ont osé faire un flim sur les schtroumphs", default=True)
-        self.assertEqual(context, self.grail.get_default_context())
-        self.assertTrue(context.default_context)
+    def test_add_Realm_default(self):
+        realm = self.grail.add_realm("zomg, ils ont osé faire un flim sur les schtroumphs", default=True)
+        self.assertEqual(realm, self.grail.get_default_realm())
+        self.assertTrue(realm.default_realm)
 
-    def test_context_should_have_a_creation_date(self):
-        context = self.grail.add_context("les fils de teuphu c'est super")
-        self.assertEqual(date.today(), context.created_at)
+    def test_realm_should_have_a_creation_date(self):
+        realm = self.grail.add_realm("les fils de teuphu c'est super")
+        self.assertEqual(date.today(), realm.created_at)
 
     def test_add_quest(self):
         quest = self.grail.add_quest("quest apocalypse")
@@ -404,58 +404,58 @@ class Test_TDD(unittest.TestCase):
         quest = self.grail.add_quest("youplaboum")
         self.assertEqual(quest.created_at, date.today())
 
-    def test_set_default_context_to_quest(self):
+    def test_set_default_realm_to_quest(self):
         quest = self.grail.add_quest("youmi, I love chocolate")
-        context = self.grail.add_context("pc")
-        quest.set_default_context(context.id)
-        self.assertEqual(context, quest.default_context)
+        realm = self.grail.add_realm("pc")
+        quest.set_default_realm(realm.id)
+        self.assertEqual(realm, quest.default_realm)
 
-    def test_set_default_context_to_quest_at_creation(self):
-        context = self.grail.add_context("pc")
-        quest = self.grail.add_quest("youmi, I love chocolate", default_context=context.id)
-        self.assertEqual(context, quest.default_context)
+    def test_set_default_realm_to_quest_at_creation(self):
+        realm = self.grail.add_realm("pc")
+        quest = self.grail.add_quest("youmi, I love chocolate", default_realm=realm.id)
+        self.assertEqual(realm, quest.default_realm)
 
-    def test_new_todo_with_quest_with_default_context(self):
-        context = self.grail.add_context("pc")
-        quest = self.grail.add_quest("youmi, I love chocolate", default_context=context.id)
+    def test_new_todo_with_quest_with_default_realm(self):
+        realm = self.grail.add_realm("pc")
+        quest = self.grail.add_quest("youmi, I love chocolate", default_realm=realm.id)
         todo = self.grail.add_todo("pataplouf", quest=quest.id)
-        self.assertEqual(todo.context, context)
+        self.assertEqual(todo.realm, realm)
 
-    def test_new_todo_with_quest_with_default_context_and_context(self):
-        context = self.grail.add_context("pc")
-        other_context = self.grail.add_context("mouhaha")
-        quest = self.grail.add_quest("youmi, I love chocolate", default_context=context.id)
-        todo = self.grail.add_todo("pataplouf", context=other_context, quest=quest.id)
-        self.assertEqual(todo.context, other_context)
+    def test_new_todo_with_quest_with_default_realm_and_realm(self):
+        realm = self.grail.add_realm("pc")
+        other_realm = self.grail.add_realm("mouhaha")
+        quest = self.grail.add_quest("youmi, I love chocolate", default_realm=realm.id)
+        todo = self.grail.add_todo("pataplouf", realm=other_realm, quest=quest.id)
+        self.assertEqual(todo.realm, other_realm)
 
-    def test_set_hide_context(self):
-        context = self.grail.add_context("pc")
-        self.assertFalse(context.hide)
-        context.toggle_hide()
-        self.assertTrue(context.hide)
-        context.toggle_hide()
-        self.assertFalse(context.hide)
-        context.toggle_hide()
-        self.assertTrue(context.hide)
+    def test_set_hide_realm(self):
+        realm = self.grail.add_realm("pc")
+        self.assertFalse(realm.hide)
+        realm.toggle_hide()
+        self.assertTrue(realm.hide)
+        realm.toggle_hide()
+        self.assertFalse(realm.hide)
+        realm.toggle_hide()
+        self.assertTrue(realm.hide)
 
-    def test_hide_context_in_list_context(self):
-        context = self.grail.add_context("pc")
-        self.assertTrue(context in self.grail.list_contexts())
-        context.toggle_hide()
-        self.assertFalse(context in self.grail.list_contexts())
+    def test_hide_realm_in_list_realm(self):
+        realm = self.grail.add_realm("pc")
+        self.assertTrue(realm in self.grail.list_realms())
+        realm.toggle_hide()
+        self.assertFalse(realm in self.grail.list_realms())
 
-    def test_list_all_contexts(self):
-        context = self.grail.add_context("pc", hide=True)
-        self.assertFalse(context in self.grail.list_contexts())
-        self.assertTrue(context in self.grail.list_contexts(all_contexts=True))
+    def test_list_all_realms(self):
+        realm = self.grail.add_realm("pc", hide=True)
+        self.assertFalse(realm in self.grail.list_realms())
+        self.assertTrue(realm in self.grail.list_realms(all_realms=True))
 
-    def test_context_hide_at_creation(self):
-        context = self.grail.add_context("pc", hide=True)
-        self.assertTrue(context.hide)
+    def test_realm_hide_at_creation(self):
+        realm = self.grail.add_realm("pc", hide=True)
+        self.assertTrue(realm.hide)
 
-    def test_hide_context_in_list_todo(self):
-        context = self.grail.add_context("pc", hide=True)
-        todo = self.grail.add_todo("atchoum", context=context)
+    def test_hide_realm_in_list_todo(self):
+        realm = self.grail.add_realm("pc", hide=True)
+        todo = self.grail.add_todo("atchoum", realm=realm)
         self.assertFalse(todo in self.grail.list_todos())
         self.assertTrue(todo in self.grail.list_todos(all_todos=True))
 
@@ -477,137 +477,137 @@ class Test_TDD(unittest.TestCase):
 
     def test_auto_create_tables(self):
         Grail('sqlite:/:memory:')
-        _Context.dropTable(ifExists=True)
+        _Realm.dropTable(ifExists=True)
         _Quest.dropTable(ifExists=True)
         _Todo.dropTable(ifExists=True)
         Grail('sqlite:/:memory:')
         self.assertTrue(_Todo.tableExists())
-        self.assertTrue(_Context.tableExists())
+        self.assertTrue(_Realm.tableExists())
         self.assertTrue(_Quest.tableExists())
 
-    def test_context_position(self):
-        context = self.grail.get_default_context()
-        self.assertEqual(0, context.position)
+    def test_realm_position(self):
+        realm = self.grail.get_default_realm()
+        self.assertEqual(0, realm.position)
 
-    def test_new_context_position(self):
-        context = self.grail.add_context("In Dublin fair city ...")
-        self.assertEqual(1, context.position)
-        context = self.grail.add_context("where the girl are so pretty ...")
-        self.assertEqual(2, context.position)
+    def test_new_realm_position(self):
+        realm = self.grail.add_realm("In Dublin fair city ...")
+        self.assertEqual(1, realm.position)
+        realm = self.grail.add_realm("where the girl are so pretty ...")
+        self.assertEqual(2, realm.position)
 
-    def test_change_context_position_alone_default_to_max(self):
-        context1 = self.grail.get_default_context()
-        context1.change_position(4)
-        self.assertEqual(0, context1.position)
+    def test_change_realm_position_alone_default_to_max(self):
+        realm1 = self.grail.get_default_realm()
+        realm1.change_position(4)
+        self.assertEqual(0, realm1.position)
 
-    def test_change_context_position_2_contexts_no_change(self):
-        context1 = self.grail.get_default_context()
-        context2 = self.grail.add_context("context2")
-        context1.change_position(0)
-        self.assertEqual(0, context1.position)
-        self.assertEqual(1, context2.position)
+    def test_change_realm_position_2_realms_no_change(self):
+        realm1 = self.grail.get_default_realm()
+        realm2 = self.grail.add_realm("realm2")
+        realm1.change_position(0)
+        self.assertEqual(0, realm1.position)
+        self.assertEqual(1, realm2.position)
 
-    def test_change_context_position_2_contexts(self):
-        context1 = self.grail.get_default_context()
-        context2 = self.grail.add_context("context2")
-        context1.change_position(1)
-        self.assertEqual(1, context1.position)
-        self.assertEqual(0, context2.position)
+    def test_change_realm_position_2_realms(self):
+        realm1 = self.grail.get_default_realm()
+        realm2 = self.grail.add_realm("realm2")
+        realm1.change_position(1)
+        self.assertEqual(1, realm1.position)
+        self.assertEqual(0, realm2.position)
 
-    def test_change_context_position_2_contexts_default_to_max(self):
-        context1 = self.grail.get_default_context()
-        context2 = self.grail.add_context("context2")
-        context1.change_position(4)
-        self.assertEqual(1, context1.position)
-        self.assertEqual(0, context2.position)
+    def test_change_realm_position_2_realms_default_to_max(self):
+        realm1 = self.grail.get_default_realm()
+        realm2 = self.grail.add_realm("realm2")
+        realm1.change_position(4)
+        self.assertEqual(1, realm1.position)
+        self.assertEqual(0, realm2.position)
 
-    def test_change_context_position_2_contexts_swap(self):
-        context1 = self.grail.get_default_context()
-        context2 = self.grail.add_context("context2")
-        context2.change_position(0)
-        self.assertEqual(0, context2.position)
-        self.assertEqual(1, context1.position)
+    def test_change_realm_position_2_realms_swap(self):
+        realm1 = self.grail.get_default_realm()
+        realm2 = self.grail.add_realm("realm2")
+        realm2.change_position(0)
+        self.assertEqual(0, realm2.position)
+        self.assertEqual(1, realm1.position)
 
-    def test_change_context_position_2_contexts_swap_reverse(self):
-        context1 = self.grail.get_default_context()
-        context2 = self.grail.add_context("context2")
-        context1.change_position(1)
-        self.assertEqual(0, context2.position)
-        self.assertEqual(1, context1.position)
+    def test_change_realm_position_2_realms_swap_reverse(self):
+        realm1 = self.grail.get_default_realm()
+        realm2 = self.grail.add_realm("realm2")
+        realm1.change_position(1)
+        self.assertEqual(0, realm2.position)
+        self.assertEqual(1, realm1.position)
 
-    def test_change_context_position_2_contexts_swap_reverse_default_to_max(self):
-        context1 = self.grail.get_default_context()
-        context2 = self.grail.add_context("context2")
-        context1.change_position(6)
-        self.assertEqual(0, context2.position)
-        self.assertEqual(1, context1.position)
+    def test_change_realm_position_2_realms_swap_reverse_default_to_max(self):
+        realm1 = self.grail.get_default_realm()
+        realm2 = self.grail.add_realm("realm2")
+        realm1.change_position(6)
+        self.assertEqual(0, realm2.position)
+        self.assertEqual(1, realm1.position)
 
-    def test_change_context_position_3_contexts(self):
-        context1 = self.grail.get_default_context()
-        context2 = self.grail.add_context("context2")
-        context3 = self.grail.add_context("context3")
-        context1.change_position(6)
-        self.assertEqual(1, context3.position)
-        self.assertEqual(0, context2.position)
-        self.assertEqual(2, context1.position)
+    def test_change_realm_position_3_realms(self):
+        realm1 = self.grail.get_default_realm()
+        realm2 = self.grail.add_realm("realm2")
+        realm3 = self.grail.add_realm("realm3")
+        realm1.change_position(6)
+        self.assertEqual(1, realm3.position)
+        self.assertEqual(0, realm2.position)
+        self.assertEqual(2, realm1.position)
 
-    def test_change_context_position_3_contexts_full(self):
-        context1 = self.grail.get_default_context()
-        context2 = self.grail.add_context("context2")
-        context3 = self.grail.add_context("context3")
-        context2.change_position(6)
-        self.assertEqual(1, context3.position)
-        self.assertEqual(2, context2.position)
-        self.assertEqual(0, context1.position)
-        context1.change_position(6)
-        self.assertEqual(0, context3.position)
-        self.assertEqual(1, context2.position)
-        self.assertEqual(2, context1.position)
-        context3.change_position(6)
-        self.assertEqual(2, context3.position)
-        self.assertEqual(0, context2.position)
-        self.assertEqual(1, context1.position)
-        context3.change_position(0)
-        self.assertEqual(0, context3.position)
-        self.assertEqual(1, context2.position)
-        self.assertEqual(2, context1.position)
-        context2.change_position(1)
-        self.assertEqual(0, context3.position)
-        self.assertEqual(1, context2.position)
-        self.assertEqual(2, context1.position)
+    def test_change_realm_position_3_realms_full(self):
+        realm1 = self.grail.get_default_realm()
+        realm2 = self.grail.add_realm("realm2")
+        realm3 = self.grail.add_realm("realm3")
+        realm2.change_position(6)
+        self.assertEqual(1, realm3.position)
+        self.assertEqual(2, realm2.position)
+        self.assertEqual(0, realm1.position)
+        realm1.change_position(6)
+        self.assertEqual(0, realm3.position)
+        self.assertEqual(1, realm2.position)
+        self.assertEqual(2, realm1.position)
+        realm3.change_position(6)
+        self.assertEqual(2, realm3.position)
+        self.assertEqual(0, realm2.position)
+        self.assertEqual(1, realm1.position)
+        realm3.change_position(0)
+        self.assertEqual(0, realm3.position)
+        self.assertEqual(1, realm2.position)
+        self.assertEqual(2, realm1.position)
+        realm2.change_position(1)
+        self.assertEqual(0, realm3.position)
+        self.assertEqual(1, realm2.position)
+        self.assertEqual(2, realm1.position)
 
-    def test_change_context_position_6_contexts(self):
-        context1 = self.grail.get_default_context()
-        context1.rename("context1")
-        context2 = self.grail.add_context("context2")
-        context3 = self.grail.add_context("context3")
-        context4 = self.grail.add_context("context4")
-        context5 = self.grail.add_context("context5")
-        context6 = self.grail.add_context("context6")
-        context1.change_position(4)
-        self.assertEqual(4, context1.position)
-        self.assertEqual(0, context2.position)
-        self.assertEqual(1, context3.position)
-        self.assertEqual(2, context4.position)
-        self.assertEqual(3, context5.position)
-        self.assertEqual(5, context6.position)
+    def test_change_realm_position_6_realms(self):
+        realm1 = self.grail.get_default_realm()
+        realm1.rename("realm1")
+        realm2 = self.grail.add_realm("realm2")
+        realm3 = self.grail.add_realm("realm3")
+        realm4 = self.grail.add_realm("realm4")
+        realm5 = self.grail.add_realm("realm5")
+        realm6 = self.grail.add_realm("realm6")
+        realm1.change_position(4)
+        self.assertEqual(4, realm1.position)
+        self.assertEqual(0, realm2.position)
+        self.assertEqual(1, realm3.position)
+        self.assertEqual(2, realm4.position)
+        self.assertEqual(3, realm5.position)
+        self.assertEqual(5, realm6.position)
 
     def test_list_quest_by_position(self):
-        context1 = self.grail.get_default_context()
-        context1.rename("context1")
-        context2 = self.grail.add_context("context2")
-        context3 = self.grail.add_context("context3")
-        context4 = self.grail.add_context("context4")
-        context5 = self.grail.add_context("context5")
-        context6 = self.grail.add_context("context6")
-        context1.change_position(4)
-        contexts = self.grail.list_contexts()
-        self.assertEqual(contexts[4], context1)
-        self.assertEqual(contexts[0], context2)
-        self.assertEqual(contexts[1], context3)
-        self.assertEqual(contexts[2], context4)
-        self.assertEqual(contexts[3], context5)
-        self.assertEqual(contexts[5], context6)
+        realm1 = self.grail.get_default_realm()
+        realm1.rename("realm1")
+        realm2 = self.grail.add_realm("realm2")
+        realm3 = self.grail.add_realm("realm3")
+        realm4 = self.grail.add_realm("realm4")
+        realm5 = self.grail.add_realm("realm5")
+        realm6 = self.grail.add_realm("realm6")
+        realm1.change_position(4)
+        realms = self.grail.list_realms()
+        self.assertEqual(realms[4], realm1)
+        self.assertEqual(realms[0], realm2)
+        self.assertEqual(realms[1], realm3)
+        self.assertEqual(realms[2], realm4)
+        self.assertEqual(realms[3], realm5)
+        self.assertEqual(realms[5], realm6)
 
     def test_quest_hide(self):
         quest = self.grail.add_quest("lalala")
@@ -712,26 +712,26 @@ class Test_TDD(unittest.TestCase):
         self.assertTrue(todo in self.grail.list_todos(all_todos=True))
 
     def test_main_view(self):
-        # empty since the only context is empty
+        # empty since the only realm is empty
         self.assertEqual([], self.grail.main_view())
 
     def test_main_view_one_todo(self):
         todo = self.grail.add_todo("kropotkine")
-        self.assertEqual([[self.grail.get_default_context(), [todo]]], self.grail.main_view())
+        self.assertEqual([[self.grail.get_default_realm(), [todo]]], self.grail.main_view())
 
-    def test_main_view_one_todo_one_empty_context(self):
+    def test_main_view_one_todo_one_empty_realm(self):
         todo = self.grail.add_todo("kropotkikine")
-        self.grail.add_context("empty context")
-        self.assertEqual([[self.grail.get_default_context(), [todo]]], self.grail.main_view())
+        self.grail.add_realm("empty realm")
+        self.assertEqual([[self.grail.get_default_realm(), [todo]]], self.grail.main_view())
 
-    def test_main_view_one_todo_one_non_empty_context(self):
+    def test_main_view_one_todo_one_non_empty_realm(self):
         todo = self.grail.add_todo("kropotkikine")
-        context = self.grail.add_context("context")
-        other_todo = self.grail.add_todo("James Joyce a l'air terrible", context=context)
-        self.assertEqual([[self.grail.get_default_context(), [todo]],
-                          [context, [other_todo]]], self.grail.main_view())
-        self.assertEqual([[self.grail.get_default_context(), [todo]],
-                          [context, [other_todo]]], self.grail.main_view())
+        realm = self.grail.add_realm("realm")
+        other_todo = self.grail.add_todo("James Joyce a l'air terrible", realm=realm)
+        self.assertEqual([[self.grail.get_default_realm(), [todo]],
+                          [realm, [other_todo]]], self.grail.main_view())
+        self.assertEqual([[self.grail.get_default_realm(), [todo]],
+                          [realm, [other_todo]]], self.grail.main_view())
 
     def test_last_completed_todos_empty(self):
         last_completed_todos = self.grail.last_completed_todos()
@@ -784,14 +784,14 @@ class Test_TDD(unittest.TestCase):
         todo = self.grail.add_todo("la gamine qui est dans le siège devant moi arrête pas de faire plein de conneries", quest=quest.id, due=(due + timedelta(1)))
         self.assertTrue(comp_datetime(todo.due, due))
 
-    def test_get_todos_on_context_empty(self):
-        context = self.grail.add_context("regardcitoyens ça déchire")
-        self.assertEqual([], context.get_todos())
+    def test_get_todos_on_realm_empty(self):
+        realm = self.grail.add_realm("regardcitoyens ça déchire")
+        self.assertEqual([], realm.get_todos())
 
-    def test_get_todos_on_context_todo(self):
-        context = self.grail.add_context("regardcitoyens ça déchire")
-        todo = self.grail.add_todo("youplaboum", context=context.id)
-        self.assertTrue(todo in context.get_todos())
+    def test_get_todos_on_realm_todo(self):
+        realm = self.grail.add_realm("regardcitoyens ça déchire")
+        todo = self.grail.add_todo("youplaboum", realm=realm.id)
+        self.assertTrue(todo in realm.get_todos())
 
     def test_get_todos_on_quest_empty(self):
         quest = self.grail.add_quest("regardcitoyens ça déchire")
