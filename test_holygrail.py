@@ -1106,68 +1106,6 @@ class TestTags(unittest.TestCase):
         self.assertTrue(todo2 in todos)
         self.assertEqual(2, len(todos))
 
-    def test_tags_on_item_empty(self):
-        item = self.grail.add_item("plop")
-        self.assertFalse(item.tags)
-
-    def test_tags_item_one(self):
-        item = self.grail.add_item("tatatags")
-        item.add_tag("plop")
-        self.assertEqual(item.tags, ["plop",])
-
-    def test_tags_item_avoid_duplication(self):
-        item = self.grail.add_item("tatatags")
-        item.add_tag("plop")
-        self.assertEqual(item.tags, ["plop",])
-        item.add_tag("plop")
-        self.assertEqual(item.tags, ["plop",])
-
-    def test_tags_item_multiple(self):
-        item = self.grail.add_item("tsointsoin")
-        item.add_tag("plop")
-        item.add_tag("plup")
-        self.assertTrue("plop" in item.tags)
-        self.assertTrue("plup" in item.tags)
-        self.assertEqual(len(item.tags), 2)
-
-    def test_tags_item_remove_tag(self):
-        item = self.grail.add_item("tsointsoin")
-        item.add_tag("plop")
-        item.remove_tag("plop")
-        self.assertEqual([], item.tags)
-
-    def test_tags_item_remove_tags(self):
-        item = self.grail.add_item("tsointsoin")
-        item.add_tag("plop")
-        item.add_tag("yop")
-        item.remove_tag("plop")
-        self.assertEqual(["yop"], item.tags)
-        item.remove_tag("yop")
-        self.assertEqual([], item.tags)
-
-    def test_tags_item_remove_tag_raise(self):
-        item = self.grail.add_item("tsointsoin")
-        item.add_tag("plop")
-        self.assertRaises(ValueError, item.remove_tag, "ploup")
-
-    def test_tags_item_get_item_empty(self):
-        self.assertEqual([], self.grail.get_items_from_tag("pouet"))
-
-    def test_tags_item_get_one_item(self):
-        item1 = self.grail.add_item("tsointsoin")
-        item1.add_tag("plop")
-        self.assertEqual([item1], self.grail.get_items_from_tag("plop"))
-
-    def test_tags_item_get_two_items(self):
-        item1 = self.grail.add_item("tsointsoin")
-        item1.add_tag("plop")
-        item2 = self.grail.add_item("tsointsoin")
-        item2.add_tag("plop")
-        items = self.grail.get_items_from_tag("plop")
-        self.assertTrue(item1 in items)
-        self.assertTrue(item2 in items)
-        self.assertEqual(2, len(items))
-
     def test_todo_with_project_without_datetime(self):
         project = self.grail.add_project("project")
         todo = self.grail.add_todo("prout", project=project.id)
