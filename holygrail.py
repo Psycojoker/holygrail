@@ -563,8 +563,7 @@ class Grail(object):
         """
         return [i for i in _Mission.select(sqlobject.AND(_Mission.q.completed == False,
                sqlobject.OR(_Mission.q.tickler == None, _Mission.q.tickler < datetime.now()))).orderBy('id')\
-                if i.visible()] if\
-                not all_missions else [i for i in _Mission.select()]
+                if i.visible()] if not all_missions else [i for i in _Mission.select()]
 
     def list_quests(self, all_quests=False):
         """
