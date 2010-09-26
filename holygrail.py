@@ -33,7 +33,7 @@ import config
 
 DATABASE_ACCESS = config.DATABASE_ACCESS if hasattr(config, "DATABASE_ACCESS") else None
 
-__version__ = "Ignus 0.1"
+__version__ = "Galahad 0.1"
 
 class _Context(sqlobject.SQLObject):
     """
