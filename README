@@ -1,18 +1,18 @@
-Toudoudone
+HolyGrail
 ==========
 
-Toudoudone aims to be a base library to interact with a todo database. It provides a
+HolyGrail aims to be a base library to interact with a todo database. It provides a
 simple interface allowing you to interact with your todo in several ways.
 This means that you can create and use whatever client you like and even use multiple
 interfaces (ie: cli, mail, web application etc).
 Yes, this is geeky and I like it.
 
-In its current state, Toudoudone is usable but not really interesting. You can
+In its current state, HolyGrail is usable but not really interesting. You can
 only create todo with a description and mark it as completed. If you want to
 start playing with it, the code is documented.
 "Release early, release often" as someone said.
 
-In it's current state Toudoudone is usable but not really interesting. You can
+In it's current state HolyGrail is usable but not really interesting. You can
 only create todo with a description and check it as completed. If you want to
 already play with it, I try to keep the code documented.
 "Release early, release often" they said.
@@ -35,7 +35,7 @@ or mail me at cortex@worlddomination.be
 
 Changelog
 ---------
- * 0.1 Ignus
+ * 0.1 Galahad
     - list all the todos (by default, only the incomplet)
     - basique operations: create, rename, delete and validate todo
 
