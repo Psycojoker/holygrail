@@ -762,7 +762,7 @@ class Test_TDD(unittest.TestCase):
 
     def test_quest_due(self):
         quest = self.grail.add_quest("je code dans un avion qui revient d'irlande")
-        due = date.today()
+        due = datetime.now()
         quest.due_for(due)
         self.assertEqual(quest.due, due)
 
