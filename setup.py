@@ -1,7 +1,7 @@
 #!/usr/bin/python
 # -*- coding:Utf-8 -*-
 
-from distutils.core import setup, find_packages
+from distutils.core import setup
 
 setup(name='HolyGrail',
       version='0.1 Galahad',
@@ -9,10 +9,7 @@ setup(name='HolyGrail',
       author='Laurent Peuch',
       author_email='cortex@worlddomination.be',
       url='http://blog.worlddomination.be/holygrail',
-      packages=find_packages(),
-      install_requires=['sqlobject',
-                        'ConfigParser'
-                       ]
+      install_requires=['sqlobject']
      )
 
 # vim:set shiftwidth=4 tabstop=4 expandtab:
