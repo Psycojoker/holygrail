@@ -44,6 +44,11 @@ class Test_TDD(unittest.TestCase):
     def setUp(self):
         self.grail = self.reinitialise()
 
+    def tearDown(self):
+        self.grail.list_missions()
+        self.grail.list_realms()
+        self.grail.list_quests()
+
     def test_connect_to_another_database(self):
         Grail("sqlite:/:memory:")
 
