@@ -21,6 +21,9 @@ HolyGrail  Copyright (C) 2010  Laurent Peuch  <cortex@worlddomination.be>
 """
 
 import sqlobject
+import os
+import ConfigParser
+
 
 from holygrail_exceptions import RealmDoesntExist,\
     MissionDoesntExist, RealmStillHasElems, CanRemoveTheDefaultRealm,\
@@ -28,9 +31,9 @@ from holygrail_exceptions import RealmDoesntExist,\
 
 from datetime import date, datetime, timedelta
 
-import config
-
-DATABASE_ACCESS = config.DATABASE_ACCESS if hasattr(config, "DATABASE_ACCESS") else None
+config = ConfigParser.ConfigParser()
+config.read(["holygrailrc", os.path.expanduser("~/.holygrailrc")])
+DATABASE_ACCESS = config.get("holygrail", "uri") if config.has_option("holygrail", "uri") else None
 
 __version__ = "Galahad 0.1"
 
