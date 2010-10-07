@@ -1,7 +1,7 @@
 #!/usr/bin/python
 # -*- coding:Utf-8 -*-
 
-from distutils.core import setup
+from setuptools import setup
 
 setup(name='HolyGrail',
       version='0.1 Galahad',
