@@ -1,34 +1,47 @@
 HolyGrail
 ==========
 
-HolyGrail aims to be a base library to interact with a todo database. It provides a
-simple interface allowing you to interact with your todo in several ways.
-This means that you can create and use whatever client you like and even use multiple
-interfaces (ie: cli, mail, web application etc).
-Yes, this is geeky and I like it.
+http://blog.worlddomination.org/holygrail
 
-In its current state, HolyGrail is usable but not really interesting. You can
-only create todo with a description and mark it as completed. If you want to
-start playing with it, the code is documented.
-"Release early, release often" as someone said.
+HolyGrail aims to be a base library to interact with a todo (missions)
+database. It provides a simple interface allowing you to interact with your
+todo in several ways. It's a GTD (getting things done) oriented approach.
 
-In it's current state HolyGrail is usable but not really interesting. You can
-only create todo with a description and check it as completed. If you want to
-already play with it, I try to keep the code documented.
-"Release early, release often" they said.
+This means that you can create and use whatever client you like (on the same
+db) and even use multiple interfaces on the same database (ie: cli, mail, web
+application etc).
+Yes, this is nerdy and I like it.
 
-I hope to provide much more cool features, a cli interface and sample interface
-in the future. The structure will be inspired a lot by Tracks (getontracks.org)
-with projects and contexts.
+My main inspiration is Tracks (getontracks.org). This database handle:
+ - missions (todos)
+ - quests (projects)
+ - realms (contexts)
+and all operations of them via one main class Grail.
+
+I found the todo/project/context vocabulary boring and non motivating so I've
+chose to use the medieval one.
+
+If you like tracks main view, I have written a main_view method that recreate this behavior.
+
+For the moment their isn't any released client but I'm working on a ncurse one
+(I have also a really dirty cli client).
 
 Installation
 ------------
-Create a config.py file and add this variable:
+(sudo) python setup.py install
 
-DATABASE_ACCESS = "value according to http://www.sqlobject.org/SQLObject.html#declaring-a-connection"
+Create a ~/.holygrailrc file and add:
 
-Sample (don't forget to create that username/database etc ...):
-DATABASE_ACCESS = "mysql://username:password@localhost/database"
+[holygrail]
+uri=value according to http://www.sqlobject.org/SQLObject.html#declaring-a-connection
+
+For example:
+uri=sqlite:/home/user/.holygrail.db
+for sqlite
+
+or
+uri=mysql://username:password@localhost/database
+for mysql (don't forget to create that username/database etc ...)
 
 If you have questions, bugs etc ... ping me on irc.freenode.net, pseudo Bram,
 or mail me at cortex@worlddomination.be
@@ -36,6 +49,4 @@ or mail me at cortex@worlddomination.be
 Changelog
 ---------
  * 0.1 Galahad
-    - list all the todos (by default, only the incomplet)
-    - basique operations: create, rename, delete and validate todo
-
+   - first release
