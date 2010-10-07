@@ -9,7 +9,8 @@ setup(name='HolyGrail',
       author='Laurent Peuch',
       author_email='cortex@worlddomination.be',
       url='http://blog.worlddomination.be/holygrail',
-      install_requires=['sqlobject']
+      install_requires=['sqlobject'],
+      packages=["holygrail"],
      )
 
 # vim:set shiftwidth=4 tabstop=4 expandtab:
