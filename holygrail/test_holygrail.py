@@ -333,6 +333,20 @@ class Test_TDD(unittest.TestCase):
         realm.remove()
         self.assertEqual(len(self.grail.list_realms()), 1)
 
+    def test_list_realms_positio(self):
+        default = self.grail.get_default_realm()
+        realm = self.grail.add_realm("foobar")
+        realm2 = self.grail.add_realm("foofoobarbar")
+        realms = self.grail.list_realms(all_realms=True)
+        self.assertEqual(realms[0], default)
+        self.assertEqual(realms[1], realm)
+        self.assertEqual(realms[2], realm2)
+        realm.change_position(2)
+        realms = self.grail.list_realms(all_realms=True)
+        self.assertEqual(realms[0], default)
+        self.assertEqual(realms[2], realm)
+        self.assertEqual(realms[1], realm2)
+
     def test_add_Realm_default(self):
         realm = self.grail.add_realm("zomg, ils ont osé faire un flim sur les schtroumphs", default=True)
         self.assertEqual(realm, self.grail.get_default_realm())

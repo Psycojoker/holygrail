@@ -596,7 +596,7 @@ class Grail(object):
             * all_realms=False by default, if True return all the realms.
         """
         return [i for i in _Realm.select(_Realm.q.hide == False).orderBy("position")] if not all_realms\
-            else [i for i in _Realm.select()]
+            else [i for i in _Realm.select().orderBy("position")]
 
     def last_completed_missions(self):
         """
