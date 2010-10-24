@@ -254,6 +254,17 @@ class Test_TDD(unittest.TestCase):
         realm.remove()
         self.assertEqual(1, _Realm.select().count())
 
+    def test_remove_realm_conserve_order(self):
+        default_realm = _Realm.select()[0]
+        self.assertEqual(0, default_realm.position)
+        realm2 = self.grail.add_realm("new realm")
+        self.assertEqual(1, realm2.position)
+        realm3 = self.grail.add_realm("other new realm")
+        self.assertEqual(2, realm3.position)
+        realm2.remove()
+        self.assertEqual(0, default_realm.position)
+        self.assertEqual(1, realm3.position)
+
     def test_default_realm_at_init(self):
         realm = self.grail.get_default_realm()
         self.assertEqual(1, realm.id)

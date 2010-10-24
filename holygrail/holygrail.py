@@ -105,6 +105,13 @@ class _Realm(sqlobject.SQLObject):
         else:
             self.destroySelf()
 
+        # update position after removing one realm
+        realms = [i for i in _Realm.select().orderBy("position")]
+        i = 0
+        while i < len(realms):
+            realms[i].position = i
+            i += 1
+
     def rename(self, new_description):
         """
         Change the description of the realm.
