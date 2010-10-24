@@ -93,7 +93,7 @@ class _Realm(sqlobject.SQLObject):
         Remove the realm.
 
         You can't remove a realm who has mission, RealmStillHasElems will be
-        raised if you tryed to
+        raised if you tryed to.
 
         You can't remove the default realm, CanRemoveTheDefaultRealm will
         be raised if you tried to.
