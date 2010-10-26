@@ -663,6 +663,7 @@ class Grail(object):
                 if i.due and i.due < datetime.now() + timedelta(time_delta_value):
                     row.append(i)
             if row:
+                row = sorted(row, key=lambda mission: mission._due)
                 main_view.append([description, row])
                 for i in row:
                     missions.remove(i)
