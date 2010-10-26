@@ -981,6 +981,75 @@ class Test_TDD(unittest.TestCase):
         mission = self.grail.add_mission("new mission", tickler)
         self.assertTrue(mission in default.get_missions(all_missions=True))
 
+    def test_get_quest_missions(self):
+        quest = self.grail.add_quest("pipapou")
+        # empty
+        self.assertEqual(0, len(quest.get_missions()))
+        t = self.grail.add_mission("mission", quest=quest.id)
+        # one mission
+        self.assertEqual(1, len(quest.get_missions()))
+        self.assertTrue(t in quest.get_missions())
+        # two mission
+        t2 = self.grail.add_mission("mission 2", quest=quest.id)
+        self.assertEqual(2, len(quest.get_missions()))
+        self.assertTrue(t in quest.get_missions())
+        self.assertTrue(t2 in quest.get_missions())
+        # only uncompleted
+        t2.toggle()
+        self.assertEqual(1, len(quest.get_missions()))
+        self.assertTrue(t in quest.get_missions())
+        self.assertTrue(t2 not in quest.get_missions())
+        # everything
+        self.assertEqual(2, len(quest.get_missions(all_missions=True)))
+        self.assertTrue(t in quest.get_missions(all_missions=True))
+        self.assertTrue(t2 in quest.get_missions(all_missions=True))
+
+    def test_get_quest_missions_with_other_quest(self):
+        quest = self.grail.add_quest("toto tata")
+        other_quest = self.grail.add_quest("pouet pouet")
+        # empty
+        self.grail.add_mission("pwet pwet", quest=other_quest.id)
+        self.assertEqual(0, len(quest.get_missions()))
+        t = self.grail.add_mission("mission", quest=quest.id)
+        # one mission
+        self.grail.add_mission("pwet pwet", quest=other_quest.id)
+        self.assertEqual(1, len(quest.get_missions()))
+        self.assertTrue(t in quest.get_missions())
+        # two mission
+        t2 = self.grail.add_mission("mission 2", quest=quest.id)
+        self.grail.add_mission("pwet pwet", quest=other_quest.id)
+        self.assertEqual(2, len(quest.get_missions()))
+        self.assertTrue(t in quest.get_missions())
+        self.grail.add_mission("pwet pwet", quest=other_quest.id)
+        self.assertTrue(t2 in quest.get_missions())
+        # only uncompleted
+        t2.toggle()
+        self.grail.add_mission("pwet pwet", quest=other_quest.id)
+        self.assertEqual(1, len(quest.get_missions()))
+        self.assertTrue(t in quest.get_missions())
+        self.grail.add_mission("pwet pwet", quest=other_quest.id)
+        self.assertTrue(t2 not in quest.get_missions())
+        # everything
+        self.grail.add_mission("pwet pwet", quest=other_quest.id)
+        self.assertEqual(2, len(quest.get_missions(all_missions=True)))
+        self.assertTrue(t in quest.get_missions(all_missions=True))
+        self.grail.add_mission("pwet pwet", quest=other_quest.id)
+        self.assertTrue(t2 in quest.get_missions(all_missions=True))
+
+    def test_get_quest_missions_dont_show_tickle_task(self):
+        quest = self.grail.add_quest("yohoho !")
+        # for tomorrow
+        tickler = datetime.now() + timedelta(1)
+        mission = self.grail.add_mission("new mission", tickler, quest=quest.id)
+        self.assertTrue(mission not in quest.get_missions())
+
+    def test_get_quest_missions_all_show_tickle_task(self):
+        quest = self.grail.add_quest("flagada")
+        # for tomorrow
+        tickler = datetime.now() + timedelta(1)
+        mission = self.grail.add_mission("new mission", tickler, quest=quest.id)
+        self.assertTrue(mission in quest.get_missions(all_missions=True))
+
 class TestTags(unittest.TestCase):
 
     def setUp(self):

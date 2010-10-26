@@ -312,14 +312,26 @@ class _Quest(sqlobject.SQLObject):
     default_realm = sqlobject.ForeignKey('_Realm', default=None)
     hide = sqlobject.BoolCol(default=False)
 
-    def get_missions(self):
+    def get_missions(self, all_missions=False):
         """
-        Get the missions and the missions associated to this quest.
+        Get the missions associated to this quest.
 
-        Return a list of a list of missions and a list of missions
-        [[missions], [missions
+        Return a list of a list of missions.
         """
-        return [i for i in _Mission.select(_Mission.q.quest == self)]
+        def visible(mission):
+            """
+            A method that return True if the mission will be display in the main_view
+            or in list_missions. You normaly needn't use it.
+            """
+            return (not mission.previous_mission or mission.previous_mission.completed)\
+                and (not mission.quest or (not mission.quest.hide and not mission.quest.completed\
+                and ((mission.quest.tickler == None) or (mission.quest.tickler < datetime.now()))))
+
+        return [i for i in _Mission.select(sqlobject.AND(_Mission.q.completed == False,
+                sqlobject.OR(_Mission.q.tickler == None, _Mission.q.tickler < datetime.now()),\
+                _Mission.q.quest == self)) if visible(i)]\
+                if not all_missions\
+                else [i for i in _Mission.select(_Mission.q.quest == self)]
 
     def due_for(self, due):
         """
