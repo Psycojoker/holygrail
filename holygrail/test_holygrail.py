@@ -841,6 +841,77 @@ class Test_TDD(unittest.TestCase):
         mission = self.grail.add_mission("ima new mission")
         self.assertRaises(WaitForError, mission.wait_for, mission)
 
+    def test_super_main_view_empty(self):
+        self.assertEqual(self.grail.super_main_view(), [])
+
+    def test_super_main_view_one_mission(self):
+        mission = self.grail.add_mission("prout")
+        default = self.grail.get_default_realm()
+        self.assertEqual(self.grail.super_main_view(), [[default, [mission]]])
+
+    def test_super_main_view_two_mission(self):
+        mission = self.grail.add_mission("prout")
+        mission2 = self.grail.add_mission("pouet")
+        default = self.grail.get_default_realm()
+        self.assertEqual(self.grail.super_main_view(), [[default, [mission, mission2]]])
+
+    def test_super_main_view_two_realm_one_mission(self):
+        mission = self.grail.add_mission("prout")
+        realm = self.grail.add_realm("pouet")
+        default = self.grail.get_default_realm()
+        self.assertEqual(self.grail.super_main_view(), [[default, [mission]]])
+
+    def test_super_main_view_two_realm_two_mission(self):
+        mission = self.grail.add_mission("prout")
+        realm = self.grail.add_realm("pouet")
+        mission2 = self.grail.add_mission("pouet", realm=realm)
+        default = self.grail.get_default_realm()
+        self.assertEqual(self.grail.super_main_view(), [[default, [mission]], [realm, [mission2]]])
+
+    def test_super_main_view_two_realm_for_mission(self):
+        mission = self.grail.add_mission("prout")
+        mission3 = self.grail.add_mission("prout")
+        realm = self.grail.add_realm("pouet")
+        mission2 = self.grail.add_mission("pouet", realm=realm)
+        mission4 = self.grail.add_mission("pouet", realm=realm)
+        default = self.grail.get_default_realm()
+        self.assertEqual(self.grail.super_main_view(), [[default, [mission, mission3]], [realm, [mission2, mission4]]])
+
+    def test_super_main_view_one_due_today(self):
+        mission = self.grail.add_mission("prout", due=datetime.now())
+        self.assertEqual(self.grail.super_main_view(), [["For today", [mission]]])
+
+    def test_super_main_view_one_due_3_days(self):
+        mission = self.grail.add_mission("prout", due=(datetime.now() + timedelta(days=3)))
+        self.assertEqual(self.grail.super_main_view(), [["For in 3 days", [mission]]])
+
+    def test_super_main_view_one_due_this_wee(self):
+        mission = self.grail.add_mission("prout", due=(datetime.now() + timedelta(days=7)))
+        self.assertEqual(self.grail.super_main_view(), [["For this week", [mission]]])
+
+    def test_super_main_view_one_due_today_3_days(self):
+        mission = self.grail.add_mission("prout", due=datetime.now())
+        mission2 = self.grail.add_mission("prout", due=(datetime.now() + timedelta(days=3)))
+        self.assertEqual(self.grail.super_main_view(), [["For today", [mission]], ["For in 3 days", [mission2]]])
+
+    def test_super_main_view_one_due_today_3_days_wee(self):
+        mission = self.grail.add_mission("prout", due=datetime.now())
+        mission2 = self.grail.add_mission("prout", due=(datetime.now() + timedelta(days=3)))
+        mission3 = self.grail.add_mission("prout", due=(datetime.now() + timedelta(days=7)))
+        self.assertEqual(self.grail.super_main_view(), [["For today", [mission]], ["For in 3 days", [mission2]], ["For this week", [mission3]]])
+
+    def test_super_main_view_a_bit_of_everything(self):
+        mission = self.grail.add_mission("prout", due=datetime.now())
+        mission2 = self.grail.add_mission("prout", due=(datetime.now() + timedelta(days=3)))
+        mission3 = self.grail.add_mission("prout", due=(datetime.now() + timedelta(days=7)))
+        mimission = self.grail.add_mission("prout")
+        mimission3 = self.grail.add_mission("prout")
+        realm = self.grail.add_realm("pouet")
+        mimission2 = self.grail.add_mission("pouet", realm=realm)
+        mimission4 = self.grail.add_mission("pouet", realm=realm)
+        default = self.grail.get_default_realm()
+        self.assertEqual(self.grail.super_main_view(), [["For today", [mission]], ["For in 3 days", [mission2]], ["For this week", [mission3]] , [default, [mimission, mimission3]], [realm, [mimission2, mimission4]]])
+
 class TestTags(unittest.TestCase):
 
     def setUp(self):

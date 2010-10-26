@@ -628,6 +628,61 @@ class Grail(object):
 
         return main_view
 
+    def super_main_view(self):
+        """
+        WARNING NOT TESTED - quick & dirty ™
+
+        Return the super main view.
+
+        The main view is a list of lists of:
+            - todo for today and late todo
+            - todo for in 3 days
+            - todo for this week
+            - visible realm
+            - list of visible missions of this realm
+
+        Order by the realm position.
+        """
+        missions = self.list_missions()
+        realms = self.list_realms()
+        main_view = []
+        if not missions:
+            return main_view
+
+        for_today = []
+        for i in missions:
+            if i.due and i.due < datetime.now() + timedelta(1):
+                for_today.append(i)
+        if for_today:
+            main_view.append(["For today", for_today])
+            for i in for_today:
+                missions.remove(i)
+
+        for_3days = []
+        for i in missions:
+            if i.due and i.due < datetime.now() + timedelta(4):
+                for_3days.append(i)
+        if for_3days:
+            main_view.append(["For in 3 days", for_3days])
+            for i in for_3days:
+                missions.remove(i)
+
+        for_this_week = []
+        for i in missions:
+            if i.due and i.due < datetime.now() + timedelta(8):
+                for_this_week.append(i)
+        if for_this_week:
+            main_view.append(["For this week", for_this_week])
+            for i in for_this_week:
+                missions.remove(i)
+
+        for realm in realms:
+            realm_missions = [i for i in missions if i.realm == realm]
+            if realm_missions:
+                main_view.append([realm, realm_missions])
+
+        return main_view
+
     def search_for_mission(self, description):
         """
         Receive a string, return all the mission that match that string
