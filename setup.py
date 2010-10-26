@@ -11,6 +11,7 @@ setup(name='HolyGrail',
       url='http://blog.worlddomination.be/holygrail',
       install_requires=['sqlobject'],
       packages=["holygrail"],
+      licence = "aGPLv3+",
      )
 
 # vim:set shiftwidth=4 tabstop=4 expandtab:
