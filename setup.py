@@ -12,6 +12,7 @@ setup(name='HolyGrail',
       install_requires=['sqlobject'],
       packages=["holygrail"],
       licence = "aGPLv3+",
+      keywords="gtd lib holygrail",
      )
 
 # vim:set shiftwidth=4 tabstop=4 expandtab:
