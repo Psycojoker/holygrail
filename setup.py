@@ -11,7 +11,7 @@ setup(name='HolyGrail',
       url='http://blog.worlddomination.be/holygrail',
       install_requires=['sqlobject'],
       packages=["holygrail"],
-      licence = "aGPLv3+",
+      license = "aGPLv3+",
       keywords="gtd lib holygrail",
      )
 
