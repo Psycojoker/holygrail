@@ -50,6 +50,7 @@ Changelog
 ---------
  * 0.1.1
    - get_missions() of realm and project now respect missions visibility and have an "all_mission attribute"
+   - due missions in the super main view are now correctly sorted
    - unittests and refactoring for the super main view
    - when the database isn't specify in the config file, give an url who point to some help
    - update the remove method of realm description
