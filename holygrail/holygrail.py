@@ -62,20 +62,12 @@ class _Realm(sqlobject.SQLObject):
 
         Return a list of a list of missions.
         """
-        def visible(mission):
-            """
-            A method that return True if the mission will be display in the main_view
-            or in list_missions. You normaly needn't use it.
-            """
-            return (not mission.previous_mission or mission.previous_mission.completed)\
-                and (not mission.quest or (not mission.quest.hide and not mission.quest.completed\
-                and ((mission.quest.tickler == None) or (mission.quest.tickler < datetime.now()))))
-
-        return [i for i in _Mission.select(sqlobject.AND(_Mission.q.completed == False,
+        if not all_missions:
+            return [i for i in _Mission.select(sqlobject.AND(_Mission.q.completed == False,
                 sqlobject.OR(_Mission.q.tickler == None, _Mission.q.tickler < datetime.now()),\
-                _Mission.q.realm == self)) if visible(i)]\
-                if not all_missions\
-                else [i for i in _Mission.select(_Mission.q.realm == self)]
+                _Mission.q.realm == self)) if i.visible()]
+        else:
+            return [i for i in _Mission.select(_Mission.q.realm == self)]
 
     def change_position(self, new_position):
         """
@@ -106,7 +98,7 @@ class _Realm(sqlobject.SQLObject):
         Remove the realm.
 
         You can't remove a realm who has mission, RealmStillHasElems will be
-        raised if you tryed to.
+        raised if you tried to.
 
         You can't remove the default realm, CanRemoveTheDefaultRealm will
         be raised if you tried to.
@@ -318,20 +310,12 @@ class _Quest(sqlobject.SQLObject):
 
         Return a list of a list of missions.
         """
-        def visible(mission):
-            """
-            A method that return True if the mission will be display in the main_view
-            or in list_missions. You normaly needn't use it.
-            """
-            return (not mission.previous_mission or mission.previous_mission.completed)\
-                and (not mission.quest or (not mission.quest.hide and not mission.quest.completed\
-                and ((mission.quest.tickler == None) or (mission.quest.tickler < datetime.now()))))
-
-        return [i for i in _Mission.select(sqlobject.AND(_Mission.q.completed == False,
+        if not all_missions:
+            return [i for i in _Mission.select(sqlobject.AND(_Mission.q.completed == False,
                 sqlobject.OR(_Mission.q.tickler == None, _Mission.q.tickler < datetime.now()),\
-                _Mission.q.quest == self)) if visible(i)]\
-                if not all_missions\
-                else [i for i in _Mission.select(_Mission.q.quest == self)]
+                _Mission.q.quest == self)) if i.visible()]
+        else:
+            return [i for i in _Mission.select(_Mission.q.quest == self)]
 
     def due_for(self, due):
         """
@@ -655,8 +639,6 @@ class Grail(object):
 
     def super_main_view(self):
         """
-        WARNING NOT TESTED - quick & dirty ™
-
         Return the super main view.
 
         The main view is a list of lists of:
@@ -681,6 +663,7 @@ class Grail(object):
                 if i.due and i.due < datetime.now() + timedelta(time_delta_value):
                     row.append(i)
             if row:
+                row = sorted(row, key=lambda mission: mission._due)
                 main_view.append([description, row])
                 for i in row:
                     missions.remove(i)

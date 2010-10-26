@@ -881,13 +881,34 @@ class Test_TDD(unittest.TestCase):
         mission = self.grail.add_mission("prout", due=datetime.now())
         self.assertEqual(self.grail.super_main_view(), [["For today", [mission]]])
 
+    def test_super_main_view_one_due_today_order(self):
+        mission = self.grail.add_mission("prout", due=datetime.now() + timedelta(seconds=50))
+        mission2 = self.grail.add_mission("prout", due=datetime.now())
+        self.assertEqual(self.grail.super_main_view(), [["For today", [mission2, mission]]])
+
+    def test_super_main_view_one_due_today_order_3_missions(self):
+        mission = self.grail.add_mission("prout", due=datetime.now() + timedelta(seconds=50))
+        mission2 = self.grail.add_mission("prout", due=datetime.now())
+        mission3 = self.grail.add_mission("prout", due=datetime.now() + timedelta(seconds=20))
+        self.assertEqual(self.grail.super_main_view(), [["For today", [mission2, mission3, mission]]])
+
     def test_super_main_view_one_due_3_days(self):
         mission = self.grail.add_mission("prout", due=(datetime.now() + timedelta(days=3)))
         self.assertEqual(self.grail.super_main_view(), [["For in 3 days", [mission]]])
 
-    def test_super_main_view_one_due_this_wee(self):
+    def test_super_main_view_one_due_in_3_days_order(self):
+        mission = self.grail.add_mission("prout", due=datetime.now() + timedelta(days=3, seconds=100))
+        mission2 = self.grail.add_mission("prout", due=datetime.now() + timedelta(days=3))
+        self.assertEqual(self.grail.super_main_view(), [["For in 3 days", [mission2, mission]]])
+
+    def test_super_main_view_one_due_this_week(self):
         mission = self.grail.add_mission("prout", due=(datetime.now() + timedelta(days=7)))
         self.assertEqual(self.grail.super_main_view(), [["For this week", [mission]]])
+
+    def test_super_main_view_one_due_this_week_order(self):
+        mission = self.grail.add_mission("prout", due=datetime.now() + timedelta(days=7, seconds=100))
+        mission2 = self.grail.add_mission("prout", due=datetime.now() + timedelta(days=7))
+        self.assertEqual(self.grail.super_main_view(), [["For this week", [mission2, mission]]])
 
     def test_super_main_view_one_due_today_3_days(self):
         mission = self.grail.add_mission("prout", due=datetime.now())
