@@ -254,6 +254,17 @@ class Test_TDD(unittest.TestCase):
         realm.remove()
         self.assertEqual(1, _Realm.select().count())
 
+    def test_remove_realm_conserve_order(self):
+        default_realm = _Realm.select()[0]
+        self.assertEqual(0, default_realm.position)
+        realm2 = self.grail.add_realm("new realm")
+        self.assertEqual(1, realm2.position)
+        realm3 = self.grail.add_realm("other new realm")
+        self.assertEqual(2, realm3.position)
+        realm2.remove()
+        self.assertEqual(0, default_realm.position)
+        self.assertEqual(1, realm3.position)
+
     def test_default_realm_at_init(self):
         realm = self.grail.get_default_realm()
         self.assertEqual(1, realm.id)
@@ -321,6 +332,20 @@ class Test_TDD(unittest.TestCase):
         self.assertEqual(len(self.grail.list_realms()), 2)
         realm.remove()
         self.assertEqual(len(self.grail.list_realms()), 1)
+
+    def test_list_realms_positio(self):
+        default = self.grail.get_default_realm()
+        realm = self.grail.add_realm("foobar")
+        realm2 = self.grail.add_realm("foofoobarbar")
+        realms = self.grail.list_realms(all_realms=True)
+        self.assertEqual(realms[0], default)
+        self.assertEqual(realms[1], realm)
+        self.assertEqual(realms[2], realm2)
+        realm.change_position(2)
+        realms = self.grail.list_realms(all_realms=True)
+        self.assertEqual(realms[0], default)
+        self.assertEqual(realms[2], realm)
+        self.assertEqual(realms[1], realm2)
 
     def test_add_Realm_default(self):
         realm = self.grail.add_realm("zomg, ils ont osé faire un flim sur les schtroumphs", default=True)
@@ -816,6 +841,236 @@ class Test_TDD(unittest.TestCase):
         mission = self.grail.add_mission("ima new mission")
         self.assertRaises(WaitForError, mission.wait_for, mission)
 
+    def test_super_main_view_empty(self):
+        self.assertEqual(self.grail.super_main_view(), [])
+
+    def test_super_main_view_one_mission(self):
+        mission = self.grail.add_mission("prout")
+        default = self.grail.get_default_realm()
+        self.assertEqual(self.grail.super_main_view(), [[default, [mission]]])
+
+    def test_super_main_view_two_mission(self):
+        mission = self.grail.add_mission("prout")
+        mission2 = self.grail.add_mission("pouet")
+        default = self.grail.get_default_realm()
+        self.assertEqual(self.grail.super_main_view(), [[default, [mission, mission2]]])
+
+    def test_super_main_view_two_realm_one_mission(self):
+        mission = self.grail.add_mission("prout")
+        realm = self.grail.add_realm("pouet")
+        default = self.grail.get_default_realm()
+        self.assertEqual(self.grail.super_main_view(), [[default, [mission]]])
+
+    def test_super_main_view_two_realm_two_mission(self):
+        mission = self.grail.add_mission("prout")
+        realm = self.grail.add_realm("pouet")
+        mission2 = self.grail.add_mission("pouet", realm=realm)
+        default = self.grail.get_default_realm()
+        self.assertEqual(self.grail.super_main_view(), [[default, [mission]], [realm, [mission2]]])
+
+    def test_super_main_view_two_realm_for_mission(self):
+        mission = self.grail.add_mission("prout")
+        mission3 = self.grail.add_mission("prout")
+        realm = self.grail.add_realm("pouet")
+        mission2 = self.grail.add_mission("pouet", realm=realm)
+        mission4 = self.grail.add_mission("pouet", realm=realm)
+        default = self.grail.get_default_realm()
+        self.assertEqual(self.grail.super_main_view(), [[default, [mission, mission3]], [realm, [mission2, mission4]]])
+
+    def test_super_main_view_one_due_today(self):
+        mission = self.grail.add_mission("prout", due=datetime.now())
+        self.assertEqual(self.grail.super_main_view(), [["For today", [mission]]])
+
+    def test_super_main_view_one_due_today_order(self):
+        mission = self.grail.add_mission("prout", due=datetime.now() + timedelta(seconds=50))
+        mission2 = self.grail.add_mission("prout", due=datetime.now())
+        self.assertEqual(self.grail.super_main_view(), [["For today", [mission2, mission]]])
+
+    def test_super_main_view_one_due_today_order_3_missions(self):
+        mission = self.grail.add_mission("prout", due=datetime.now() + timedelta(seconds=50))
+        mission2 = self.grail.add_mission("prout", due=datetime.now())
+        mission3 = self.grail.add_mission("prout", due=datetime.now() + timedelta(seconds=20))
+        self.assertEqual(self.grail.super_main_view(), [["For today", [mission2, mission3, mission]]])
+
+    def test_super_main_view_one_due_3_days(self):
+        mission = self.grail.add_mission("prout", due=(datetime.now() + timedelta(days=3)))
+        self.assertEqual(self.grail.super_main_view(), [["For in 3 days", [mission]]])
+
+    def test_super_main_view_one_due_in_3_days_order(self):
+        mission = self.grail.add_mission("prout", due=datetime.now() + timedelta(days=3, seconds=100))
+        mission2 = self.grail.add_mission("prout", due=datetime.now() + timedelta(days=3))
+        self.assertEqual(self.grail.super_main_view(), [["For in 3 days", [mission2, mission]]])
+
+    def test_super_main_view_one_due_this_week(self):
+        mission = self.grail.add_mission("prout", due=(datetime.now() + timedelta(days=7)))
+        self.assertEqual(self.grail.super_main_view(), [["For this week", [mission]]])
+
+    def test_super_main_view_one_due_this_week_order(self):
+        mission = self.grail.add_mission("prout", due=datetime.now() + timedelta(days=7, seconds=100))
+        mission2 = self.grail.add_mission("prout", due=datetime.now() + timedelta(days=7))
+        self.assertEqual(self.grail.super_main_view(), [["For this week", [mission2, mission]]])
+
+    def test_super_main_view_one_due_today_3_days(self):
+        mission = self.grail.add_mission("prout", due=datetime.now())
+        mission2 = self.grail.add_mission("prout", due=(datetime.now() + timedelta(days=3)))
+        self.assertEqual(self.grail.super_main_view(), [["For today", [mission]], ["For in 3 days", [mission2]]])
+
+    def test_super_main_view_one_due_today_3_days_wee(self):
+        mission = self.grail.add_mission("prout", due=datetime.now())
+        mission2 = self.grail.add_mission("prout", due=(datetime.now() + timedelta(days=3)))
+        mission3 = self.grail.add_mission("prout", due=(datetime.now() + timedelta(days=7)))
+        self.assertEqual(self.grail.super_main_view(), [["For today", [mission]], ["For in 3 days", [mission2]], ["For this week", [mission3]]])
+
+    def test_super_main_view_a_bit_of_everything(self):
+        mission = self.grail.add_mission("prout", due=datetime.now())
+        mission2 = self.grail.add_mission("prout", due=(datetime.now() + timedelta(days=3)))
+        mission3 = self.grail.add_mission("prout", due=(datetime.now() + timedelta(days=7)))
+        mimission = self.grail.add_mission("prout")
+        mimission3 = self.grail.add_mission("prout")
+        realm = self.grail.add_realm("pouet")
+        mimission2 = self.grail.add_mission("pouet", realm=realm)
+        mimission4 = self.grail.add_mission("pouet", realm=realm)
+        default = self.grail.get_default_realm()
+        self.assertEqual(self.grail.super_main_view(), [["For today", [mission]], ["For in 3 days", [mission2]], ["For this week", [mission3]] , [default, [mimission, mimission3]], [realm, [mimission2, mimission4]]])
+
+    def test_get_realm_missions(self):
+        default = self.grail.get_default_realm()
+        # empty
+        self.assertEqual(0, len(default.get_missions()))
+        t = self.grail.add_mission("mission")
+        # one mission
+        self.assertEqual(1, len(default.get_missions()))
+        self.assertTrue(t in default.get_missions())
+        # two mission
+        t2 = self.grail.add_mission("mission 2")
+        self.assertEqual(2, len(default.get_missions()))
+        self.assertTrue(t in default.get_missions())
+        self.assertTrue(t2 in default.get_missions())
+        # only uncompleted
+        t2.toggle()
+        self.assertEqual(1, len(default.get_missions()))
+        self.assertTrue(t in default.get_missions())
+        self.assertTrue(t2 not in default.get_missions())
+        # everything
+        self.assertEqual(2, len(default.get_missions(all_missions=True)))
+        self.assertTrue(t in default.get_missions(all_missions=True))
+        self.assertTrue(t2 in default.get_missions(all_missions=True))
+
+    def test_get_realm_missions_with_other_realm(self):
+        default = self.grail.get_default_realm()
+        realm = self.grail.add_realm("pouet pouet")
+        # empty
+        self.grail.add_mission("pwet pwet", realm=realm.id)
+        self.assertEqual(0, len(default.get_missions()))
+        t = self.grail.add_mission("mission")
+        # one mission
+        self.grail.add_mission("pwet pwet", realm=realm.id)
+        self.assertEqual(1, len(default.get_missions()))
+        self.assertTrue(t in default.get_missions())
+        # two mission
+        t2 = self.grail.add_mission("mission 2")
+        self.grail.add_mission("pwet pwet", realm=realm.id)
+        self.assertEqual(2, len(default.get_missions()))
+        self.assertTrue(t in default.get_missions())
+        self.grail.add_mission("pwet pwet", realm=realm.id)
+        self.assertTrue(t2 in default.get_missions())
+        # only uncompleted
+        t2.toggle()
+        self.grail.add_mission("pwet pwet", realm=realm.id)
+        self.assertEqual(1, len(default.get_missions()))
+        self.assertTrue(t in default.get_missions())
+        self.grail.add_mission("pwet pwet", realm=realm.id)
+        self.assertTrue(t2 not in default.get_missions())
+        # everything
+        self.grail.add_mission("pwet pwet", realm=realm.id)
+        self.assertEqual(2, len(default.get_missions(all_missions=True)))
+        self.assertTrue(t in default.get_missions(all_missions=True))
+        self.grail.add_mission("pwet pwet", realm=realm.id)
+        self.assertTrue(t2 in default.get_missions(all_missions=True))
+
+    def test_get_realm_missions_dont_show_tickle_task(self):
+        default = self.grail.get_default_realm()
+        # for tomorrow
+        tickler = datetime.now() + timedelta(1)
+        mission = self.grail.add_mission("new mission", tickler)
+        self.assertTrue(mission not in default.get_missions())
+
+    def test_get_realm_missions_all_show_tickle_task(self):
+        default = self.grail.get_default_realm()
+        # for tomorrow
+        tickler = datetime.now() + timedelta(1)
+        mission = self.grail.add_mission("new mission", tickler)
+        self.assertTrue(mission in default.get_missions(all_missions=True))
+
+    def test_get_quest_missions(self):
+        quest = self.grail.add_quest("pipapou")
+        # empty
+        self.assertEqual(0, len(quest.get_missions()))
+        t = self.grail.add_mission("mission", quest=quest.id)
+        # one mission
+        self.assertEqual(1, len(quest.get_missions()))
+        self.assertTrue(t in quest.get_missions())
+        # two mission
+        t2 = self.grail.add_mission("mission 2", quest=quest.id)
+        self.assertEqual(2, len(quest.get_missions()))
+        self.assertTrue(t in quest.get_missions())
+        self.assertTrue(t2 in quest.get_missions())
+        # only uncompleted
+        t2.toggle()
+        self.assertEqual(1, len(quest.get_missions()))
+        self.assertTrue(t in quest.get_missions())
+        self.assertTrue(t2 not in quest.get_missions())
+        # everything
+        self.assertEqual(2, len(quest.get_missions(all_missions=True)))
+        self.assertTrue(t in quest.get_missions(all_missions=True))
+        self.assertTrue(t2 in quest.get_missions(all_missions=True))
+
+    def test_get_quest_missions_with_other_quest(self):
+        quest = self.grail.add_quest("toto tata")
+        other_quest = self.grail.add_quest("pouet pouet")
+        # empty
+        self.grail.add_mission("pwet pwet", quest=other_quest.id)
+        self.assertEqual(0, len(quest.get_missions()))
+        t = self.grail.add_mission("mission", quest=quest.id)
+        # one mission
+        self.grail.add_mission("pwet pwet", quest=other_quest.id)
+        self.assertEqual(1, len(quest.get_missions()))
+        self.assertTrue(t in quest.get_missions())
+        # two mission
+        t2 = self.grail.add_mission("mission 2", quest=quest.id)
+        self.grail.add_mission("pwet pwet", quest=other_quest.id)
+        self.assertEqual(2, len(quest.get_missions()))
+        self.assertTrue(t in quest.get_missions())
+        self.grail.add_mission("pwet pwet", quest=other_quest.id)
+        self.assertTrue(t2 in quest.get_missions())
+        # only uncompleted
+        t2.toggle()
+        self.grail.add_mission("pwet pwet", quest=other_quest.id)
+        self.assertEqual(1, len(quest.get_missions()))
+        self.assertTrue(t in quest.get_missions())
+        self.grail.add_mission("pwet pwet", quest=other_quest.id)
+        self.assertTrue(t2 not in quest.get_missions())
+        # everything
+        self.grail.add_mission("pwet pwet", quest=other_quest.id)
+        self.assertEqual(2, len(quest.get_missions(all_missions=True)))
+        self.assertTrue(t in quest.get_missions(all_missions=True))
+        self.grail.add_mission("pwet pwet", quest=other_quest.id)
+        self.assertTrue(t2 in quest.get_missions(all_missions=True))
+
+    def test_get_quest_missions_dont_show_tickle_task(self):
+        quest = self.grail.add_quest("yohoho !")
+        # for tomorrow
+        tickler = datetime.now() + timedelta(1)
+        mission = self.grail.add_mission("new mission", tickler, quest=quest.id)
+        self.assertTrue(mission not in quest.get_missions())
+
+    def test_get_quest_missions_all_show_tickle_task(self):
+        quest = self.grail.add_quest("flagada")
+        # for tomorrow
+        tickler = datetime.now() + timedelta(1)
+        mission = self.grail.add_mission("new mission", tickler, quest=quest.id)
+        self.assertTrue(mission in quest.get_missions(all_missions=True))
+
 class TestTags(unittest.TestCase):
 
     def setUp(self):
@@ -899,9 +1154,7 @@ class TestTags(unittest.TestCase):
 
     # TODO: refactorer les exceptions, favoriser un message plutôt que plein d'exceptions différentes
     # TODO: faire un utils.py et rajouter plein de petits outils dedans comme un parseur de date etc ...
-    # TODO: faire marcher sd <- migrer vers lucid
     # TODO: tien et si je faisais un nouveau attribut "drop" en plus de completed
-    # TODO: envisager de changer le fichier de config pour qu'écrire l'accès à la bdd soit plus simple
     # TODO: add other search methods
     # TODO: spliter mes tests unitaires en plusieurs classes
 

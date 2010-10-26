@@ -3,6 +3,8 @@
 
 from holygrail import *
 
+VERSION="0.1.1 Galahad"
+
 if __name__ == "__main__":
     pass
 

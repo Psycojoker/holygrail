@@ -56,13 +56,18 @@ class _Realm(sqlobject.SQLObject):
     hide = sqlobject.BoolCol(default=False)
     position = sqlobject.IntCol(unique=True)
 
-    def get_missions(self):
+    def get_missions(self, all_missions=False):
         """
         Get the missions associated to this quest.
 
         Return a list of a list of missions.
         """
-        return [i for i in _Mission.select(_Mission.q.realm == self)]
+        if not all_missions:
+            return [i for i in _Mission.select(sqlobject.AND(_Mission.q.completed == False,
+                sqlobject.OR(_Mission.q.tickler == None, _Mission.q.tickler < datetime.now()),\
+                _Mission.q.realm == self)) if i.visible()]
+        else:
+            return [i for i in _Mission.select(_Mission.q.realm == self)]
 
     def change_position(self, new_position):
         """
@@ -92,6 +97,9 @@ class _Realm(sqlobject.SQLObject):
         """
         Remove the realm.
 
+        You can't remove a realm who has mission, RealmStillHasElems will be
+        raised if you tried to.
+
         You can't remove the default realm, CanRemoveTheDefaultRealm will
         be raised if you tried to.
         """
@@ -101,6 +109,13 @@ class _Realm(sqlobject.SQLObject):
             raise RealmStillHasElems
         else:
             self.destroySelf()
+
+        # update position after removing one realm
+        realms = [i for i in _Realm.select().orderBy("position")]
+        i = 0
+        while i < len(realms):
+            realms[i].position = i
+            i += 1
 
     def rename(self, new_description):
         """
@@ -289,14 +304,18 @@ class _Quest(sqlobject.SQLObject):
     default_realm = sqlobject.ForeignKey('_Realm', default=None)
     hide = sqlobject.BoolCol(default=False)
 
-    def get_missions(self):
+    def get_missions(self, all_missions=False):
         """
-        Get the missions and the missions associated to this quest.
+        Get the missions associated to this quest.
 
-        Return a list of a list of missions and a list of missions
-        [[missions], [missions
+        Return a list of a list of missions.
         """
-        return [i for i in _Mission.select(_Mission.q.quest == self)]
+        if not all_missions:
+            return [i for i in _Mission.select(sqlobject.AND(_Mission.q.completed == False,
+                sqlobject.OR(_Mission.q.tickler == None, _Mission.q.tickler < datetime.now()),\
+                _Mission.q.quest == self)) if i.visible()]
+        else:
+            return [i for i in _Mission.select(_Mission.q.quest == self)]
 
     def due_for(self, due):
         """
@@ -586,7 +605,7 @@ class Grail(object):
             * all_realms=False by default, if True return all the realms.
         """
         return [i for i in _Realm.select(_Realm.q.hide == False).orderBy("position")] if not all_realms\
-            else [i for i in _Realm.select()]
+            else [i for i in _Realm.select().orderBy("position")]
 
     def last_completed_missions(self):
         """
@@ -611,6 +630,48 @@ class Grail(object):
         main_view = []
         if not missions:
             return main_view
+        for realm in realms:
+            realm_missions = [i for i in missions if i.realm == realm]
+            if realm_missions:
+                main_view.append([realm, realm_missions])
+
+        return main_view
+
+    def super_main_view(self):
+        """
+        Return the super main view.
+
+        The main view is a list of lists of:
+            - todo for today and late todo
+            - todo for in 3 days
+            - todo for this week
+            - visible realm
+            - list of visible missions of this realm
+
+        Order by the realm position.
+        """
+        missions = self.list_missions()
+        if not missions:
+            return []
+
+        realms = self.list_realms()
+        main_view = []
+
+        def create_row(missions, description, time_delta_value):
+            row = []
+            for i in missions:
+                if i.due and i.due < datetime.now() + timedelta(time_delta_value):
+                    row.append(i)
+            if row:
+                row = sorted(row, key=lambda mission: mission._due)
+                main_view.append([description, row])
+                for i in row:
+                    missions.remove(i)
+
+        create_row(missions, "For today", 1)
+        create_row(missions, "For in 3 days", 4)
+        create_row(missions, "For this week", 8)
+
         for realm in realms:
             realm_missions = [i for i in missions if i.realm == realm]
             if realm_missions:
