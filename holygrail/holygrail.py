@@ -644,37 +644,25 @@ class Grail(object):
         Order by the realm position.
         """
         missions = self.list_missions()
+        if not missions:
+            return []
+
         realms = self.list_realms()
         main_view = []
-        if not missions:
-            return main_view
 
-        for_today = []
-        for i in missions:
-            if i.due and i.due < datetime.now() + timedelta(1):
-                for_today.append(i)
-        if for_today:
-            main_view.append(["For today", for_today])
-            for i in for_today:
-                missions.remove(i)
+        def create_row(missions, description, time_delta_value):
+            row = []
+            for i in missions:
+                if i.due and i.due < datetime.now() + timedelta(time_delta_value):
+                    row.append(i)
+            if row:
+                main_view.append([description, row])
+                for i in row:
+                    missions.remove(i)
 
-        for_3days = []
-        for i in missions:
-            if i.due and i.due < datetime.now() + timedelta(4):
-                for_3days.append(i)
-        if for_3days:
-            main_view.append(["For in 3 days", for_3days])
-            for i in for_3days:
-                missions.remove(i)
-
-        for_this_week = []
-        for i in missions:
-            if i.due and i.due < datetime.now() + timedelta(8):
-                for_this_week.append(i)
-        if for_this_week:
-            main_view.append(["For this week", for_this_week])
-            for i in for_this_week:
-                missions.remove(i)
+        create_row(missions, "For today", 1)
+        create_row(missions, "For in 3 days", 4)
+        create_row(missions, "For this week", 8)
 
         for realm in realms:
             realm_missions = [i for i in missions if i.realm == realm]
