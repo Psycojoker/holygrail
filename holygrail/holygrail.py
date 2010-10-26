@@ -639,8 +639,6 @@ class Grail(object):
 
     def super_main_view(self):
         """
-        WARNING NOT TESTED - quick & dirty ™
-
         Return the super main view.
 
         The main view is a list of lists of:
