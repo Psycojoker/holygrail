@@ -995,9 +995,7 @@ class TestTags(unittest.TestCase):
 
     # TODO: refactorer les exceptions, favoriser un message plutôt que plein d'exceptions différentes
     # TODO: faire un utils.py et rajouter plein de petits outils dedans comme un parseur de date etc ...
-    # TODO: faire marcher sd <- migrer vers lucid
     # TODO: tien et si je faisais un nouveau attribut "drop" en plus de completed
-    # TODO: envisager de changer le fichier de config pour qu'écrire l'accès à la bdd soit plus simple
     # TODO: add other search methods
     # TODO: spliter mes tests unitaires en plusieurs classes
 
