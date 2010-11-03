@@ -1,6 +1,7 @@
 #!/usr/bin/python
 # -*- coding:Utf-8 -*-
 
+from holygrail import _Realm, _Quest, _Mission, _TagMission
 from holygrail import *
 
 VERSION="0.1.1 Galahad"
