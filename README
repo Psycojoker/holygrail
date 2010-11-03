@@ -48,6 +48,8 @@ or mail me at cortex@worlddomination.be
 
 Changelog
 ---------
+ * 0.1.2
+   - fix fail import on privates class
  * 0.1.1
    - get_missions() of realm and project now respect missions visibility and have an "all_mission attribute"
    - due missions in the super main view are now correctly sorted
