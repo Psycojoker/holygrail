@@ -4,7 +4,7 @@
 from holygrail import _Realm, _Quest, _Mission, _TagMission
 from holygrail import *
 
-VERSION="0.1.1 Galahad"
+VERSION="0.1.2 Galahad"
 
 if __name__ == "__main__":
     pass
