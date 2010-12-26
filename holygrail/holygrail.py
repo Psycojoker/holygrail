@@ -641,17 +641,12 @@ class Grail(object):
 
         Order by the realm position.
         """
-        missions = self.list_missions()
         realms = self.list_realms()
         main_view = []
-        if not missions:
-            return main_view
         for realm in realms:
-            egual_realm = lambda x: x.realm == realm
-            realm_missions = filter(egual_realm, missions)
             missions = realm.get_missions()
-            if realm_missions:
-                main_view.append([realm, realm_missions])
+            if missions:
+                main_view.append([realm, missions])
 
         return main_view
 
