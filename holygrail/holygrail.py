@@ -625,14 +625,8 @@ class Grail(object):
 
         Order by the realm position.
         """
-        realms = self.list_realms()
-        main_view = []
-        for realm in realms:
-            missions = realm.get_missions()
-            if missions:
-                main_view.append([realm, missions])
-
-        return main_view
+        # double sql query, not optimised, i hope sqlite/other cached those
+        return [[i, i.get_missions()] for i in self.list_realms() if i.get_missions()]
 
     def super_main_view(self):
         """
@@ -655,10 +649,8 @@ class Grail(object):
         main_view = []
 
         def create_row(missions, description, time_delta_value):
-            row = []
-            for i in missions:
-                if i.due and i.due < datetime.now() + timedelta(time_delta_value):
-                    row.append(i)
+            row = [i for i in missions if i.due and i.due < datetime.now() + timedelta(time_delta_value)]
+
             if row:
                 row = sorted(row, key=lambda mission: mission._due)
                 main_view.append([description, row])
