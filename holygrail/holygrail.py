@@ -678,7 +678,7 @@ class Grail(object):
         create_row(missions, "For this week", 8)
 
         for realm in realms:
-            realm_missions = [i for i in missions if i.realm == realm]
+            realm_missions = [i for i in realm.get_missions() if not i.due or i.due >= datetime.now() + timedelta(8)]
             if realm_missions:
                 main_view.append([realm, realm_missions])
 
