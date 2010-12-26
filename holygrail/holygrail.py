@@ -670,8 +670,7 @@ class Grail(object):
             if row:
                 row = sorted(row, key=lambda mission: mission._due)
                 main_view.append([description, row])
-                for i in row:
-                    missions.remove(i)
+                map(missions.remove, row)
 
         create_row(missions, "For today", 1)
         create_row(missions, "For in 3 days", 4)
