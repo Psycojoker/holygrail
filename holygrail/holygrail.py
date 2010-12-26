@@ -661,7 +661,6 @@ class Grail(object):
         if not missions:
             return []
 
-        realms = self.list_realms()
         main_view = []
 
         def create_row(missions, description, time_delta_value):
@@ -679,7 +678,7 @@ class Grail(object):
 
         main_view += [[realm,
                        [i for i in realm.get_missions() if not i.due or i.due >= datetime.now() + timedelta(8)]]
-                      for realm in realms]
+                      for realm in self.list_realms()]
 
         return filter(lambda item: item[1], main_view)
 
