@@ -681,7 +681,7 @@ class Grail(object):
                        [i for i in realm.get_missions() if not i.due or i.due >= datetime.now() + timedelta(8)]]
                       for realm in realms]
 
-        return filter(lambda i: i[1], main_view)
+        return filter(lambda item: item[1], main_view)
 
     def search_for_mission(self, description):
         """
