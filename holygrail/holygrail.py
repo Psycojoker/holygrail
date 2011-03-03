@@ -641,17 +641,8 @@ class Grail(object):
 
         Order by the realm position.
         """
-        missions = self.list_missions()
-        realms = self.list_realms()
-        main_view = []
-        if not missions:
-            return main_view
-        for realm in realms:
-            realm_missions = [i for i in missions if i.realm == realm]
-            if realm_missions:
-                main_view.append([realm, realm_missions])
-
-        return main_view
+        # double sql query, not optimised, i hope sqlite/other cached those
+        return [[i, i.get_missions()] for i in self.list_realms() if i.get_missions()]
 
     def super_main_view(self):
         """
@@ -670,30 +661,26 @@ class Grail(object):
         if not missions:
             return []
 
-        realms = self.list_realms()
         main_view = []
 
         def create_row(missions, description, time_delta_value):
-            row = []
-            for i in missions:
-                if i.due and i.due < datetime.now() + timedelta(time_delta_value):
-                    row.append(i)
-            if row:
-                row = sorted(row, key=lambda mission: mission._due)
-                main_view.append([description, row])
-                for i in row:
-                    missions.remove(i)
+            row = [i for i in missions if i.due and i.due < datetime.now() + timedelta(time_delta_value)]
+            if not row:
+                return
+
+            row = sorted(row, key=lambda mission: mission._due)
+            main_view.append([description, row])
+            map(missions.remove, row)
 
         create_row(missions, "For today", 1)
         create_row(missions, "For in 3 days", 4)
         create_row(missions, "For this week", 8)
 
-        for realm in realms:
-            realm_missions = [i for i in missions if i.realm == realm]
-            if realm_missions:
-                main_view.append([realm, realm_missions])
+        main_view += [[realm,
+                       [i for i in realm.get_missions() if not i.due or i.due >= datetime.now() + timedelta(8)]]
+                      for realm in self.list_realms()]
 
-        return main_view
+        return filter(lambda item: item[1], main_view)
 
     def search_for_mission(self, description):
         """
