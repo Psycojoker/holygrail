@@ -26,6 +26,9 @@ from datetime import date, datetime, timedelta
 
 from holygrail import Grail, MissionDoesntExist, CanRemoveTheDefaultRealm, RealmDoesntExist, RealmStillHasElems, _Realm, QuestDoesntExist, _Mission, _Quest, WaitForError
 
+def _to_list(sequence):
+    return map(lambda x: [x[0], list(x[1])], list(sequence))
+
 def comp_datetime(a, b):
     if a.year != b.year:
         return False
@@ -66,14 +69,14 @@ class Test_TDD(unittest.TestCase):
         You should be able to add a new mission.
         This should inscrease the number of missions by one
         """
-        was = len(self.grail.list_missions())
+        was = len(list(self.grail.list_missions()))
         mission = self.grail.add_mission("This is a new mission")
-        self.assertEqual(was + 1, len(self.grail.list_missions()))
+        self.assertEqual(was + 1, len(list(self.grail.list_missions())))
         self.assertTrue(mission in self.grail.list_missions())
 
         # check if we can add two time a mission with the same description
         mission2 = self.grail.add_mission("This is a new mission")
-        self.assertEqual(was + 2, len(self.grail.list_missions()))
+        self.assertEqual(was + 2, len(list(self.grail.list_missions())))
         self.assertTrue(mission in self.grail.list_missions())
         self.assertTrue(mission2 in self.grail.list_missions())
 
@@ -107,15 +110,15 @@ class Test_TDD(unittest.TestCase):
 
     def test_remove_mission(self):
 
-        was = len(self.grail.list_missions())
+        was = len(list(self.grail.list_missions()))
         mission = self.grail.add_mission("This is a new mission")
 
-        self.assertEqual(was + 1, len(self.grail.list_missions()))
+        self.assertEqual(was + 1, len(list(self.grail.list_missions())))
 
         id = mission.id
         mission.remove()
 
-        self.assertEqual(was, len(self.grail.list_missions()))
+        self.assertEqual(was, len(list(self.grail.list_missions())))
         self.assertRaises(MissionDoesntExist, self.grail.get_mission, id)
 
     def test_seach_for_mission(self):
@@ -160,23 +163,23 @@ class Test_TDD(unittest.TestCase):
 
     def test_list_missions(self):
         # empty
-        self.assertEqual(0, len(self.grail.list_missions()))
+        self.assertEqual(0, len(list(self.grail.list_missions())))
         t = self.grail.add_mission("mission")
         # one mission
-        self.assertEqual(1, len(self.grail.list_missions()))
+        self.assertEqual(1, len(list(self.grail.list_missions())))
         self.assertTrue(t in self.grail.list_missions())
         # two mission
         t2 = self.grail.add_mission("mission 2")
-        self.assertEqual(2, len(self.grail.list_missions()))
+        self.assertEqual(2, len(list(self.grail.list_missions())))
         self.assertTrue(t in self.grail.list_missions())
         self.assertTrue(t2 in self.grail.list_missions())
         # only uncompleted
         t2.toggle()
-        self.assertEqual(1, len(self.grail.list_missions()))
+        self.assertEqual(1, len(list(self.grail.list_missions())))
         self.assertTrue(t in self.grail.list_missions())
         self.assertTrue(t2 not in self.grail.list_missions())
         # everything
-        self.assertEqual(2, len(self.grail.list_missions(all_missions=True)))
+        self.assertEqual(2, len(list(self.grail.list_missions(all_missions=True))))
         self.assertTrue(t in self.grail.list_missions(all_missions=True))
         self.assertTrue(t2 in self.grail.list_missions(all_missions=True))
 
@@ -327,22 +330,22 @@ class Test_TDD(unittest.TestCase):
 
     def test_list_realms(self):
         self.assertTrue(self.grail.get_default_realm() in self.grail.list_realms())
-        self.assertEqual(len(self.grail.list_realms()), 1)
+        self.assertEqual(len(list(self.grail.list_realms())), 1)
         realm = self.grail.add_realm("foobar")
-        self.assertEqual(len(self.grail.list_realms()), 2)
+        self.assertEqual(len(list(self.grail.list_realms())), 2)
         realm.remove()
-        self.assertEqual(len(self.grail.list_realms()), 1)
+        self.assertEqual(len(list(self.grail.list_realms())), 1)
 
     def test_list_realms_positio(self):
         default = self.grail.get_default_realm()
         realm = self.grail.add_realm("foobar")
         realm2 = self.grail.add_realm("foofoobarbar")
-        realms = self.grail.list_realms(all_realms=True)
+        realms = list(self.grail.list_realms(all_realms=True))
         self.assertEqual(realms[0], default)
         self.assertEqual(realms[1], realm)
         self.assertEqual(realms[2], realm2)
         realm.change_position(2)
-        realms = self.grail.list_realms(all_realms=True)
+        realms = list(self.grail.list_realms(all_realms=True))
         self.assertEqual(realms[0], default)
         self.assertEqual(realms[2], realm)
         self.assertEqual(realms[1], realm2)
@@ -381,19 +384,19 @@ class Test_TDD(unittest.TestCase):
         self.assertEqual(quest.description, "the cake is a lie")
 
     def test_list_quests(self):
-        self.assertEqual(0, len(self.grail.list_quests()))
+        self.assertEqual(0, len(list(self.grail.list_quests())))
         quest = self.grail.add_quest("ce truc a l'air super http://smarterware.org/6172/hilary-mason-how-to-replace-yourself-with-a-small-shell-script")
         self.assertTrue(quest in self.grail.list_quests())
-        self.assertEqual(1, len(self.grail.list_quests()))
+        self.assertEqual(1, len(list(self.grail.list_quests())))
 
     def test_remove_quest(self):
-        self.assertEqual(0, len(self.grail.list_quests()))
+        self.assertEqual(0, len(list(self.grail.list_quests())))
         quest = self.grail.add_quest("lovely code vortex")
-        self.assertEqual(1, len(self.grail.list_quests()))
+        self.assertEqual(1, len(list(self.grail.list_quests())))
         old_id = quest.id
         quest.remove()
         self.assertRaises(QuestDoesntExist, self.grail.get_quest, old_id)
-        self.assertEqual(0, len(self.grail.list_quests()))
+        self.assertEqual(0, len(list(self.grail.list_quests())))
 
     def test_change_mission_quest(self):
         quest = self.grail.add_quest("manger une pomme")
@@ -631,7 +634,7 @@ class Test_TDD(unittest.TestCase):
         realm5 = self.grail.add_realm("realm5")
         realm6 = self.grail.add_realm("realm6")
         realm1.change_position(4)
-        realms = self.grail.list_realms()
+        realms = list(self.grail.list_realms())
         self.assertEqual(realms[4], realm1)
         self.assertEqual(realms[0], realm2)
         self.assertEqual(realms[1], realm3)
@@ -743,35 +746,35 @@ class Test_TDD(unittest.TestCase):
 
     def test_main_view(self):
         # empty since the only realm is empty
-        self.assertEqual([], self.grail.main_view())
+        self.assertEqual([], list(self.grail.main_view()))
 
     def test_main_view_one_mission(self):
         mission = self.grail.add_mission("kropotkine")
-        self.assertEqual([[self.grail.get_default_realm(), [mission]]], self.grail.main_view())
+        self.assertEqual([[self.grail.get_default_realm(), [mission]]], _to_list(self.grail.main_view()))
 
     def test_main_view_one_mission_one_empty_realm(self):
         mission = self.grail.add_mission("kropotkikine")
         self.grail.add_realm("empty realm")
-        self.assertEqual([[self.grail.get_default_realm(), [mission]]], self.grail.main_view())
+        self.assertEqual([[self.grail.get_default_realm(), [mission]]], _to_list(self.grail.main_view()))
 
     def test_main_view_one_mission_one_non_empty_realm(self):
         mission = self.grail.add_mission("kropotkikine")
         realm = self.grail.add_realm("realm")
         other_mission = self.grail.add_mission("James Joyce a l'air terrible", realm=realm)
         self.assertEqual([[self.grail.get_default_realm(), [mission]],
-                          [realm, [other_mission]]], self.grail.main_view())
+                          [realm, [other_mission]]], _to_list(self.grail.main_view()))
         self.assertEqual([[self.grail.get_default_realm(), [mission]],
-                          [realm, [other_mission]]], self.grail.main_view())
+                          [realm, [other_mission]]], _to_list(self.grail.main_view()))
 
     def test_last_completed_missions_empty(self):
         last_completed_missions = self.grail.last_completed_missions()
-        self.assertEqual([], last_completed_missions)
+        self.assertEqual([], list(last_completed_missions))
 
     def test_last_completed_missions_one_mission(self):
         mission = self.grail.add_mission("pouet")
         mission.toggle()
         last_completed_missions = self.grail.last_completed_missions()
-        self.assertEqual([mission], last_completed_missions)
+        self.assertEqual([mission], list(last_completed_missions))
 
     def test_last_completed_missions_multiple_missions(self):
         mission1 = self.grail.add_mission("pouet")
@@ -783,7 +786,7 @@ class Test_TDD(unittest.TestCase):
         time.sleep(1)
         mission2.toggle()
         last_completed_missions = self.grail.last_completed_missions()
-        self.assertEqual([mission2, mission3, mission1], last_completed_missions)
+        self.assertEqual([mission2, mission3, mission1], list(last_completed_missions))
 
     def test_quest_due(self):
         quest = self.grail.add_quest("je code dans un avion qui revient d'irlande")
@@ -816,7 +819,7 @@ class Test_TDD(unittest.TestCase):
 
     def test_get_missions_on_realm_empty(self):
         realm = self.grail.add_realm("regardcitoyens ça déchire")
-        self.assertEqual([], realm.get_missions())
+        self.assertEqual([], list(realm.get_missions()))
 
     def test_get_missions_on_realm_mission(self):
         realm = self.grail.add_realm("regardcitoyens ça déchire")
@@ -936,23 +939,23 @@ class Test_TDD(unittest.TestCase):
     def test_get_realm_missions(self):
         default = self.grail.get_default_realm()
         # empty
-        self.assertEqual(0, len(default.get_missions()))
+        self.assertEqual(0, len(list(default.get_missions())))
         t = self.grail.add_mission("mission")
         # one mission
-        self.assertEqual(1, len(default.get_missions()))
+        self.assertEqual(1, len(list(default.get_missions())))
         self.assertTrue(t in default.get_missions())
         # two mission
         t2 = self.grail.add_mission("mission 2")
-        self.assertEqual(2, len(default.get_missions()))
+        self.assertEqual(2, len(list(default.get_missions())))
         self.assertTrue(t in default.get_missions())
         self.assertTrue(t2 in default.get_missions())
         # only uncompleted
         t2.toggle()
-        self.assertEqual(1, len(default.get_missions()))
+        self.assertEqual(1, len(list(default.get_missions())))
         self.assertTrue(t in default.get_missions())
         self.assertTrue(t2 not in default.get_missions())
         # everything
-        self.assertEqual(2, len(default.get_missions(all_missions=True)))
+        self.assertEqual(2, len(list(default.get_missions(all_missions=True))))
         self.assertTrue(t in default.get_missions(all_missions=True))
         self.assertTrue(t2 in default.get_missions(all_missions=True))
 
@@ -961,29 +964,29 @@ class Test_TDD(unittest.TestCase):
         realm = self.grail.add_realm("pouet pouet")
         # empty
         self.grail.add_mission("pwet pwet", realm=realm.id)
-        self.assertEqual(0, len(default.get_missions()))
+        self.assertEqual(0, len(list(default.get_missions())))
         t = self.grail.add_mission("mission")
         # one mission
         self.grail.add_mission("pwet pwet", realm=realm.id)
-        self.assertEqual(1, len(default.get_missions()))
+        self.assertEqual(1, len(list(default.get_missions())))
         self.assertTrue(t in default.get_missions())
         # two mission
         t2 = self.grail.add_mission("mission 2")
         self.grail.add_mission("pwet pwet", realm=realm.id)
-        self.assertEqual(2, len(default.get_missions()))
+        self.assertEqual(2, len(list(default.get_missions())))
         self.assertTrue(t in default.get_missions())
         self.grail.add_mission("pwet pwet", realm=realm.id)
         self.assertTrue(t2 in default.get_missions())
         # only uncompleted
         t2.toggle()
         self.grail.add_mission("pwet pwet", realm=realm.id)
-        self.assertEqual(1, len(default.get_missions()))
+        self.assertEqual(1, len(list(default.get_missions())))
         self.assertTrue(t in default.get_missions())
         self.grail.add_mission("pwet pwet", realm=realm.id)
         self.assertTrue(t2 not in default.get_missions())
         # everything
         self.grail.add_mission("pwet pwet", realm=realm.id)
-        self.assertEqual(2, len(default.get_missions(all_missions=True)))
+        self.assertEqual(2, len(list(default.get_missions(all_missions=True))))
         self.assertTrue(t in default.get_missions(all_missions=True))
         self.grail.add_mission("pwet pwet", realm=realm.id)
         self.assertTrue(t2 in default.get_missions(all_missions=True))
@@ -1005,23 +1008,23 @@ class Test_TDD(unittest.TestCase):
     def test_get_quest_missions(self):
         quest = self.grail.add_quest("pipapou")
         # empty
-        self.assertEqual(0, len(quest.get_missions()))
+        self.assertEqual(0, len(list(quest.get_missions())))
         t = self.grail.add_mission("mission", quest=quest.id)
         # one mission
-        self.assertEqual(1, len(quest.get_missions()))
+        self.assertEqual(1, len(list(quest.get_missions())))
         self.assertTrue(t in quest.get_missions())
         # two mission
         t2 = self.grail.add_mission("mission 2", quest=quest.id)
-        self.assertEqual(2, len(quest.get_missions()))
+        self.assertEqual(2, len(list(quest.get_missions())))
         self.assertTrue(t in quest.get_missions())
         self.assertTrue(t2 in quest.get_missions())
         # only uncompleted
         t2.toggle()
-        self.assertEqual(1, len(quest.get_missions()))
+        self.assertEqual(1, len(list(quest.get_missions())))
         self.assertTrue(t in quest.get_missions())
         self.assertTrue(t2 not in quest.get_missions())
         # everything
-        self.assertEqual(2, len(quest.get_missions(all_missions=True)))
+        self.assertEqual(2, len(list(quest.get_missions(all_missions=True))))
         self.assertTrue(t in quest.get_missions(all_missions=True))
         self.assertTrue(t2 in quest.get_missions(all_missions=True))
 
@@ -1030,29 +1033,29 @@ class Test_TDD(unittest.TestCase):
         other_quest = self.grail.add_quest("pouet pouet")
         # empty
         self.grail.add_mission("pwet pwet", quest=other_quest.id)
-        self.assertEqual(0, len(quest.get_missions()))
+        self.assertEqual(0, len(list(quest.get_missions())))
         t = self.grail.add_mission("mission", quest=quest.id)
         # one mission
         self.grail.add_mission("pwet pwet", quest=other_quest.id)
-        self.assertEqual(1, len(quest.get_missions()))
+        self.assertEqual(1, len(list(quest.get_missions())))
         self.assertTrue(t in quest.get_missions())
         # two mission
         t2 = self.grail.add_mission("mission 2", quest=quest.id)
         self.grail.add_mission("pwet pwet", quest=other_quest.id)
-        self.assertEqual(2, len(quest.get_missions()))
+        self.assertEqual(2, len(list(quest.get_missions())))
         self.assertTrue(t in quest.get_missions())
         self.grail.add_mission("pwet pwet", quest=other_quest.id)
         self.assertTrue(t2 in quest.get_missions())
         # only uncompleted
         t2.toggle()
         self.grail.add_mission("pwet pwet", quest=other_quest.id)
-        self.assertEqual(1, len(quest.get_missions()))
+        self.assertEqual(1, len(list(quest.get_missions())))
         self.assertTrue(t in quest.get_missions())
         self.grail.add_mission("pwet pwet", quest=other_quest.id)
         self.assertTrue(t2 not in quest.get_missions())
         # everything
         self.grail.add_mission("pwet pwet", quest=other_quest.id)
-        self.assertEqual(2, len(quest.get_missions(all_missions=True)))
+        self.assertEqual(2, len(list(quest.get_missions(all_missions=True))))
         self.assertTrue(t in quest.get_missions(all_missions=True))
         self.grail.add_mission("pwet pwet", quest=other_quest.id)
         self.assertTrue(t2 in quest.get_missions(all_missions=True))
