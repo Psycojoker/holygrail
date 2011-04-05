@@ -685,7 +685,6 @@ class Grail(object):
 
         def create_row(description, time_delta_value):
             row = [i for i in list_missions() if i.id not in removed and i.due and i.due < datetime.now() + timedelta(time_delta_value)]
-            print "row:", row
             if not row:
                 return
             row = sorted(row, key=lambda mission: mission._due)
