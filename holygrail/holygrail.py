@@ -640,6 +640,9 @@ class Grail(object):
     def last_completed_missions(self, number=5):
         """
         Return a generator that contain the 5 last completed missions order in a reverse chronological order.
+
+        Arguments:
+            * number: the maximum number of missions returned
         """
         for i in _Mission.select(_Mission.q.completed == True).orderBy("-completed_at")[:number]:
             yield i
