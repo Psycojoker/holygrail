@@ -788,6 +788,12 @@ class Test_TDD(unittest.TestCase):
         last_completed_missions = self.grail.last_completed_missions()
         self.assertEqual([mission2, mission3, mission1], list(last_completed_missions))
 
+    def test_last_completed_missions_max_multiple_missions(self):
+        for i in xrange(10):
+            self.grail.add_mission("pouet").toggle()
+        last_completed_missions = self.grail.last_completed_missions()
+        self.assertEqual(5, len(list(last_completed_missions)))
+
     def test_quest_due(self):
         quest = self.grail.add_quest("je code dans un avion qui revient d'irlande")
         due = datetime.now()
