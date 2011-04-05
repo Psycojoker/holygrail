@@ -637,11 +637,11 @@ class Grail(object):
             for i in _Realm.select().orderBy("position"):
                 yield i
 
-    def last_completed_missions(self):
+    def last_completed_missions(self, number=5):
         """
         Return a generator that contain the 5 last completed missions order in a reverse chronological order.
         """
-        for i in _Mission.select(_Mission.q.completed == True).orderBy("-completed_at")[:5]:
+        for i in _Mission.select(_Mission.q.completed == True).orderBy("-completed_at")[:number]:
             yield i
 
     def main_view(self):
