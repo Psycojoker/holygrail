@@ -948,6 +948,10 @@ class Test_Main(unittest.TestCase):
         default = self.grail.get_default_realm()
         self.assertEqual(self.grail.super_main_view(), [["For today", [mission]], ["For in 3 days", [mission2]], ["For this week", [mission3]] , [default, [mimission, mimission3]], [realm, [mimission2, mimission4]]])
 
+    def test_super_late_missions(self):
+        mission = self.grail.add_mission("prout", due=datetime.now() - timedelta(days=100))
+        self.assertEqual(self.grail.super_main_view(), [["For today", [mission]]])
+
     def test_get_realm_missions(self):
         default = self.grail.get_default_realm()
         # empty
