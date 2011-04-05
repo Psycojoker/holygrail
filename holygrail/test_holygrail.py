@@ -42,7 +42,7 @@ def comp_datetime(a, b):
         return False
     return True
 
-class Test_TDD(unittest.TestCase):
+class Test_Main(unittest.TestCase):
 
     def setUp(self):
         self.grail = self.reinitialise()
