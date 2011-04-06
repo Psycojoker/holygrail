@@ -48,6 +48,11 @@ or mail me at cortex@worlddomination.be
 
 Changelog
 ---------
+ * 0.2
+   - API change: now every list_* methods return a generator, not a list. This increase the performances.
+   - API change: last_completed_missions return only 5 missions by default, an argument can increase this number
+   - fix a bug with quest and realm "get_missions" method that won't return any missions if the quest/realm is hidden
+   - refactoring and various tests
  * 0.1.2
    - fix fail import on privates class
  * 0.1.1
