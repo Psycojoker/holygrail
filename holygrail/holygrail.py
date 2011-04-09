@@ -71,11 +71,13 @@ class _Realm(sqlobject.SQLObject):
                 and (not mission.quest or (not mission.quest.hide and not mission.quest.completed\
                 and ((mission.quest.tickler == None) or (mission.quest.tickler < datetime.now()))))
 
-        return [i for i in _Mission.select(sqlobject.AND(_Mission.q.completed == False,
-                sqlobject.OR(_Mission.q.tickler == None, _Mission.q.tickler < datetime.now()),\
-                _Mission.q.realm == self)) if visible(i)]\
-                if not all_missions\
-                else [i for i in _Mission.select(_Mission.q.realm == self)]
+        if not all_missions:
+            for i in _Mission.select(sqlobject.AND(_Mission.q.completed == False, sqlobject.OR(_Mission.q.tickler == None, _Mission.q.tickler < datetime.now()), _Mission.q.realm == self)):
+                if visible(i):
+                    yield i
+        else:
+            for i in _Mission.select(_Mission.q.realm == self):
+                yield i
 
     def change_position(self, new_position):
         """
@@ -594,55 +596,77 @@ class Grail(object):
 
     def list_missions(self, all_missions=False):
         """
-        Return a list of visible missions.
+        Return a generator of visible missions.
 
         Arguments:
             * all_missions=False by default, if True return all the missions.
         """
-        return [i for i in _Mission.select(sqlobject.AND(_Mission.q.completed == False,
-               sqlobject.OR(_Mission.q.tickler == None, _Mission.q.tickler < datetime.now()))).orderBy('id')\
-                if i.visible()] if not all_missions else [i for i in _Mission.select()]
+        if not all_missions:
+            for i in _Mission.select(sqlobject.AND(_Mission.q.completed == False, sqlobject.AND(_Mission.q.realm == _Realm.q.id, _Realm.q.hide == False), sqlobject.OR(_Mission.q.tickler == None, _Mission.q.tickler < datetime.now()))):
+                if i.visible():
+                    yield i
+        else:
+            for i in _Mission.select():
+                yield i
 
     def list_quests(self, all_quests=False):
         """
-        Return a list of visible quests.
+        Return a generator of visible quests.
 
         Arguments:
             * all_quests=False by default, if True return all the quests.
         """
-        return [i for i in _Quest.select(sqlobject.AND(_Quest.q.hide == False, sqlobject.OR(_Quest.q.tickler == None, _Quest.q.tickler < datetime.now())))]\
-                if not all_quests else [i for i in _Quest.select()]
+        if not all_quests:
+            for i in _Quest.select(sqlobject.AND(_Quest.q.hide == False, sqlobject.OR(_Quest.q.tickler == None, _Quest.q.tickler < datetime.now()))):
+                yield i
+        else:
+            for i in _Quest.select():
+                yield i
 
     def list_realms(self, all_realms=False):
         """
-        Return a list of visible realms.
+        Return a generator of visible realms.
 
         Arguments:
             * all_realms=False by default, if True return all the realms.
         """
-        return [i for i in _Realm.select(_Realm.q.hide == False).orderBy("position")] if not all_realms\
-            else [i for i in _Realm.select().orderBy("position")]
+        if not all_realms:
+            for i in _Realm.select(_Realm.q.hide == False).orderBy("position"):
+                yield i
+        else:
+            for i in _Realm.select().orderBy("position"):
+                yield i
 
-    def last_completed_missions(self):
+    def last_completed_missions(self, number=5):
         """
-        Return a list of the last completed missions order in a none chronological order.
+        Return a generator that contain the 5 last completed missions order in a reverse chronological order.
+
+        Arguments:
+            * number: the maximum number of missions returned
         """
-        to_return = [i for i in _Mission.select(_Mission.q.completed == True).orderBy("completed_at")]
-        to_return.reverse()
-        return to_return
+        for i in _Mission.select(_Mission.q.completed == True).orderBy("-completed_at")[:number]:
+            yield i
 
     def main_view(self):
         """
         Return the main view.
 
-        The main view is a list of lists of:
+        The main view is a generator of lists of:
             - visible realm
-            - list of visible missions of this realm
+            - generator of visible missions of this realm
 
         Order by the realm position.
         """
-        # double sql query, not optimised, i hope sqlite/other cached those
-        return [[i, i.get_missions()] for i in self.list_realms() if i.get_missions()]
+        def empty(a):
+            try:
+                a().next()
+                return False
+            except StopIteration:
+                return True
+
+        for i in self.list_realms():
+            if not empty(i.get_missions):
+                yield [i, i.get_missions()]
 
     def super_main_view(self):
         """
@@ -657,30 +681,29 @@ class Grail(object):
 
         Order by the realm position.
         """
-        missions = self.list_missions()
-        if not missions:
-            return []
+        def list_missions():
+            for i in _Mission.select(sqlobject.AND(_Mission.q.completed == False, _Mission.q._due < datetime.now() + timedelta(8), sqlobject.AND(_Mission.q.realm == _Realm.q.id, _Realm.q.hide == False), sqlobject.OR(_Mission.q.tickler == None, _Mission.q.tickler < datetime.now()))):
+                if i.visible():
+                    yield i
 
-        main_view = []
-
-        def create_row(missions, description, time_delta_value):
-            row = [i for i in missions if i.due and i.due < datetime.now() + timedelta(time_delta_value)]
+        def create_row(description, time_delta_value):
+            row = [i for i in list_missions() if i.id not in removed and i.due and i.due < datetime.now() + timedelta(time_delta_value)]
             if not row:
                 return
-
             row = sorted(row, key=lambda mission: mission._due)
             main_view.append([description, row])
-            map(missions.remove, row)
+            for i in row:
+                removed.add(i.id)
 
-        create_row(missions, "For today", 1)
-        create_row(missions, "For in 3 days", 4)
-        create_row(missions, "For this week", 8)
+        main_view = []
+        removed = set()
+        create_row("For today", 1)
+        create_row("For in 3 days", 4)
+        create_row("For this week", 8)
 
-        main_view += [[realm,
-                       [i for i in realm.get_missions() if not i.due or i.due >= datetime.now() + timedelta(8)]]
-                      for realm in self.list_realms()]
+        main_view += filter(lambda item: item[1], [[realm, [i for i in realm.get_missions() if i.id not in removed]] for realm in self.list_realms()])
 
-        return filter(lambda item: item[1], main_view)
+        return main_view
 
     def search_for_mission(self, description):
         """
