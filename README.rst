@@ -1,7 +1,7 @@
 HolyGrail
 ==========
 
-http://blog.worlddomination.org/holygrail
+http://blog.worlddomination.be/holygrail
 
 HolyGrail aims to be a base library to interact with a todo (missions)
 database. It provides a simple interface allowing you to interact with your
