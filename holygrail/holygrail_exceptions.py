@@ -72,7 +72,7 @@ class NoDatabaseConfiguration(exceptions.Exception):
 
     def __str__(self):
         return """Their isn't any uri for the database, etheir give MissionDB an uri at creation or create a config file with a DATABASE_ACCESS variable that containt the string of the uri
-    Do you have a ~/.holygrailrc ? Take a look here http://blog.worlddomination.be/holygrail/#configuration"""
+    Do you have a ~/.holygrailrc ? Take a look here http://worlddomination.be/holygrail.html#configuration"""
 
 class WaitForError(exceptions.Exception):
     def __init__(self, error):
