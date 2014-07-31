@@ -4,7 +4,7 @@
 from setuptools import setup
 
 setup(name='HolyGrail',
-      version='0.2 Perceval',
+      version='0.2.1 Perceval',
       description='High level lib to manage the holy quests of your life (in other words GTD next actions)',
       author='Laurent Peuch',
       long_description=open("README.rst").read(),

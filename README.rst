@@ -60,6 +60,9 @@ or mail me at <cortex@worlddomination.be>
 
 Changelog
 ---------
+- 0.2.1 Perceval
+    - Various doc updates and rehosting of the project on github
+
 - 0.2 Perceval
     - API change: now every list_* methods return a generator, not a list. This increase the performances.
     - API change: last_completed_missions return only 5 missions by default, an argument can increase this number
