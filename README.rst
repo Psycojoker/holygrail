@@ -71,6 +71,7 @@ Changelog
 ---------
 - 0.2.1 Perceval
     - Various doc updates and rehosting of the project on github
+    - also: wheels
 
 - 0.2 Perceval
     - API change: now every list_* methods return a generator, not a list. This increase the performances.
