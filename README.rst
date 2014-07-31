@@ -58,6 +58,15 @@ or for mysql (don't forget to create the username/database etc ...):
 If you have questions, bugs etc ... ping me on irc.freenode.net, nick Bram,
 or mail me at <cortex@worlddomination.be>
 
+Tests
+-----
+
+::
+
+    cd holygrail && python test_holygrail.py
+
+Or use nosetests/py.test.
+
 Changelog
 ---------
 - 0.2.1 Perceval
